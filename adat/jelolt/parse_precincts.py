@@ -19,6 +19,9 @@ def clean_cell(text):
     else:
         return 'id'
 
+def numeric_value(text):
+    return int(NONPRINTABLE_RE.sub('', text))
+
 def html_table(etre_element):
     output = []
     rows = iter(etre_element)
@@ -46,7 +49,7 @@ def store_relation(row, jelolt_lista, eredmeny_lista, oevk_map):
         jelolt_lista.append(dict(id=jid, nev=row['A jelölt neve'], szervezet=row['Jelölő szervezet(ek)']))
     else:
         assert dict(id=jid, nev=row['A jelölt neve'], szervezet=row['Jelölő szervezet(ek)']) in jelolt_lista
-    eredmeny_lista.append(dict(szavazokor=row['szavazokor'], jelolt=jid, szavazat=row['Kapott érvényes szavazat']))
+    eredmeny_lista.append(dict(szavazokor=row['szavazokor'], jelolt=jid, szavazat=numeric_value(row['Kapott érvényes szavazat'])))
 
 def store_listas(row, szervezet_lista, eredmeny_lista):
     jid = row['id']
@@ -57,7 +60,7 @@ def store_listas(row, szervezet_lista, eredmeny_lista):
             assert dict(id=jid, szervezet=row['A pártlista neve']) in szervezet_lista
         except: 
             pass 
-    eredmeny_lista.append(dict(szavazokor=row['szavazokor'], part=jid, szavazat=row['Szavazat']))
+    eredmeny_lista.append(dict(szavazokor=row['szavazokor'], part=jid, szavazat=numeric_value(row['Szavazat'])))
 
 def parse_file(filename, datastore):
     html = open(filename,'r', encoding='latin2').read()
