@@ -25,8 +25,9 @@ egen partjeloltek_szama = sum(jelolt_tag), by(szervezet)
 egen jeloltek_szama = sum(jelolt_tag), by(szavazokor)
 egen osszes_szavazat = sum(szavazat), by(szavazokor)
 gen arany = szavazat/osszes_szavazat
+egen rang = rank(-szavazat), by(szavazokor) unique
 
-foreach X of var szavazat arany jeloltek_szama {
+foreach X of var szavazat arany jeloltek_szama osszes_szavazat {
 	gen ln_`X' = ln(`X')
 }
 
