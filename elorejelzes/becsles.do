@@ -8,8 +8,9 @@ local T = r(max)
 tempvar Yhat
 gen Yhat=.
 forval t=1/`T' {
-	capture reg ln_arany ln_jeloltek_szama ln_osszes_szavazat i.szervezet_kod if telepules_tipus==`t'
+	capture areg ln_arany ferfi dr listan_is_indul ismert i.szervezet_kod if partjeloltek_szama>=30 & telepules_tipus==`t', a(szavazokor)
 	if _rc==0 {
+		areg
 		predict `Yhat'
 		replace Yhat=`Yhat' if telepules_tipus==`t'
 		drop `Yhat'
