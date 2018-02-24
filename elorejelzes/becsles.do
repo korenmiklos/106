@@ -21,7 +21,7 @@ egen `veletlen' = mean(cond(szavazokor_tag,uniform(),.)), by(szavazokor)
 egen `vrang' = rank(uniform()), by(szintetikus_telepules szervezet)
 egen szint_szavazokorok_szama = sum(szavazokor_tag), by(szintetikus_telepules)
 
-gen holdout_sample = (`vrang'<= szint_szavazokorok_szama*0.33)
+gen holdout_sample = (`vrang'<= szint_szavazokorok_szama*0.70)
 tab holdout_sample
 /*
 holdout_sam |
@@ -37,41 +37,49 @@ holdout_sam |
 su telepules_tipus
 local T = r(max)
 
-reg ln_arany ferfi dr listan_is_indul ismert i.telepulesXszervezet if !holdout_sample
+areg ln_arany ferfi dr listan_is_indul ismert egyeniben_nyert listan_nyert i.telepulesXszervezet if !holdout_sample, a(szavazokor)
 /*
-      Source |       SS           df       MS      Number of obs   =    36,654
--------------+----------------------------------   F(1175, 35478)  =    267.47
-       Model |  37297.9207     1,175  31.7429112   Prob > F        =    0.0000
-    Residual |  4210.45192    35,478  .118677826   R-squared       =    0.8986
--------------+----------------------------------   Adj R-squared   =    0.8952
-       Total |  41508.3726    36,653  1.13246863   Root MSE        =     .3445
+Linear regression, absorbing indicators         Number of obs     =     31,270
+                                                F( 881,  20445)   =     248.85
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9253
+                                                Adj R-squared     =     0.8858
+                                                Root MSE          =     0.3616
 
 -----------------------------------------------------------------------------------
          ln_arany |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 ------------------+----------------------------------------------------------------
-            ferfi |   .0356002   .0100292     3.55   0.000     .0159427    .0552577
-               dr |   .0462951   .0080439     5.76   0.000     .0305289    .0620614
-  listan_is_indul |   .0201582   .0101792     1.98   0.048     .0002067    .0401096
-           ismert |   .1504618   .0170022     8.85   0.000     .1171371    .1837866
+            ferfi |   .0554165    .014169     3.91   0.000     .0276441    .0831889
+               dr |   .0397268   .0116573     3.41   0.001     .0168776    .0625759
+  listan_is_indul |   .0352629   .0144267     2.44   0.015     .0069855    .0635403
+           ismert |   .1375403   .0232303     5.92   0.000     .0920071    .1830736
+  egyeniben_nyert |    .085699   .0214345     4.00   0.000     .0436856    .1277125
+     listan_nyert |   .0238007   .0131278     1.81   0.070    -.0019308    .0495321
 */
 predict Yhat, xb
+gen becsult_szavazat = exp(Yhat)
+tempvar sum
+egen `sum' = sum(becsult_szavazat), by(szavazokor)
+replace becsult_szavazat = int(becsult_szavazat/`sum'*osszes_szavazat)
+replace Yhat = ln(becsult_szavazat/osszes_szavazat)
 
 reg ln_arany Yhat if holdout_sample
 ** szavazokor-szinten jo out-of-sample illeszkedes
 /*
-      Source |       SS           df       MS      Number of obs   =     4,486
--------------+----------------------------------   F(1, 4484)      =  37847.77
-       Model |  4382.45245         1  4382.45245   Prob > F        =    0.0000
-    Residual |  519.209332     4,484  .115791555   R-squared       =    0.8941
--------------+----------------------------------   Adj R-squared   =    0.8941
-       Total |  4901.66178     4,485  1.09290118   Root MSE        =    .34028
+      Source |       SS           df       MS      Number of obs   =     9,865
+-------------+----------------------------------   F(1, 9863)      =  74554.72
+       Model |  9362.01246         1  9362.01246   Prob > F        =    0.0000
+    Residual |  1238.52031     9,863  .125572373   R-squared       =    0.8832
+-------------+----------------------------------   Adj R-squared   =    0.8832
+       Total |  10600.5328     9,864  1.07466877   Root MSE        =    .35436
 
 ------------------------------------------------------------------------------
     ln_arany |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 -------------+----------------------------------------------------------------
-        Yhat |   1.008251   .0051826   194.55   0.000     .9980902    1.018411
-       _cons |   .0093727   .0105921     0.88   0.376     -.011393    .0301384
+        Yhat |   .9596309   .0035145   273.05   0.000     .9527417    .9665201
+       _cons |  -.1107614   .0071263   -15.54   0.000    -.1247304   -.0967925
 ------------------------------------------------------------------------------
+
 */
 
 egen rang_becsles = rank(-Yhat), by(szavazokor) unique
@@ -84,18 +92,14 @@ tab nagyok_kozti_rang rang_becsles if holdout_sample
    )    by |   unique rank of (-Yhat)    by szavazokor
 szavazokor |         1          2          3          4 |     Total
 -----------+--------------------------------------------+----------
-         1 |     1,003        131          9          0 |     1,143 
-         2 |       122        780        220          1 |     1,123 
-         3 |         8        215        875         42 |     1,140 
-         4 |         0          3         33      1,090 |     1,126 
+         1 |     2,182        285         29          0 |     2,496 
+         2 |       292      1,681        518          2 |     2,493 
+         3 |        19        512      1,857         89 |     2,477 
+         4 |         0          4         91      2,382 |     2,477 
 -----------+--------------------------------------------+----------
-     Total |     1,133      1,129      1,137      1,133 |     4,532 
+     Total |     2,493      2,482      2,495      2,473 |     9,943 
 */
 
-gen becsult_szavazat = exp(Yhat)
-tempvar sum
-egen `sum' = sum(becsult_szavazat), by(szavazokor)
-replace becsult_szavazat = int(becsult_szavazat/`sum'*osszes_szavazat)
 
 replace becsult_szavazat = . if !holdout_sample
 
@@ -106,7 +110,7 @@ foreach X of var *szavazat {
 	egen rang_`X' = rank(-`X'), by(oevk) unique
 }
 tab rang_szavazat rang_becsult
-** oevk szinten sokkal rosszabb illeszkedes
+** oevk szinten rosszabb illeszkedes
 /*
     unique |
    rank of |
@@ -114,24 +118,29 @@ tab rang_szavazat rang_becsult
    )    by |                    oevk
       oevk |         1          2          3          4 |     Total
 -----------+--------------------------------------------+----------
-         1 |        83         10          6          7 |       106 
-         2 |         9         58         30          9 |       106 
-         3 |        10         30         59          7 |       106 
-         4 |         4          8         11         83 |       106 
+         1 |        88          5         10          3 |       106 
+         2 |         6         74         20          6 |       106 
+         3 |         7         22         70          7 |       106 
+         4 |         5          5          6         90 |       106 
 -----------+--------------------------------------------+----------
      Total |       106        106        106        106 |       424 
 */
 
-reshape wide rang_szavazat jelolt nev szervezet szavazat becsult_szavazat , i(oevk ) j(rang_becsult_szavazat  )
+egen nyertes_szavazat = mean(cond(rang_szavazat==1,szavazat,.)), by(oevk)
+egen osszes_szavazat = sum(szavazat), by(oevk)
+gen nyeresi_arany = nyertes_szavazat/osszes_szavazat
+
+reshape wide rang_szavazat jelolt nev szervezet szavazat becsult_szavazat , i(oevk nyeresi_arany) j(rang_becsult_szavazat  )
 gen byte sorrend_stimmel = rang_szavazat2 <rang_szavazat3 
-tab sorrend_stimmel 
+tab sorrend_stimmel  if nyeresi_arany<=0.5
 
 /*
 sorrend_sti |
        mmel |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-          0 |         35       33.02       33.02
-          1 |         71       66.98      100.00
+          0 |         23       29.11       29.11
+          1 |         56       70.89      100.00
 ------------+-----------------------------------
-      Total |        106      100.00
+      Total |         79      100.00
+
 */
