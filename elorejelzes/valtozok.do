@@ -19,7 +19,7 @@ drop _m
 merge m:1 id using `jelolt_extra_adatok'
 drop _m
 
-foreach X in jelolt telepules szavazokor szervezet {
+foreach X in jelolt telepules szavazokor szervezet megye {
 	egen `X'_tag = tag(`X')
 	egen `X'_kod = group(`X')
 }
