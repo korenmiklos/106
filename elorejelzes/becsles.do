@@ -33,7 +33,7 @@ gen byte buda = inlist(budapest_kerulet,"01","02","11","12","22")
 * budat es pestet kulon megyenek tekintjuk
 gen str oevk = substr(jelolt,1,7)
 egen telepules_tipus = group(megye buda meret)
-egen telepulesXszervezet = group(oevk telepules_tipus szervezet)
+egen telepulesXszervezet = group(telepules_tipus szervezet)
 
 * telepulesen beluli, de out-of-sample illeszkedes
 tempvar veletlen vrang
@@ -52,22 +52,22 @@ local T = r(max)
 
 areg ln_arany `egyeni_valtozok' i.telepulesXszervezet if !holdout_sample, a(szavazokor)
 /*
-Linear regression, absorbing indicators         Number of obs     =     20,795
-                                                F( 993,  14554)   =     170.83
+Linear regression, absorbing indicators         Number of obs     =     20,788
+                                                F( 303,  15237)   =     452.86
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.9241
-                                                Adj R-squared     =     0.8916
-                                                Root MSE          =     0.3511
+                                                R-squared         =     0.9039
+                                                Adj R-squared     =     0.8690
+                                                Root MSE          =     0.3852
 
 -----------------------------------------------------------------------------------
          ln_arany |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 ------------------+----------------------------------------------------------------
-  listan_is_indul |  -1.653961   .1655226    -9.99   0.000    -1.978407   -1.329516
-            ferfi |  -1.684284   .1655226   -10.18   0.000     -2.00873   -1.359839
-               dr |  -1.752771   .0973849   -18.00   0.000    -1.943658   -1.561884
-           ismert |   6.065327   .2689002    22.56   0.000     5.538249    6.592406
-  egyeniben_nyert |   .1400201   .1058686     1.32   0.186    -.0674958     .347536
-     listan_nyert |   4.084798   .2069032    19.74   0.000     3.679242    4.490355
+  listan_is_indul |   .0633066   .0129597     4.88   0.000     .0379039    .0887093
+            ferfi |   .0513491   .0116673     4.40   0.000     .0284798    .0742183
+               dr |   .0162755   .0100684     1.62   0.106    -.0034597    .0360107
+           ismert |   .1721298    .017472     9.85   0.000     .1378826     .206377
+  egyeniben_nyert |   .0521725   .0191356     2.73   0.006     .0146643    .0896806
+     listan_nyert |   .0535026   .0115845     4.62   0.000     .0307957    .0762095
 */
 predict Yhat, xb
 gen becsult_szavazat = exp(Yhat)
@@ -79,18 +79,18 @@ replace Yhat = ln(becsult_szavazat/osszes_szavazat)
 reg ln_arany Yhat if holdout_sample
 ** szavazokor-szinten az out-of-sample illeszkedes is jo
 /*
-      Source |       SS           df       MS      Number of obs   =    20,292
--------------+----------------------------------   F(1, 20290)     >  99999.00
-       Model |  20156.4111         1  20156.4111   Prob > F        =    0.0000
-    Residual |  2504.28485    20,290  .123424586   R-squared       =    0.8895
--------------+----------------------------------   Adj R-squared   =    0.8895
-       Total |   22660.696    20,291  1.11678557   Root MSE        =    .35132
+      Source |       SS           df       MS      Number of obs   =    20,329
+-------------+----------------------------------   F(1, 20327)     >  99999.00
+       Model |  20077.2375         1  20077.2375   Prob > F        =    0.0000
+    Residual |    2750.828    20,327  .135328774   R-squared       =    0.8795
+-------------+----------------------------------   Adj R-squared   =    0.8795
+       Total |  22828.0655    20,328   1.1229863   Root MSE        =    .36787
 
 ------------------------------------------------------------------------------
     ln_arany |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 -------------+----------------------------------------------------------------
-        Yhat |   .9631822   .0023834   404.12   0.000     .9585104    .9678539
-       _cons |  -.1083725    .004858   -22.31   0.000    -.1178946   -.0988503
+        Yhat |   .9720151   .0025236   385.17   0.000     .9670687    .9769615
+       _cons |   -.098314   .0051207   -19.20   0.000    -.1083511    -.088277
 ------------------------------------------------------------------------------
 */
 
@@ -104,12 +104,12 @@ tab nagyok_kozti_rang rang_becsles if holdout_sample
    )    by |   unique rank of (-Yhat)    by szavazokor
 szavazokor |         1          2          3          4 |     Total
 -----------+--------------------------------------------+----------
-         1 |     4,381        644        109          2 |     5,136 
-         2 |       670      3,543        918          2 |     5,133 
-         3 |        85        945      3,930        166 |     5,126 
-         4 |         2          5        174      4,881 |     5,062 
+         1 |     4,243        794        101          0 |     5,138 
+         2 |       813      3,269      1,054          2 |     5,138 
+         3 |        82      1,066      3,780        203 |     5,131 
+         4 |         0          9        203      4,877 |     5,089 
 -----------+--------------------------------------------+----------
-     Total |     5,138      5,137      5,131      5,051 |    20,457 
+     Total |     5,138      5,138      5,138      5,082 |    20,496 
 */
 
 
@@ -129,12 +129,13 @@ tab rang_szavazat rang_becsult
    )    by |                    oevk
       oevk |         1          2          3          4 |     Total
 -----------+--------------------------------------------+----------
-         1 |       105          1          0          0 |       106 
-         2 |         1        103          2          0 |       106 
-         3 |         0          2        104          0 |       106 
-         4 |         0          0          0        106 |       106 
+         1 |        98          8          0          0 |       106 
+         2 |         8         84         14          0 |       106 
+         3 |         0         14         90          2 |       106 
+         4 |         0          0          2        104 |       106 
 -----------+--------------------------------------------+----------
      Total |       106        106        106        106 |       424 
+
 */
 
 egen nyertes_szavazat = mean(cond(rang_szavazat==1,szavazat,.)), by(oevk)
@@ -149,8 +150,8 @@ tab sorrend_stimmel
 sorrend_sti |
        mmel |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-          0 |          2        1.89        1.89
-          1 |        104       98.11      100.00
+          0 |         14       13.21       13.21
+          1 |         92       86.79      100.00
 ------------+-----------------------------------
       Total |        106      100.00
 */
