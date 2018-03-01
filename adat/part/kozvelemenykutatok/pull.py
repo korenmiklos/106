@@ -65,20 +65,21 @@ def parse_row(row):
 def store_row(row, part, fajl, datastore):
 	for key, value in row.items():
 		if key in KUTATOK:
-			datastore.append(dict(
+			datastore[fajl].append(dict(
 				datum=iso_datum(row['datum']),
 				part=part,
-				minta=fajl,
 				kutato=key,
 				szazalek=value))
 
 if __name__ == '__main__':
-	datastore = []
+	datastore = dict(
+		teljes_nepesseg=[],
+		biztos_valasztok=[])
 	for sheet in SHEETS.keys():
 		for part in PARTOK:
 			for row in get_csv(sheet, part):
 				store_row(row, part, sheet, datastore)
-	writer = csv.DictWriter(open('kozvelemenykutatas.csv', 'w'), fieldnames=datastore[0].keys())
-	writer.writeheader()
-	for row in datastore:
-		writer.writerow(row)
+		writer = csv.DictWriter(open('{}.csv'.format(sheet), 'w'), fieldnames=datastore[sheet][0].keys())
+		writer.writeheader()
+		for row in datastore[sheet]:
+			writer.writerow(row)
