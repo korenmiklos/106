@@ -1,0 +1,748 @@
+szervezet,id,nev
+LEHET MÁS A POLITIKA,M01/E01/1,Ertsey Katalin
+MSZP,M01/E01/2,Dr. Molnár Zsolt
+FIDESZ-KDNP,M01/E01/3,Dr. Nagy Gábor Tamás
+Jobbik,M01/E01/4,Pörzse Sándor
+Jobbik,M01/E02/1,Balczó Zoltán
+FIDESZ-KDNP,M01/E02/2,Dr. Balsai István
+MSZP,M01/E02/3,Donáth László
+MDF,M01/E02/4,Dr. Pusztai Erzsébet
+LEHET MÁS A POLITIKA,M01/E02/5,Szombati Kristóf
+MDF-SZDSZ,M01/E04/1,Dr. Badacsonyi Szabolcs
+Jobbik,M01/E04/2,Fejes István
+FIDESZ-KDNP,M01/E04/3,Menczer Erzsébet
+MSZP,M01/E04/4,Dr. Orosz Sándor
+LEHET MÁS A POLITIKA,M01/E04/5,Szabó Tímea
+MSZP,M01/E06/1,Kiss Péter
+LEHET MÁS A POLITIKA,M01/E06/2,Perneczky László
+Jobbik,M01/E06/3,Szegedi Csanád
+FIDESZ-KDNP,M01/E06/4,Wintermantel Zsolt
+LEHET MÁS A POLITIKA,M01/E06/5,Tálosné Pálvölgyi Márta
+MDF,M01/E07/1,Debreczeni József
+Jobbik,M01/E07/2,Hegedűs Lórántné
+FIDESZ-KDNP,M01/E07/3,Rogán Antal
+LEHET MÁS A POLITIKA,M01/E07/4,Schiffer András
+MSZP,M01/E07/5,Dr. Steiner Pál
+Jobbik,M01/E08/1,Dr. Cziráki Adorján
+MSZP,M01/E08/2,Hatvani Csaba
+FIDESZ-KDNP,M01/E08/3,Dr. Illés Zoltán
+LEHET MÁS A POLITIKA,M01/E08/4,Kaszics Bálint
+FIDESZ-KDNP,M01/E10/1,dr. Fónagy János
+MDF,M01/E10/2,Herényi Károly
+LEHET MÁS A POLITIKA,M01/E10/3,Moldován László
+Jobbik,M01/E10/4,Pintér Attila
+MSZP,M01/E10/5,dr. Szabó Zoltán
+FIDESZ-KDNP,M01/E11/1,dr. Fónagy János
+MDF,M01/E11/2,Herényi Károly
+LEHET MÁS A POLITIKA,M01/E11/3,Moldován László
+Jobbik,M01/E11/4,Pintér Attila
+MSZP,M01/E11/5,dr. Szabó Zoltán
+FIDESZ-KDNP,M01/E13/1,Dr. Bácskai János
+MSZP,M01/E13/2,Budai Bernadett
+LEHET MÁS A POLITIKA,M01/E13/3,Csárdi Antal
+Jobbik,M01/E13/4,Kassab Adonis
+MSZP,M01/E26/1,Arató Gergely László
+Jobbik,M01/E26/2,Farnady László
+FIDESZ-KDNP,M01/E26/3,Dr. György István
+MDF,M01/E26/4,Győri Dénes
+Jobbik,M01/E17/1,Dúró Dóra
+LEHET MÁS A POLITIKA,M01/E17/2,Jávor Benedek
+FIDESZ-KDNP,M01/E17/3,Dr. Rétvári Bence
+MSZP,M01/E17/4,Szabó Vilmos
+MSZP,M01/E18/1,Dr. Katona Tamás
+Jobbik,M01/E18/2,Martinez Gábor
+FIDESZ-KDNP,M01/E18/3,Pokorni Zoltán
+LEHET MÁS A POLITIKA,M01/E18/4,Sipos Péter
+MDF,M01/E18/5,Slosár Gábor
+MDF,M01/E20/1,Debreczeni József
+Jobbik,M01/E20/2,Hegedűs Lórántné
+FIDESZ-KDNP,M01/E20/3,Rogán Antal
+LEHET MÁS A POLITIKA,M01/E20/4,Schiffer András
+MSZP,M01/E20/5,Dr. Steiner Pál
+MSZP,M01/E22/1,Dr. Bárándy Gergely
+Jobbik,M01/E22/2,Dr. Gyenes Géza
+FIDESZ-KDNP,M01/E22/3,Dr. Papcsák Ferenc
+LEHET MÁS A POLITIKA,M01/E22/4,Várnai László Sándor
+MSZP,M01/E23/1,Kiss Péter
+LEHET MÁS A POLITIKA,M01/E23/2,Perneczky László
+Jobbik,M01/E23/3,Szegedi Csanád
+FIDESZ-KDNP,M01/E23/4,Wintermantel Zsolt
+MDF,M01/E24/1,Fejér László Előd
+FIDESZ-KDNP,M01/E24/2,Kovács Péter
+LEHET MÁS A POLITIKA,M01/E24/3,Szabó Barbara
+Jobbik,M01/E24/4,Vas Zoltán
+MSZP,M01/E24/5,Dr. Vidorné Dr. Szabó Györgyi Mária
+MSZP,M01/E25/1,Alexa György
+LEHET MÁS A POLITIKA,M01/E25/2,Berze Márton
+MDF,M01/E25/3,Dr. Farkas Tibor
+Független,M01/E25/4,Kovács István
+FIDESZ-KDNP,M01/E25/5,Riz Levente
+Jobbik,M01/E25/6,Szilágyi György
+FIDESZ-KDNP,M01/E27/1,Kucsák László
+Jobbik,M01/E27/2,Makai Tibor
+MSZP,M01/E27/3,Simon Gábor
+LEHET MÁS A POLITIKA,M01/E27/4,Scheiring Gábor
+FIDESZ-KDNP,M01/E27/5,Ughy Attila
+MSZP,M01/E28/1,Burány Sándor
+LEHET MÁS A POLITIKA,M01/E28/2,Faith Balázs
+Jobbik,M01/E28/3,Pősze Lajos
+MDF-SZDSZ,M01/E28/4,Ritter János
+FIDESZ-KDNP,M01/E28/5,Dr. Tarnai Richárd
+LEHET MÁS A POLITIKA,M01/E29/1,Dr. Erőss Gábor
+Jobbik,M01/E29/2,Győry Sarolta
+MSZP,M01/E29/3,Pál Tibor
+FIDESZ-KDNP,M01/E29/4,Dr. Vas Imre
+MSZP,M01/E31/1,Dr. Avarkeszi Dezső
+Jobbik,M01/E31/2,Hegedűs Tamás Mihály
+LEHET MÁS A POLITIKA,M01/E31/3,Hudák János
+FIDESZ-KDNP,M01/E31/4,Németh Szilárd
+MDF-SZDSZ,M01/E32/1,Iván János
+FIDESZ-KDNP,M01/E32/2,Németh Zoltán
+LEHET MÁS A POLITIKA,M01/E32/3,Polákovics Balázs
+Jobbik,M01/E32/4,Dr. Staudt Gábor
+MSZP,M01/E32/5,Dr. Szincsák József
+FIDESZ-KDNP,M02/E02/1,Nagy Csaba
+Jobbik,M02/E02/2,Németh Zsolt
+MSZP,M02/E02/3,Dr. Szili Katalin
+LEHET MÁS A POLITIKA,M02/E02/4,Dr. Wildmann János Ferenc
+LEHET MÁS A POLITIKA,M02/E06/1,Balogh Edina
+Jobbik,M02/E06/2,Barkó Béla
+MSZP,M02/E06/3,Kocsi László
+ÖSSZEFOGÁS PÁRT,M02/E06/4,Mali Zoltán
+FIDESZ-KDNP,M02/E06/5,Tiffán Zsolt
+Független Kisgazdapárt,M02/E06/6,Walter György
+Jobbik,M02/E07/1,Kovács Bernadett
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M02/E07/2,Litter János
+FIDESZ-KDNP,M02/E07/3,Pichler Imre
+MSZP,M02/E07/4,Szubotics Miklós
+LEHET MÁS A POLITIKA,M02/E04/1,Ladányi Attila
+MDF,M02/E04/2,Ordas Miklós
+FIDESZ-KDNP,M02/E04/3,Polics József
+Független,M02/E04/4,Stéger Róbert
+MSZP,M02/E04/5,Dr. Szakács László
+Jobbik,M02/E04/6,Talált Tímea
+MDF,M02/E05/1,Dr. Habjánecz Tibor
+FIDESZ-KDNP,M02/E05/2,Dr. Hargitai János
+LEHET MÁS A POLITIKA,M02/E05/3,Hartweg Ildikó
+MSZP,M02/E05/4,Dr. Nyul István
+MUNKÁSPÁRT,M02/E05/5,Ódor György
+Jobbik,M02/E05/6,Polgár Károly
+Jobbik,M02/E03/1,Draskócziné Kertész Júlia
+LEHET MÁS A POLITIKA,M02/E03/2,Dr. Kóbor József
+FIDESZ-KDNP,M02/E03/3,Kővári János
+MSZP,M02/E03/4,Dr. Tóth Bertalan
+MSZP,M02/E01/1,Bókay Endre
+MDF,M02/E01/2,Dr. Füredi Péter
+FIDESZ-KDNP,M02/E01/3,Dr. Hoppál Péter
+LEHET MÁS A POLITIKA,M02/E01/4,Kölcsey-Gyurkóné Baka Sára
+Jobbik,M02/E01/5,Porpáczy Ernő
+Jobbik,M02/E03/5,Porpáczy Ernő
+FIDESZ-KDNP,M03/E06/1,Font Sándor
+MSZP,M03/E06/2,Kollarik László
+Jobbik,M03/E06/3,Szávay István
+FIDESZ-KDNP,M03/E04/1,Balogh József
+Jobbik,M03/E04/2,Boros László
+MSZP,M03/E04/3,Hortobágyi István
+MSZP,M03/E03/1,Csernus Ferenc
+MDF,M03/E03/2,Dr. Csernus Tibor
+Jobbik,M03/E03/3,Gyöngyösi Márton
+FIDESZ-KDNP,M03/E03/4,Lezsák Sándor
+Jobbik,M03/E09/1,Ambrus Tibor
+LEHET MÁS A POLITIKA,M03/E09/2,Ikotity István
+MSZP,M03/E09/3,Márfai Péter
+CIVILEK,M03/E09/4,Papp József
+FIDESZ-KDNP,M03/E09/5,Zsigó Róbert
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M03/E08/1,Bor László
+Független,M03/E08/2,Gömzsik László
+MDF,M03/E08/3,Kiss Norbert
+FIDESZ-KDNP,M03/E08/4,Lukács László
+MSZP,M03/E08/5,Szabó Károly
+Jobbik,M03/E08/6,Vizi István
+LEHET MÁS A POLITIKA,M03/E08/7,Wágner Szabolcs Ákos
+FIDESZ-KDNP,M03/E10/1,Bányai Gábor
+MDF,M03/E10/2,Karsai Péter
+Jobbik,M03/E10/3,Kiss-Pető Tibor
+MSZP,M03/E10/4,Mamuzsits Sándor
+MSZP,M03/E07/1,András István
+Jobbik,M03/E07/2,Beck Ottó
+LEHET MÁS A POLITIKA,M03/E07/3,Dr. Dudás József
+MDF,M03/E07/4,Romsics Imre
+FIDESZ-KDNP,M03/E07/5,Dr. Semjén Zsolt
+MSZP,M03/E05/1,Dr. Garai István Levente
+FIDESZ-KDNP,M03/E05/2,Kapus Krisztián
+MDF,M03/E05/3,Dr. Kiss Ákos Csaba
+CIVILEK,M03/E05/4,Dr. Réczi László
+Jobbik,M03/E05/5,Dr. Vakulya István
+MSZP,M03/E02/1,Dr. Balogh László
+Jobbik,M03/E02/2,Dr. Károlyfalvi József
+LEHET MÁS A POLITIKA,M03/E02/3,Vágó Gábor
+FIDESZ-KDNP,M03/E02/4,Dr. Zombor Gábor
+Jobbik,M04/E07/1,Dr. Dévényi-Dabrowsky Géza Dániel
+MSZP,M04/E07/2,Dr. Karsai József
+MDF,M04/E07/3,Dr. Nagy Béla
+FIDESZ-KDNP,M04/E07/4,Simonka György
+CIVILEK,M04/E03/1,Debreceni Lajos
+FIDESZ-KDNP,M04/E03/2,Erdős Norbert
+Jobbik,M04/E03/3,Molnár József
+MSZP,M04/E03/4,Nagy László
+LEHET MÁS A POLITIKA,M04/E01/1,Gál István Elek
+MSZP,M04/E01/2,Molnár László
+CIVILEK,M04/E01/3,Dr. Szabó Terézia
+Jobbik,M04/E01/4,Szabóné Kocziha Tünde
+FIDESZ-KDNP,M04/E01/5,Vantara Gyula
+FIDESZ-KDNP,M04/E06/1,Dr. Dancsó József
+LEHET MÁS A POLITIKA,M04/E06/2,Fanaczán Istvánné
+MUNKÁSPÁRT,M04/E06/3,Gál Ferenc
+Jobbik,M04/E06/4,Jámbor Nándor
+MDF,M04/E06/5,Muszka Kálmánné
+MSZP,M04/E06/6,Varga Zoltán
+FIDESZ-KDNP,M04/E05/1,Domokos László
+MSZP,M04/E05/2,Földesi Zoltán
+Jobbik,M04/E05/3,Samu Tamás Gergő
+Független,M04/E04/1,Dr. Farkas Beáta
+FIDESZ-KDNP,M04/E04/2,Farkas Zoltán
+Jobbik,M04/E04/3,Séllei Zsigmond
+MSZP,M04/E04/4,Veress József
+FIDESZ-KDNP,M04/E02/1,Dr. Kovács József
+MSZP,M04/E02/2,Dr. Perjési Klára
+Jobbik,M04/E02/3,Dr. Pomuczné Nagy Ildikó Anna
+Jobbik,M05/E09/1,Baksy Rezső András
+LEHET MÁS A POLITIKA,M05/E09/2,Bihi Miklós
+ÖSSZEFOGÁS PÁRT,M05/E09/3,Egerszegi Sándor
+MSZP,M05/E09/4,Nyakó István
+FIDESZ-KDNP,M05/E09/5,Dr. Ódor Ferenc
+MDF,M05/E09/6,Szabó Gyula
+FIDESZ-KDNP,M05/E08/1,Dr. Daher Pierre
+MSZP,M05/E08/2,Gúr Nándor
+Független,M05/E08/3,Horváth Aladár
+Jobbik,M05/E08/4,Miklós Árpád
+Független,M05/E08/5,Molnár Oszkár
+Jobbik,M05/E06/1,Bencs Gábor
+FIDESZ-KDNP,M05/E06/2,Demeter Zoltán
+MUNKÁSPÁRT,M05/E06/3,Gulyás János
+MIÉP,M05/E06/4,Soltész Imre István
+MSZP,M05/E06/5,Dr. Varga László
+MDF,M05/E06/6,Zsiros László
+FIDESZ-KDNP,M05/E10/1,Dr. Hörcsik Richárd
+LEHET MÁS A POLITIKA,M05/E10/2,Koleszár Sándor
+MDF,M05/E10/3,Németh Károly
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M05/E10/4,Szabó Attila
+Jobbik,M05/E10/5,Szajkó Gábor
+MSZP,M05/E10/6,Vécsi István
+MSZDP,M05/E11/1,Dancs Mihály
+MSZP,M05/E11/2,Ficsor Ádám
+Jobbik,M05/E11/3,Holcman László
+MDF,M05/E11/4,Kemény Endre
+FIDESZ-KDNP,M05/E11/5,Koncz Ferenc
+ÖSSZEFOGÁS PÁRT,M05/E11/6,Szepesi Zsolt László
+MDF,M05/E01/1,Csanálossi Béla
+FIDESZ-KDNP,M05/E01/2,Csöbör Katalin
+Jobbik,M05/E01/3,Egyed Zsolt
+MSZP,M05/E01/4,Fedor Vilmos
+ÖSSZEFOGÁS PÁRT,M05/E01/5,Hajdu János
+Független Kisgazdapárt,M05/E05/1,Greskovits István
+Jobbik,M05/E05/2,Kisgergely András
+MCF ROMA ÖSSZEFOGÁS PÁRT,M05/E05/3,Kolompár Orbán
+MUNKÁSPÁRT,M05/E05/4,Kónya Béla
+FIDESZ-KDNP,M05/E05/5,Riz Gábor
+MSZP,M05/E05/6,Dr. Tóth István
+Jobbik,M05/E12/1,Balla Gergő
+MSZDP,M05/E12/2,Bordás Géza
+MSZP,M05/E12/3,Kovács Tibor
+FIDESZ-KDNP,M05/E12/4,Dr. Mengyi Roland
+ÖSSZEFOGÁS PÁRT,M05/E12/5,Szoboszlai Barna
+MDF,M05/E12/6,Tóth Ferenc
+MUNKÁSPÁRT,M05/E12/7,Dr. Váli Zoltán
+Jobbik,M05/E07/1,Endrésik Zsolt
+LEHET MÁS A POLITIKA,M05/E07/2,Dr. Király Bálint
+MSZP,M05/E07/3,Szitka Péter
+FIDESZ-KDNP,M05/E07/4,Tamás Barnabás
+Jobbik,M05/E13/1,Csikai Balázs
+MSZP,M05/E13/2,Kormos Dénes
+FIDESZ-KDNP,M05/E13/3,Tállai András
+MIÉP,M05/E13/4,Vass József
+FIDESZ-KDNP,M05/E04/1,Sebestyén László
+Jobbik,M05/E04/2,Sztancsik Barnabás
+MSZP,M05/E04/3,Dr. Tompa Sándor
+MSZP,M05/E03/1,Káli Sándor
+LEHET MÁS A POLITIKA,M05/E03/2,Mile Lajos
+FIDESZ-KDNP,M05/E03/3,Dr. Nagy Kálmán
+Jobbik,M05/E03/4,Szabó Attila
+MSZP,M05/E04/4,Fedor Vilmos
+ÖSSZEFOGÁS PÁRT,M05/E04/5,Hajdu János
+FIDESZ-KDNP,M06/E03/1,Dr. Bohács Zsolt József
+MSZP,M06/E03/2,Dr. Botka László
+LEHET MÁS A POLITIKA,M06/E03/3,Málovics György
+Jobbik,M06/E03/4,Molnár Áron
+MSZP,M06/E07/1,Dr. Buzás Péter
+Jobbik,M06/E07/2,Fazekas Ferenc
+CIVILEK,M06/E07/3,Kovács László
+FIDESZ-KDNP,M06/E07/4,Mágori Józsefné
+MUNKÁSPÁRT,M06/E07/5,Szabó Jenőné
+MDF,M06/E07/6,Szabó Sámuel
+FIDESZ-KDNP,M06/E05/1,Farkas Sándor
+MSZP,M06/E05/2,Móra József Antal
+Jobbik,M06/E05/3,Varga Géza
+LEHET MÁS A POLITIKA,M06/E02/1,Bozsóné Dr. Margóczi Katalin
+MDF,M06/E02/2,Hódi Tamás
+CIVILEK,M06/E02/3,Knipf Róbert
+MSZP,M06/E02/4,Dr. Kozma József
+FIDESZ-KDNP,M06/E02/5,Nógrádi Zoltán
+MIÉP,M06/E02/6,Pápai István
+Jobbik,M06/E02/7,Tóth Péter
+MSZP,M06/E04/1,Bedő Tamás Albert
+CIVILEK,M06/E04/2,Csenki Mihály
+Jobbik,M06/E04/3,Dudás Zoltán Sándor
+MDF,M06/E04/4,Rabi Mihály
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M06/E04/5,Dr. Torgyán József
+FIDESZ-KDNP,M06/E04/6,Vincze László Mihály
+FIDESZ-KDNP,M06/E01/1,Bodó Imre
+MSZP,M06/E01/2,Dr. Ujhelyi István
+Jobbik,M06/E01/3,Zagyva György Gyula
+MSZP,M06/E06/1,Csengeri István
+ZÖLD BALOLDAL,M06/E06/2,Havránek Ferenc
+MIÉP,M06/E06/3,Dr. Kovács László
+Jobbik,M06/E06/4,Kristó Gabriella
+FIDESZ-KDNP,M06/E06/5,Dr. Lázár János
+MDF,M06/E06/6,Dr. Takács Róbert
+FIDESZ-KDNP,M06/E03/5,Nógrádi Zoltán
+MIÉP,M06/E03/6,Pápai István
+Jobbik,M06/E03/7,Tóth Péter
+Jobbik,M07/E06/1,Árgyelán János
+MUNKÁSPÁRT,M07/E06/2,Berényi Béla
+MSZP,M07/E06/3,Dr. Szabadkai Tamás
+FIDESZ-KDNP,M07/E06/4,Varga Gábor
+MDF,M07/E06/5,Vas István János
+MSZP,M07/E04/1,Ecsődi László
+MDF,M07/E04/2,Kránitz László Viktor
+FIDESZ-KDNP,M07/E04/3,L. Simon László
+Jobbik,M07/E04/4,Rozgonyi Ernő
+MDF,M07/E07/1,Dr. Göblyös István
+MSZP,M07/E07/2,Horváth András Tibor
+Jobbik,M07/E07/3,Som Tamás Gyula
+FIDESZ-KDNP,M07/E07/4,Tessely Zoltán
+Független,M07/E05/1,Kelemen Levente
+Jobbik,M07/E05/2,Krausz Attila
+CIVILEK,M07/E05/3,Péteri Cecília
+FIDESZ-KDNP,M07/E05/4,Törő Gábor
+MSZP,M07/E05/5,Velez Árpád
+Jobbik,M07/E02/1,Gál Péter Pál
+MDF,M07/E02/2,Horváth Dóra
+MSZP,M07/E02/3,Dr. Márton Roland
+FIDESZ-KDNP,M07/E02/4,Vargha Tamás
+FIDESZ-KDNP,M07/E03/1,Dr. Dorkota Lajos
+MSZP,M07/E03/2,Dr. Kálmán András
+LEHET MÁS A POLITIKA,M07/E03/3,Dr. Kiss Endre
+Jobbik,M07/E03/4,Pintér Tamás
+MDF-SZDSZ,M07/E03/5,Dr. Skaliczki Andrea
+CIVILEK,M07/E03/6,Szaksz Ferenc
+MDF,M07/E02/5,Viniczai Tibor
+MSZP,M08/E01/1,Bajorfi Tamás
+Jobbik,M08/E01/2,Farkas Ádám
+FIDESZ-KDNP,M08/E01/3,Kara Ákos
+LEHET MÁS A POLITIKA,M08/E01/4,Pinczés Bálint
+MSZP,M08/E05/1,Balogh Csaba
+FIDESZ-KDNP,M08/E05/2,Gyopáros Alpár
+MIÉP,M08/E05/3,Molnár Tivadar
+MDF,M08/E05/4,Szabó Tamás
+Jobbik,M08/E05/5,Takács Krisztián
+CIVILEK,M08/E05/6,Véber József
+CIVILEK,M08/E06/1,Bozsvári István
+FIDESZ-KDNP,M08/E06/2,Ivanics Ferenc
+Jobbik,M08/E06/3,Magyar Zoltán
+MDF,M08/E06/4,Pethő István Ernő
+MSZP,M08/E06/5,Róka István
+LEHET MÁS A POLITIKA,M08/E07/1,Bebesi József Lajos
+FIDESZ-KDNP,M08/E07/2,Firtl Mátyás Sándor
+Jobbik,M08/E07/3,Gőbl Gábor
+MSZP,M08/E07/4,Kránitz László
+MDF,M08/E07/5,Nagy Tamás
+MSZP,M08/E04/1,Beke Károly
+MUNKÁSPÁRT,M08/E04/2,Belovitz Károly
+Jobbik,M08/E04/3,Kopetti Tamás Márton
+MDF,M08/E04/4,Luksa Attila
+FIDESZ-KDNP,M08/E04/5,Dr. Nagy István
+LEHET MÁS A POLITIKA,M08/E04/6,Oross Dániel
+Jobbik,M08/E03/1,Hofbauer Sándor József
+MSZP,M08/E03/2,Dr. Molnár Csaba
+MDF,M08/E03/3,Prácser Attila Endre
+FIDESZ-KDNP,M08/E03/4,Dr. Szakács Imre
+MSZP,M09/E04/1,Dr. Juhászné Lévai Katalin
+MDF,M09/E04/2,Komor Sándor
+Jobbik,M09/E04/3,Rubi Gergely
+FIDESZ-KDNP,M09/E04/4,Tasó László
+Független,M09/E04/5,Tóth János
+Jobbik,M09/E05/1,Balázs István
+LEHET MÁS A POLITIKA,M09/E05/2,Bozsányi László
+MSZP,M09/E05/3,Gyula Ferencné
+MDF,M09/E05/4,Lakatos Tibor József
+MIÉP,M09/E05/5,Megyesi Károly
+MSZDP,M09/E05/6,Nagy Norbert
+FIDESZ-KDNP,M09/E05/7,Dr. Vitányi István
+LEHET MÁS A POLITIKA,M09/E08/1,Bekker Gyula
+MDF,M09/E08/2,Joó Szabolcs
+Jobbik,M09/E08/3,Kis Csaba
+FIDESZ-KDNP,M09/E08/4,Dr. Tiba István
+MSZP,M09/E08/5,Tóth József
+FIDESZ-KDNP,M09/E06/1,Arnóth Sándor
+MSZP,M09/E06/2,Csontos János
+MIÉP,M09/E06/3,Dr. Móri Antal
+Jobbik,M09/E06/4,Rigán István
+MDF,M09/E06/5,Tóth István
+LEHET MÁS A POLITIKA,M09/E03/1,Biró Tamás
+MDF,M09/E03/2,Danka Beáta
+CIVILEK,M09/E03/3,Hunyadi László
+Jobbik,M09/E03/4,Kulcsár Gergely
+FIDESZ-KDNP,M09/E03/5,Dr. Pósán László
+MSZP,M09/E03/6,Varga Zoltán Imre
+LEHET MÁS A POLITIKA,M09/E07/1,Dede Tamás
+Jobbik,M09/E07/2,Kocsis Zsolt
+MDF,M09/E07/3,Makay Zsolt
+FIDESZ-KDNP,M09/E07/4,Márton Attila
+MSZDP,M09/E07/5,Nagy Sándor
+MSZP,M09/E07/6,Dr. Oláh Lajos
+MSZP,M09/E09/1,Dr. Forgács Barnabás
+MDF,M09/E09/2,Iván Alfréd
+FIDESZ-KDNP,M09/E09/3,Kiss Attila
+Jobbik,M09/E09/4,Pogácsás Mariann
+FIDESZ-KDNP,M10/E03/1,Balázs József
+LEHET MÁS A POLITIKA,M10/E03/2,Dr. Lukács Zoltán
+MSZP,M10/E03/3,Dr. Magda Sándor
+Jobbik,M10/E03/4,Vona Gábor
+Jobbik,M10/E05/1,Dr. Árvai György
+MSZP,M10/E05/2,Godó Lajos
+Független,M10/E05/3,Gönczi Mihály Miklós
+MDF,M10/E05/4,Karsai Miklós
+FIDESZ-KDNP,M10/E05/5,Dr. Tóth József
+FIDESZ-KDNP-Vállalkozók Pártja,M10/E06/1,Herman István
+MSZP,M10/E06/2,Korózs Lajos
+Jobbik,M10/E06/3,Mirkóczki Ádám
+MSZP,M10/E04/1,Érsek Zsolt
+Jobbik,M10/E04/2,Dr. Nyujtó Zsolt
+LEHET MÁS A POLITIKA,M10/E04/3,Püspöki Gábor
+FIDESZ-KDNP,M10/E04/4,Szabó Zsolt
+MDF,M10/E02/1,Borsos László
+Jobbik,M10/E02/2,Dudás Róbert
+FIDESZ-KDNP,M10/E02/3,Horváth László
+LEHET MÁS A POLITIKA,M10/E02/4,Ivády Gábor
+MSZP,M10/E02/5,Sós Tamás
+FIDESZ-KDNP,M10/E01/1,Habis László
+LEHET MÁS A POLITIKA,M10/E01/2,Juhász Mihály
+MSZP,M10/E01/3,Dr. Nagy Imre
+Jobbik,M10/E01/4,Sneider Tamás
+Jobbik,M11/E08/1,Boros István
+Független,M11/E08/2,Dr. Léderer Károly Áronné
+MSZP,M11/E08/3,Dr. Vadai Ágnes
+FIDESZ-KDNP,M11/E08/4,Varga Mihály
+MDF,M11/E02/1,Lukácsi Katalin
+Jobbik,M11/E02/2,Madarász Sándor
+FIDESZ-KDNP,M11/E02/3,Pócs János
+MSZP,M11/E02/4,Dr. Szekeres Imre
+Jobbik,M11/E03/1,Baráth Zsolt
+MUNKÁSPÁRT,M11/E03/2,Bencsik Mihály
+MSZP,M11/E03/3,Csák László
+LEHET MÁS A POLITIKA,M11/E03/4,Dr. Pető Ernő Zoltán
+FIDESZ-KDNP,M11/E03/5,Szalay Ferenc
+Független,M11/E05/1,Dr. Czuczi Mihály
+FIDESZ-KDNP,M11/E05/2,Sági István
+CIVILEK,M11/E05/3,Smuta Zsolt
+Jobbik,M11/E05/4,Soós Antal
+MSZP,M11/E05/5,Tokajiné Demecs Katalin
+FIDESZ-KDNP,M11/E07/1,Fejér Andor
+MDF,M11/E07/2,Mező József
+Jobbik,M11/E07/3,Dr. Nagy Levente
+MSZP,M11/E07/4,Serfőző István
+MUNKÁSPÁRT,M11/E07/5,Szilágyi András
+MSZP,M11/E01/1,Dr. Gedei József
+Jobbik,M11/E01/2,Murányi Levente
+FIDESZ-KDNP,M11/E01/3,Dr. Szabó Tamás
+FIDESZ-KDNP,M11/E06/1,Boldog István
+Jobbik,M11/E06/2,Csányi Tamás
+MUNKÁSPÁRT,M11/E06/3,Herceg Antal
+MDF,M11/E06/4,Jenei István Imre
+MSZP,M11/E06/5,Rózsa Endre
+LEHET MÁS A POLITIKA,M11/E06/6,Szabó Attila Antal
+MUNKÁSPÁRT,M11/E04/1,Fekete Sándor
+MSZP,M11/E04/2,Iváncsik Imre
+FIDESZ-KDNP,M11/E04/3,Jánosiné Dr. Bene Ildikó
+Jobbik,M11/E04/4,Kalóczkai Sándor
+LEHET MÁS A POLITIKA,M11/E04/5,Nagy Gábor
+MDF,M11/E04/6,Petronyák László
+FIDESZ-KDNP,M12/E03/1,Czunyiné Dr. Bertalan Judit
+MSZP,M12/E03/2,Keleti György
+MDF,M12/E03/3,Kovácsné Dr. Trázsi Csilla
+Jobbik,M12/E03/4,Schwarcz János
+LEHET MÁS A POLITIKA,M12/E04/1,József Imre
+MSZP,M12/E04/2,Nagy Zoltán
+Jobbik,M12/E04/3,Tóth Ferenc
+FIDESZ-KDNP,M12/E04/4,Dr. Völner Pál
+Jobbik,M12/E05/1,Balog János
+LEHET MÁS A POLITIKA,M12/E05/2,Batyikné Csőke Ágnes Erzsébet
+MDF,M12/E05/3,Dr. Jónás László
+FIDESZ-KDNP,M12/E05/4,Meggyes Tamás
+MSZP,M12/E05/5,Winkfein Csaba
+MDF,M12/E02/1,Jagarics Ferenc
+FIDESZ-KDNP,M12/E02/2,Michl József
+Jobbik,M12/E02/3,Michl Miklós
+LEHET MÁS A POLITIKA,M12/E02/4,Dr. Nagy Sándor
+MSZP,M12/E02/5,Szaniszló Zoltán
+FIDESZ-KDNP,M12/E01/1,Bencsik János
+MSZP,M12/E01/2,Kilián Géza
+MDF,M12/E01/3,Ludányi Tamás
+LEHET MÁS A POLITIKA,M12/E01/4,Szilágyi László
+Jobbik,M12/E01/5,Vágó Sebestyén
+FIDESZ-KDNP,M13/E04/1,Balla Mihály
+Jobbik,M13/E04/2,Dr. Czuczi János
+MDF,M13/E04/3,Dr. Dobos Attila
+MSZDP,M13/E04/4,Ferencz Sándor
+MUNKÁSPÁRT,M13/E04/5,Dr. Frankfurter Zsuzsanna
+LEHET MÁS A POLITIKA,M13/E04/6,Galanics Zoltán
+MSZP,M13/E04/7,Lombos István
+Jobbik,M13/E03/1,Betz József
+MSZP,M13/E03/2,Borenszki Ervin
+FIDESZ-KDNP,M13/E03/3,Dr. Nagy Andor
+Jobbik,M13/E01/1,Bagó László
+MSZP,M13/E01/2,Boldvai László
+MUNKÁSPÁRT,M13/E01/3,Nagy Attila
+FIDESZ-KDNP,M13/E01/4,Székyné Dr. Sztrémi Melinda
+FIDESZ-KDNP,M13/E02/1,Becsó Zsolt
+LEHET MÁS A POLITIKA,M13/E02/2,Fekete József
+MSZP,M13/E02/3,Juhász Gábor
+Jobbik,M13/E02/4,Navratil Attila
+ZÖLD BALOLDAL,M13/E02/5,Soós Károly
+FIDESZ-KDNP,M14/E16/1,Dr. Czira Szabolcs
+Jobbik,M14/E16/2,Dénes Dénes
+LEHET MÁS A POLITIKA,M14/E16/3,Földi Áron
+CIVILEK,M14/E16/4,Köteles Lajos
+MSZP,M14/E16/5,László Ferenc
+Jobbik,M14/E01/1,Bedéné dr. Balogh Róza
+FIDESZ-KDNP,M14/E01/2,Harrach Péter
+MSZP,M14/E01/3,Kárpáti Zsuzsa
+MDF,M14/E01/4,Krenedits Sándor
+LEHET MÁS A POLITIKA,M14/E01/5,Tatár Sándor
+FIDESZ-KDNP,M14/E15/1,Földi László
+MDF,M14/E15/2,Dr. Fülöp Hajnalka Ilona
+Jobbik,M14/E15/3,Korondi Miklós
+MSZP,M14/E15/4,Nagy Tamás
+Jobbik,M14/E13/1,Gerecz Attila
+FIDESZ-KDNP,M14/E13/2,Pánczél Károly
+MSZP,M14/E13/3,Szentgyörgyi József
+Jobbik,M14/E05/1,Koncz Balázs
+MDF,M14/E05/2,Perna Pál
+MSZP,M14/E05/3,Dr. Szabóné Müller Timea
+FIDESZ-KDNP,M14/E05/4,Tóth Gábor
+Jobbik,M14/E06/1,Csanádi Gábor Ferenc
+FIDESZ-KDNP,M14/E06/2,Czerván György
+MSZP,M14/E06/3,Varró István
+FIDESZ-KDNP,M14/E09/1,Csenger-Zalán Zsolt
+LEHET MÁS A POLITIKA,M14/E09/2,Dr. Görög Balázs
+MSZP,M14/E09/3,Keller László
+Jobbik,M14/E09/4,Pályi István
+FIDESZ-KDNP,M14/E10/1,Gulyás Dénes
+Jobbik,M14/E10/2,Dr. Lenhardt Balázs Péter
+MSZP,M14/E10/3,Sass Szabolcs
+LEHET MÁS A POLITIKA,M14/E10/4,Szél Bernadett
+MDF,M14/E11/1,Dr. Dragon Pál
+Jobbik,M14/E11/2,Dr. Filó András
+FIDESZ-KDNP,M14/E11/3,Hadházy Sándor
+LEHET MÁS A POLITIKA,M14/E11/4,Kukorelly Endre
+MSZP,M14/E11/5,Szabó Imre
+LEHET MÁS A POLITIKA,M14/E14/1,Dr. Bartháné Harsányi Nóra
+FIDESZ-KDNP,M14/E14/2,Dr. Szűcs Lajos
+MSZP,M14/E14/3,Végh Tibor
+Jobbik,M14/E14/4,Volner János
+FIDESZ-KDNP,M14/E03/1,Dióssi Csaba
+MSZP,M14/E03/2,Fábry Béla
+LEHET MÁS A POLITIKA,M14/E03/3,Lukácsi Bálint
+MDF,M14/E03/4,Móczár Béla
+Jobbik,M14/E03/5,Nyiri Márton
+CIVILEK,M14/E03/6,Simon Zsolt
+Jobbik,M14/E04/1,Bertha Szilvia
+MSZP,M14/E04/2,Fogarasiné Deák Valéria
+LEHET MÁS A POLITIKA,M14/E04/3,Lengyel Szilvia
+MDF,M14/E04/4,Roszík Gábor
+FIDESZ-KDNP,M14/E04/5,Vécsey László
+FIDESZ-KDNP,M14/E08/1,Dr. Aradszki András
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M14/E08/2,Klimsa Arthúr
+Jobbik,M14/E08/3,Süle-Szigeti Gábor
+MSZP,M14/E08/4,Tóbiás József
+CIVILEK,M14/E12/1,Dankó Géza Gábor
+FIDESZ-KDNP,M14/E12/2,Hoffman Pál
+LEHET MÁS A POLITIKA,M14/E12/3,Kaufer Virág
+Jobbik,M14/E12/4,Lévai György
+MSZP,M14/E12/5,Varju László
+MSZP,M14/E07/1,Gémesi Ferenc János
+MDF,M14/E07/2,Horváth István Attila
+CIVILEK,M14/E07/3,Dr. Nagy Marianna
+FIDESZ-KDNP,M14/E07/4,Pogácsás Tibor János
+Jobbik,M14/E07/5,Szabóné Papp Klára
+FIDESZ-KDNP,M14/E02/1,Bábiné Szottfried Gabriella
+Független,M14/E02/2,Bethlen Farkas
+LEHET MÁS A POLITIKA,M14/E02/3,Elekes Balázs
+Jobbik,M14/E02/4,Fehér Zsolt
+MSZP,M14/E02/5,Dr. Jakab Zoltán Attila
+LEHET MÁS A POLITIKA,M15/E02/1,Felder Frigyes
+Jobbik,M15/E02/2,Futó Tibor
+FIDESZ-KDNP,M15/E02/3,Gelencsér Attila
+MSZP,M15/E02/4,Dr. Kolber István
+MDF,M15/E03/1,Géczi Tibor
+FIDESZ-KDNP,M15/E03/2,Dr. Gruber Attila László
+MSZP,M15/E03/3,Harangozó Gábor István
+Jobbik,M15/E03/4,Dr. Léhmann György
+Jobbik,M15/E06/1,Egervári József
+MSZP,M15/E06/2,Feigli Ferenc
+SOMOGYÉRT,M15/E06/3,Dr. Gyenesei István László
+FIDESZ-KDNP,M15/E06/4,Karvalics Ottó János
+MSZDP,M15/E06/5,Lóth Ferenc
+SOMOGYÉRT,M15/E04/1,Dr. Bollók Sándor
+LEHET MÁS A POLITIKA,M15/E04/2,Filák Péter
+MSZP,M15/E04/3,Hajmási Judit
+FIDESZ-KDNP,M15/E04/4,Móring József Attila
+Jobbik,M15/E04/5,Stamler József
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M15/E05/1,Boros Milán
+SOMOGYÉRT,M15/E05/2,Kövér István
+MSZP,M15/E05/3,Dr. Suchman Tamás
+FIDESZ-KDNP,M15/E05/4,Szászfalvi László
+Jobbik,M15/E05/5,Széll Károly
+Jobbik,M16/E07/1,Bodrog László
+MSZP,M16/E07/2,Dr. Boros László
+MDF,M16/E07/3,Gyüre Lajos
+CIVILEK,M16/E07/4,Nagy László
+FIDESZ-KDNP,M16/E07/5,Dr. Seszták Miklós
+MUNKÁSPÁRT,M16/E07/6,Tóth Péter
+FIDESZ-KDNP,M16/E04/1,Dr. Budai Gyula
+MSZP,M16/E04/2,Demendi László
+ÖSSZEFOGÁS MEGYÉNKÉRT-MDF,M16/E04/3,Juhász Zoltán
+Jobbik,M16/E04/4,Szilágyi Péter
+MUNKÁSPÁRT,M16/E04/5,Szöllősiné Fitos Éva
+Jobbik,M16/E08/1,Adorján Béla
+FIDESZ-KDNP,M16/E08/2,Dr. Czomba Sándor
+MESZ,M16/E08/3,Daróczy Pál
+MSZDP,M16/E08/4,Dr. Kapolyi László
+MSZP,M16/E08/5,Dr. Legény Zsolt
+Független,M16/E05/1,Balogh Gyula
+MSZP,M16/E05/2,Gazda László
+FIDESZ-KDNP,M16/E05/3,Lipők Sándor
+Független,M16/E05/4,Orosz Mihály
+Jobbik,M16/E05/5,Vass Zoltán Géza
+Jobbik,M16/E03/1,Császár József
+ÖSSZEFOGÁS MEGYÉNKÉRT-MDF,M16/E03/2,Dr. Helmeczy László
+MSZP,M16/E03/3,Juhász Ferenc
+FIDESZ-KDNP,M16/E03/4,Dr. Karakó László
+Független,M16/E03/5,Rozgonyi Attila
+Jobbik,M16/E06/1,Dr. Kiss Sándor
+FIDESZ-KDNP,M16/E06/2,Dr. Simon Miklós
+MSZP,M16/E06/3,Dr. Veres János
+MSZP,M16/E10/1,Hopka András
+Jobbik,M16/E10/2,Kovács András Bálint
+MSZDP,M16/E10/3,Kozma Józsefné
+Független,M16/E10/4,Seres Tamás Richárd
+LEHET MÁS A POLITIKA,M16/E10/5,Sipos László
+FIDESZ-KDNP,M16/E10/6,Dr. Tilki Attila
+Jobbik,M16/E09/1,Dr. Apáti István
+FIDESZ-KDNP,M16/E09/2,Fülöp István
+CIVILEK,M16/E09/3,Dr. Göröncséri Ferencné
+MSZP,M16/E09/4,Kárpáti Tibor
+TORGYÁN-KISGAZDA-KOALÍCIÓ,M16/E09/5,Dr. Szöőr Anna Noémi
+MESZ,M16/E09/6,Tőzsér József
+MDF,M16/E09/7,Dr. Vékony Miklós
+CIVILEK,M16/E02/1,Dr. Csokonay József Péter
+Jobbik,M16/E02/2,Dr. Gyüre Csaba
+Független,M16/E02/3,Marsó Tamásné
+MSZP,M16/E02/4,Tukacs István
+FIDESZ-KDNP,M16/E02/5,Dr. Vinnai Győző
+LEHET MÁS A POLITIKA,M16/E02/6,Zalatnay László
+MSZP,M16/E01/1,Jeszenszki András
+FIDESZ-KDNP,M16/E01/2,Dr. Kovács Ferenc
+MDF,M16/E01/3,Petrika Ibolya
+LEHET MÁS A POLITIKA,M16/E01/4,Priksz Gábor
+CIVILEK,M16/E01/5,Seres Mária
+Jobbik,M16/E01/6,Dr. Sztankó Éva
+MDF,M17/E03/1,Helfenbein Péter
+Jobbik,M17/E03/2,László Ferenc
+FIDESZ-KDNP,M17/E03/3,Potápi Árpád János
+MSZP,M17/E03/4,Takács László
+Jobbik,M17/E04/1,Bodó Imre
+LEHET MÁS A POLITIKA,M17/E04/2,Máté Mihály
+FIDESZ-KDNP,M17/E04/3,Patay Vilmos
+MSZP,M17/E04/4,Tóth Gyula
+MSZP,M17/E01/1,Dr. Harangozó Tamás
+FIDESZ-KDNP,M17/E01/2,Horváth István
+MDF-SZDSZ,M17/E01/3,Horváth Tibor
+MESZ,M17/E01/4,Kőszegi Zsolt
+LEHET MÁS A POLITIKA,M17/E01/5,Rák Vilmos
+Jobbik,M17/E01/6,Tóth Endre
+MDF,M17/E05/1,Balogh Árpádné
+Jobbik,M17/E05/2,Bencze János
+MSZP,M17/E05/3,Dr. Benkő András
+LEHET MÁS A POLITIKA,M17/E05/4,Bóni Zoltán
+FIDESZ-KDNP,M17/E05/5,Hirt Ferenc
+MESZ,M17/E02/1,Földesi-Szabó László
+Jobbik,M17/E02/2,Horváth Zoltán
+MSZP,M17/E02/3,Horváth Zsolt
+FIDESZ-KDNP,M17/E02/4,Tóth Ferenc
+FIDESZ-KDNP,M18/E03/1,Básthy Tamás
+Jobbik,M18/E03/2,Giczy József
+LEHET MÁS A POLITIKA,M18/E03/3,Plechl Tibor István
+MSZP,M18/E03/4,Rába László
+CIVILEK,M18/E03/5,Szabó Erika
+Jobbik,M18/E05/1,Bana Tibor
+MSZP,M18/E05/2,Oroszvári Péter
+FIDESZ-KDNP,M18/E05/3,V.Németh Zsolt
+Jobbik,M18/E02/1,Dr. Árvai Roland
+FIDESZ-KDNP,M18/E02/2,Dr. Hende Csaba
+CIVILEK,M18/E02/3,Kohuth Győző Viktor
+MSZP,M18/E02/4,Dr. Nemény András
+LEHET MÁS A POLITIKA,M18/E04/1,Gergácz Ildikó
+Jobbik,M18/E04/2,György Tamás
+FIDESZ-KDNP,M18/E04/3,Kovács Ferenc
+MSZP,M18/E04/4,Szabó Lajos
+Jobbik,M19/E03/1,Erőss Bulcsú
+MSZP,M19/E03/2,Gőgös Zoltán
+FIDESZ-KDNP,M19/E03/3,Dr. Kovács Zoltán
+FIDESZ-KDNP,M19/E01/1,Ékes József László
+Jobbik,M19/E01/2,Ferenczi Gábor
+LEHET MÁS A POLITIKA,M19/E01/3,Halmay Zsuzsa Réka
+MDF,M19/E01/4,Marton József Gyula
+MSZP,M19/E01/5,Schwartz Béla
+FIDESZ-KDNP,M19/E02/1,Dr. Bóka István
+Jobbik,M19/E02/2,Kepli Lajos
+MSZP,M19/E02/3,Nagy Jenő
+Jobbik,M19/E04/1,Dobó Zoltán
+FIDESZ-KDNP,M19/E04/2,Lasztovicza Jenő
+MSZP,M19/E04/3,Lévai József
+MDF,M19/E04/4,Mészáros László
+MSZP,M19/E05/1,Deák Istvánné
+Jobbik,M19/E05/2,Szabó Richárd
+FIDESZ-KDNP,M19/E05/3,Talabér Márta
+LEHET MÁS A POLITIKA,M19/E05/4,Vancsek Ferenc
+MSZP,M19/E06/1,Brantmüller László
+FIDESZ-KDNP,M19/E06/2,Dr. Horváth Zsolt
+Jobbik,M19/E06/3,Kovács Rajmund
+Jobbik,M19/E07/1,Forgó Gyula
+LEHET MÁS A POLITIKA,M19/E07/2,Hites Viktor
+FIDESZ-KDNP,M19/E07/3,Dr. Navracsics Tibor
+MSZP,M19/E07/4,Pál Béla
+MSZP,M20/E05/1,Baracskai József
+LEHET MÁS A POLITIKA,M20/E05/2,Mező János Bálint
+Jobbik,M20/E05/3,Péntek László
+MDF,M20/E05/4,Dr. Szigethy István
+FIDESZ-KDNP,M20/E05/5,Vigh László
+FIDESZ-KDNP,M20/E03/1,Manninger Jenő
+MSZP,M20/E03/2,Mohácsi József
+Jobbik,M20/E03/3,Dr. Pap Ervin
+MSZDP,M20/E04/1,Nagy Imre
+Független,M20/E04/2,Nógrádi László
+FIDESZ-KDNP,M20/E04/3,Pintér László
+MSZP,M20/E04/4,Rada Tamás
+Jobbik,M20/E04/5,Völgyi Zoltán
+MSZDP,M20/E02/1,Bogár Ferenc
+FIDESZ-KDNP,M20/E02/2,Cseresnyés Péter
+MSZP,M20/E02/3,Dr. Fodor Csaba
+MDF-SZDSZ,M20/E02/4,Röst János
+Jobbik,M20/E02/5,Zakó László
+MDF,M20/E01/1,Baján Antal
+FIDESZ-KDNP,M20/E01/2,Dr. Gyimesi Endre
+MSZP,M20/E01/3,Major Gábor
+Jobbik,M20/E01/4,Pete Róbert
+LEHET MÁS A POLITIKA,M20/E01/5,Viant Zsolt
