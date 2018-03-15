@@ -164,6 +164,13 @@ tstar_merge_5 <- join(tstar_merge_4, data_allaskeresok_filtered, type="left")
 
 tstar_telepules_all <- tstar_merge_5
 
+### GLM települések szintjén
+
+telepules_fidesz <- glm(fidesz_pc ~ ffi_65._aranya + nok_65._aranya + kozmunka_aranya + nyudijas_ffi_arany + nyudijas_noi_arany + allaskeresok_aranya_8osztalyse + allaskeresok_aranya_8osztaly, data = tstar_telepules_all)
+summary(telepules_fidesz)
+coeftest(telepules_fidesz)
+
+
 #### SZAVAZOKÖRI ADATOK 
 
 data <- read.csv("106/adat/jelolt/vote_counts_precincts_2a.csv")
