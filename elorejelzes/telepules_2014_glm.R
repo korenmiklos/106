@@ -164,11 +164,46 @@ tstar_merge_5 <- join(tstar_merge_4, data_allaskeresok_filtered, type="left")
 
 tstar_telepules_all <- tstar_merge_5
 
+tstar_telepules_all$arany2014 <- NULL
+
+tstar_telepules_all$fidesz_pc <- tstar_telepules_all$fidesz_pc / 100
+
+tstar_telepules_all$jobbik_pc <- tstar_telepules_all$jobbik_pc / 100
+
+tstar_telepules_all$baloldal_pc <- tstar_telepules_all$baloldal_pc / 100
+
+tstar_telepules_all$lmp_pc <- tstar_telepules_all$lmp_pc / 100
+
+tstar_telepules_all$egyeb_pc <- tstar_telepules_all$egyeb_pc / 100
+
 ### GLM települések szintjén
 
 telepules_fidesz <- glm(fidesz_pc ~ ffi_65._aranya + nok_65._aranya + kozmunka_aranya + nyudijas_ffi_arany + nyudijas_noi_arany + allaskeresok_aranya_8osztalyse + allaskeresok_aranya_8osztaly, data = tstar_telepules_all)
 summary(telepules_fidesz)
 coeftest(telepules_fidesz)
+
+##LOGIT telepules test
+
+logitcoeffs_fidesz_telepules <- glm(fidesz_pc ~ nok_0_14_aranya + nok_15_17_aranya + nok_18_aranya + nok_19_aranya + 
+                                      nok_20_29_aranya + nok_30_39_aranya + nok_40_49_aranya + nok_50_59_aranya + 
+                                      nok_60_64_aranya + nok_65._aranya + ffi_0_14_aranya + ffi_15_17_aranya + ffi_18_aranya + 
+                                      ffi_19_aranya + ffi_20_29_aranya + ffi_30_39_aranya + ffi_40_49_aranya + ffi_50_59_aranya + 
+                                      ffi_60_64_aranya + ffi_65._aranya + kozgyogy_tam_aranya + idos_jar_tam_aranya + 
+                                      kozmunka_aranya + X0_fos_ceg + X1.9_fos_ceg + X10.19_fos_ceg + X20.49_fos_ceg + 
+                                      X50.249_fos_ceg + X250.499_fos_ceg + X500._fos_ceg + nyudijas_ffi_arany + nyudijas_noi_arany + 
+                                      allaskeresok_aranya_8osztalyse + allaskeresok_aranya_8osztaly +  allaskeresok_aranya_szakmunkas + 
+                                      allaskeresok_aranya_szakiskolai + allaskeresok_aranya_kozepiskola + allaskeresok_aranya_foiskola +
+                                      allaskeresok_aranya_egyetem, data=tstar_telepules_all, family='binomial')
+
+
+summary(logitcoeffs_fidesz_telepules)
+
+
+tstar_telepules_all$pred_logit <- predict.glm(logitcoeffs_fidesz_telepules, type="response")
+
+ggplot(data = tstar_telepules_all, aes(x=fidesz_pc, y= pred_logit)) + xlim(0.2, 0.9) + ylim(0.2, 0.9) +
+  geom_line(aes(x=pred_logit, y=pred_logit), colour="orange") +
+  geom_point()
 
 
 #### SZAVAZOKÖRI ADATOK 
@@ -249,7 +284,21 @@ write.csv(by_oevk_2014, 'oevk2014_clean.csv')
 
 new_by_oevk_2014 <- read.csv("oevk2014_clean_new.csv")
 
-regression_fidesz_test <- glm(egyeni_fidesz_pc ~ szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=new_by_oevk_2014)
+new_by_oevk_2014 <- as.data.table(new_by_oevk_2014)
+
+new_by_oevk_2014 <- new_by_oevk_2014[, telepulesek_szama_banded  := cut(telepulesek_szama, breaks = c(0, 1, 6, 20, 30, 40, Inf),
+                                                                    labels = c(1, 2, 3, 4, 5, 6))]
+
+new_by_oevk_2014 <- new_by_oevk_2014[, szavazokorok_szama_banded  := cut(szavazokorok_szama, breaks = c(0, 60, 80, 93, 103, 130, 160, Inf),
+                                                                        labels = c(1, 2, 3, 4, 5, 6, 7))]
+
+new_by_oevk_2014$telepulesek_szama_banded <- as.numeric(as.factor(new_by_oevk_2014$telepulesek_szama_banded))
+
+new_by_oevk_2014$szavazokorok_szama_banded <- as.numeric(as.factor(new_by_oevk_2014$szavazokorok_szama_banded))
+
+##regression test
+
+regression_fidesz_test <- glm(egyeni_fidesz_pc ~ szavazokorok_szama_banded + telepulesek_szama_banded + profil + varos_aranya , data=new_by_oevk_2014)
 summary(regression_fidesz_test)
 coeftest(regression_fidesz_test)
 
@@ -260,6 +309,20 @@ coeftest(regression_kormanyvaltok_test)
 regression_jobbik_test <- glm(egyeni_jobbik_pc ~ szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=new_by_oevk_2014)
 summary(regression_jobbik_test)
 coeftest(regression_jobbik_test)
+
+## logit test
+
+logitcoeffs_fidesz <- glm(egyeni_fidesz_pc ~ szavazokorok_szama_banded + telepulesek_szama_banded + profil + varos_aranya, data=new_by_oevk_2014, family='binomial')
+logitmarg_fidesz <- logitmfx(egyeni_fidesz_pc ~ szavazokorok_szama_banded + telepulesek_szama_banded + profil + varos_aranya , data=new_by_oevk_2014, atmean=FALSE)
+summary(logitcoeffs_fidesz)
+print(logitmarg_fidesz)
+
+
+new_by_oevk_2014$pred_logit <- predict.glm(logitcoeffs_fidesz, type="response")
+
+ggplot(data = new_by_oevk_2014, aes(x=egyeni_fidesz_pc, y= pred_logit)) + xlim(0.3, 0.6) + ylim(0.3, 0.6) +
+  geom_line(aes(x=pred_logit, y=pred_logit), colour="orange") +
+  geom_point()
 
 #uniform swing kalkulacio data_UNS
 #REMOVED - it is in a different file
@@ -370,27 +433,3 @@ csongrad_fidesz_ellenzek <- subset(csongrad4, select = c(telepules_kerulet, egye
 csongrad_fidesz_ellenzek_2 <- csongrad_fidesz_ellenzek[!telepules_kerulet %in% c("T024")]
 
 
-
-
-##### Tstar adatok DRAFT 
-
-
-
-data_telepules <- data_telepules[, tazon := telepules_nev]
-
-write.csv(data_telepules, 'data_telepules_2018.csv')
-
-data_koraranyok_filtered <- data_koraranyok[ev.3 == "2014"] 
-data_koraranyok_filtered2 <- data_koraranyok[ev.3 == "2018"] 
-
-data_tamogatottak_filtered <- data_tamogatottak[ev.3 == "2014"] 
-data_tamogatottak_filtered2 <- data_tamogatottak[ev.3 == "2018"] 
-
-data_munkaadok_filtered <- data_munkaadok[ev.3 == "2014"] 
-data_munkaadok_filtered2 <- data_munkaadok[ev.3 == "2018"] 
-
-data_nyugdijasok_filtered <- data_nyugdijasok[ev.3 == "2014"]
-data_nyugdijasok_filtered2 <- data_nyugdijasok[ev.3 == "2018"] 
-
-data_allaskeresok_filtered <- data_allaskeresok[ev.3 == "2014"]
-data_allaskeresok_filtered2 <- data_allaskeresok[ev.3 == "2018"]
