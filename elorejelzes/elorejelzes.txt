@@ -1,0 +1,327 @@
+------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/elorej
+> elzes.txt
+  log type:  text
+ opened on:  17 Mar 2018, 19:15:10
+
+. 
+. use szavazokor_szintu
+
+. gen megyekod = real(substr(id2010,2,2))
+
+. merge m:1 megyekod partnev using ../adat/part/google_trends, keep(master match) no
+> gen
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        12,968
+        from master                    12,968  
+        from using                          0  
+
+    matched                            41,544  
+    -----------------------------------------
+
+. merge m:1 partnev using ../adat/part/kozvelemeny, keep(master match) nogen
+(note: variable partnev was str8, now str9 to accommodate using data's values)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        12,968
+        from master                    12,968  
+        from using                          0  
+
+    matched                            41,544  
+    -----------------------------------------
+
+. 
+. keep if !missing(oevk)
+(2,582 observations deleted)
+
+. 
+. gen kerulet = real(substr(oevk,6,2))
+
+. * paros szamu oevk-k kihagyva minden megyeben
+. gen byte holdout_sample = int(kerulet/2)*2==kerulet
+
+. 
+. foreach X of var ma* arany* {
+  2.         gen ln_`X' = ln(0.1+`X')
+  3. }
+(51,930 missing values generated)
+(51,930 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(10,386 missing values generated)
+(4,459 missing values generated)
+
+. egen telepules_meret = sum(osszes2014), by(id2010)
+
+. gen telkat = telepules_meret
+
+. recode telkat min/10000=1 10000/100000=2 100000/max=3
+(telkat: 51930 changes made)
+
+. gen byte nagyvaros = (telepules_meret>100000)|(megyekod==1)
+
+. replace telkat = 0 if megyekod==1
+(7,360 real changes made)
+
+. gen ln_becsult = .
+(51,930 missing values generated)
+
+. tempvar becsult
+
+. 
+. * create prediction for 2018
+. expand 2, gen(future)
+(51,930 observations created)
+
+. 
+. foreach X in ln_arany ln_ma6google ln_ma3google {
+  2.         capture replace `X'2010=`X'2014 if future
+  3.         capture replace `X'2014=`X'2018 if future
+  4. }
+
+. gen aranysq = ln_arany2010^2
+(4,459 missing values generated)
+
+. gen aranycb = ln_arany2010^3
+(4,459 missing values generated)
+
+. 
+. forval t=0/3 {
+  2.         areg ln_arany2014 ln_arany2010 arany?? ln_ma?google2014 ln_ma?google201
+> 0 if telkat==`t' & !holdout & !future [fw=osszes2014], a(szavazokor) vce(cluster o
+> evk)
+  3.         predict `becsult'
+  4.         replace ln_becsult = `becsult' if telkat==`t'
+  5.         drop `becsult'
+  6. }
+note: ln_ma6google2010 omitted because of collinearity
+
+Linear regression, absorbing indicators         Number of obs     =  1,832,644
+                                                F(   6,      8)   =    4025.44
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9423
+                                                Adj R-squared     =     0.9423
+                                                Root MSE          =     0.1731
+
+                                       (Std. Err. adjusted for 9 clusters in oevk)
+----------------------------------------------------------------------------------
+                 |               Robust
+    ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+    ln_arany2010 |   .4030201     1.8355     0.22   0.832    -3.829651    4.635691
+         aranysq |   .5745936   .6927825     0.83   0.431    -1.022966    2.172153
+         aranycb |  -.0963285   .0817492    -1.18   0.273    -.2848424    .0921854
+ln_ma3google2014 |   10.73717   .9571045    11.22   0.000     8.530086    12.94426
+ln_ma6google2014 |  -10.83541   1.059964   -10.22   0.000    -13.27969   -8.391123
+ln_ma3google2010 |   -.236446   .0423293    -5.59   0.001    -.3340575   -.1388345
+ln_ma6google2010 |          0  (omitted)
+           _cons |  -3.950039     1.4109    -2.80   0.023     -7.20358   -.6964971
+-----------------+----------------------------------------------------------------
+      szavazokor |   absorbed                                     (733 categories)
+(option xb assumed; fitted values)
+(20,772 missing values generated)
+(11,776 real changes made)
+
+Linear regression, absorbing indicators         Number of obs     =  2,702,172
+                                                F(   7,     44)   =    2322.58
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9192
+                                                Adj R-squared     =     0.9191
+                                                Root MSE          =     0.3465
+
+                                      (Std. Err. adjusted for 45 clusters in oevk)
+----------------------------------------------------------------------------------
+                 |               Robust
+    ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+    ln_arany2010 |   .7447174    .047299    15.74   0.000     .6493925    .8400422
+         aranysq |    .135671   .0237868     5.70   0.000     .0877319    .1836101
+         aranycb |  -.0269799   .0046004    -5.86   0.000    -.0362513   -.0177084
+ln_ma3google2014 |   .0438284   .0795087     0.55   0.584    -.1164108    .2040676
+ln_ma6google2014 |   .2298856   .0678005     3.39   0.001     .0932426    .3665287
+ln_ma3google2010 |  -.0192262   .0195378    -0.98   0.330     -.058602    .0201496
+ln_ma6google2010 |   .0993923   .0253021     3.93   0.000     .0483994    .1503853
+           _cons |  -.6877654   .0692263    -9.94   0.000    -.8272818    -.548249
+-----------------+----------------------------------------------------------------
+      szavazokor |   absorbed                                    (2068 categories)
+(option xb assumed; fitted values)
+(20,772 missing values generated)
+(32,880 real changes made)
+
+Linear regression, absorbing indicators         Number of obs     =  3,207,868
+                                                F(   7,     37)   =    1958.23
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9258
+                                                Adj R-squared     =     0.9258
+                                                Root MSE          =     0.2631
+
+                                      (Std. Err. adjusted for 38 clusters in oevk)
+----------------------------------------------------------------------------------
+                 |               Robust
+    ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+    ln_arany2010 |    .702987   .4980513     1.41   0.166    -.3061609    1.712135
+         aranysq |   .2570893   .2161002     1.19   0.242    -.1807713    .6949499
+         aranycb |  -.0511444   .0284059    -1.80   0.080    -.1087003    .0064114
+ln_ma3google2014 |  -.0631975   .0801274    -0.79   0.435     -.225551     .099156
+ln_ma6google2014 |   .2720864   .0613312     4.44   0.000     .1478177    .3963551
+ln_ma3google2010 |  -.0277122   .0183248    -1.51   0.139    -.0648418    .0094173
+ln_ma6google2010 |   .0629018   .0172981     3.64   0.001     .0278525     .097951
+           _cons |   -.635304   .3761503    -1.69   0.100    -1.397457     .126849
+-----------------+----------------------------------------------------------------
+      szavazokor |   absorbed                                    (1566 categories)
+(option xb assumed; fitted values)
+(20,772 missing values generated)
+(24,912 real changes made)
+
+Linear regression, absorbing indicators         Number of obs     =  2,823,600
+                                                F(   7,     19)   =    1223.25
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.9084
+                                                Adj R-squared     =     0.9084
+                                                Root MSE          =     0.2281
+
+                                      (Std. Err. adjusted for 20 clusters in oevk)
+----------------------------------------------------------------------------------
+                 |               Robust
+    ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------+----------------------------------------------------------------
+    ln_arany2010 |  -2.267406    2.02443    -1.12   0.277    -6.504586    1.969774
+         aranysq |   1.269983   .7490472     1.70   0.106    -.2977911    2.837757
+         aranycb |   -.167185   .0881979    -1.90   0.073    -.3517854    .0174153
+ln_ma3google2014 |   .0966209   .0743445     1.30   0.209    -.0589839    .2522258
+ln_ma6google2014 |   .2227232   .1039536     2.14   0.045     .0051457    .4403006
+ln_ma3google2010 |  -.0030651   .0397154    -0.08   0.939    -.0861904    .0800602
+ln_ma6google2010 |   .0281286   .0423397     0.66   0.514    -.0604893    .1167465
+           _cons |   1.997789   1.785804     1.12   0.277    -1.739941    5.735519
+-----------------+----------------------------------------------------------------
+      szavazokor |   absorbed                                    (1165 categories)
+(option xb assumed; fitted values)
+(20,772 missing values generated)
+(13,520 real changes made)
+
+. 
+. gen becsult_szavazat = exp(ln_becsult)
+(20,772 missing values generated)
+
+. egen total = sum(becsult_szavazat), by(szavazokor future)
+
+. replace becsult_szavazat = int(becsult_szavazat/total*osszes2014)
+(83,088 real changes made)
+
+. 
+. collapse (sum) szavazat2010 szavazat2014 becsult_szavazat, by(oevk partnev holdout
+>  future)
+
+. foreach X of var szavazat???? becsult {
+  2.         egen total_`X' = sum(`X'), by(oevk future)
+  3.         gen arany_`X' = `X'/total_`X'*100
+  4. }
+
+. 
+. reg arany_szavazat2014 arany_becsult if holdout & !future [fw=total_szavazat2014],
+>  
+
+      Source |       SS           df       MS      Number of obs   =  11289100
+-------------+----------------------------------   F(1, 11289098)  >  99999.00
+       Model |  2.7345e+09         1  2.7345e+09   Prob > F        =    0.0000
+    Residual |  53552103.2  11289098   4.7437008   R-squared       =    0.9808
+-------------+----------------------------------   Adj R-squared   =    0.9808
+       Total |  2.7881e+09  11289099  246.971639   Root MSE        =     2.178
+
+-----------------------------------------------------------------------------------
+arany_szavaz~2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+arany_becsult_s~t |   .9051672   .0000377  2.4e+04   0.000     .9050933    .9052411
+            _cons |   1.896655   .0009943  1907.43   0.000     1.894706    1.898604
+-----------------------------------------------------------------------------------
+
+. reg arany_szavazat2014 arany_szavazat2010 if holdout & !future [fw=total_szavazat2
+> 014], 
+
+      Source |       SS           df       MS      Number of obs   =  11289100
+-------------+----------------------------------   F(1, 11289098)  >  99999.00
+       Model |  2.5332e+09         1  2.5332e+09   Prob > F        =    0.0000
+    Residual |   254863222  11289098  22.5760483   R-squared       =    0.9086
+-------------+----------------------------------   Adj R-squared   =    0.9086
+       Total |  2.7881e+09  11289099  246.971639   Root MSE        =    4.7514
+
+-----------------------------------------------------------------------------------
+arany_szavaz~2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+------------------+----------------------------------------------------------------
+arany_szavaz~2010 |   .8289675   .0000783  1.1e+04   0.000     .8288141    .8291209
+            _cons |   3.420651   .0021094  1621.64   0.000     3.416516    3.424785
+-----------------------------------------------------------------------------------
+
+. scatter arany_szavazat2014 arany_becsult if holdout & !future, msize(tiny) scheme(
+> s2mono)
+
+. graph export oevk_out_of_sample.png, width(800) replace
+(file oevk_out_of_sample.png written in PNG format)
+
+. scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(tiny) sc
+> heme(s2mono)
+
+. graph export oevk_2010.png, width(800) replace
+(file oevk_2010.png written in PNG format)
+
+. 
+. keep if future
+(530 observations deleted)
+
+. keep oevk partnev szavazat2014 becsult_szavazat arany_szavazat2010 arany_szavazat2
+> 014 arany_becsult_szavazat
+
+. 
+. export delimited listas_106.csv, replace
+file listas_106.csv saved
+
+. 
+. 
+. collapse (sum) szavazat2014 becsult_szavazat, by(partnev)
+
+. egen total=sum(szavazat2014)
+
+. foreach X of var szavazat2014 becsult_szavazat {
+  2.         gen arany_`X' = `X'/total*100
+  3. }
+
+. 
+. capture log close
