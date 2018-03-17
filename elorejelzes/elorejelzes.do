@@ -35,7 +35,7 @@ gen aranysq = ln_arany2010^2
 gen aranycb = ln_arany2010^3
 
 forval t=0/3 {
-	areg ln_arany2014 ln_arany2010 arany?? ln_ma?google2014 ln_ma?google2010 if telkat==`t' & !holdout & !future [fw=osszes2014], a(szavazokor) vce(cluster oevk)
+	areg ln_arany2014 ln_arany2010 arany?? ln_ma3google2014 ln_ma3google2010 if telkat==`t' & !holdout & !future [fw=osszes2014], a(szavazokor) vce(cluster oevk)
 	predict `becsult'
 	replace ln_becsult = `becsult' if telkat==`t'
 	drop `becsult'

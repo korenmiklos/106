@@ -1,5 +1,5 @@
 clear all
-local files jelolt szervezet egyeni listas jelolt_extra_adatok
+local files jelolt szervezet egyeni listas jelolt_extra_adatok reszvetel
 
 tempfile `files'
 foreach fn in `files' {
@@ -17,6 +17,9 @@ merge m:1 id using `jelolt'
 drop _m
 
 merge m:1 id using `jelolt_extra_adatok'
+drop _m
+
+merge m:1 szavazokor using `reszvetel'
 drop _m
 
 foreach X in jelolt telepules szavazokor szervezet megye {

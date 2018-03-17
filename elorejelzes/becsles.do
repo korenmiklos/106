@@ -17,12 +17,16 @@ gen byte jobbik = part=="JOB"
 gen byte lmp = part=="LMP"
 gen byte baloldal = part=="MSZ"
 
+gen reszveteli_arany = ervenyes/valasztopolgarok
+
 local egyeni_valtozok listan_is_indul ferfi dr ismert egyeniben_nyert listan_nyert
-foreach X of var `egyeni_valtozok' {
+foreach X of var `egyeni_valtozok' reszveteli_arany {
 	foreach P in fidesz jobbik lmp baloldal {
 		gen `P'_X_`X' = `P'*`X'
 	}
 }
+* fix-hatas miatt egyet ki kell dobni
+drop fidesz_X_reszveteli_arany
 
 
 * osszevonjuk a falvakat megyenkent, felteve, hogy hasonloan szavaznak
@@ -36,21 +40,24 @@ egen telepules_tipus = group(megye buda meret)
 egen telepulesXszervezet = group(telepules_tipus szervezet)
 
 * telepulesen beluli, de out-of-sample illeszkedes
-tempvar veletlen vrang
+tempvar veletlen vrang vmax
 set seed 123
 * szavazokoronkent egy veletlenszam
-egen `veletlen' = mean(cond(szavazokor_tag,uniform(),.)), by(szavazokor)
-egen `vrang' = rank(`veletlen'), by(szintetikus_telepules szervezet )
-egen szint_szavazokorok_szama = max(`vrang'), by(szintetikus_telepules)
+egen metszet = group(oevk telepules_tipus)
+egen metszet_tag = tag(metszet)
 
-gen holdout_sample = (`vrang'<= szint_szavazokorok_szama*0.5)
+egen `veletlen' = mean(cond(szavazokor_tag,uniform(),.)), by(szavazokor)
+egen `vrang' = rank(`veletlen'), by(telepules_tipus szervezet)
+egen `vmax' = max(`vrang'), by(telepules_tipus)
+
+gen holdout_sample = (`vrang'<= `vmax'*0.33)
 tab holdout_sample
 
 
 su telepules_tipus
 local T = r(max)
 
-areg ln_arany `egyeni_valtozok' i.telepulesXszervezet if !holdout_sample, a(szavazokor)
+areg ln_arany `egyeni_valtozok' *_X_reszveteli_arany i.szervezet_kod if !holdout_sample, a(szavazokor)
 /*
 Linear regression, absorbing indicators         Number of obs     =     20,788
                                                 F( 303,  15237)   =     452.86
