@@ -10,8 +10,8 @@ replace part="kispart" if inlist(part,"lmp","momentum")
 collapse (sum) szavazat2010 szavazat2014 arany2010 arany2014 (mean) osszes2010 osszes2014, by(szavazokor id2010 oevk partnev)
 
 gen megyekod = real(substr(id2010,2,2))
-merge m:1 megyekod partnev using ../adat/part/google_trends2014, keep(master match) nogen
-merge m:1 partnev using ../adat/part/kozvelemeny, keep(master match) nogen
+merge m:1 megyekod partnev using ../adat/part/google_trends2014, keepusing(google2010 google2014) keep(master match) nogen
+merge m:1 partnev using ../adat/part/kozvelemeny, keepusing(kozvelemeny2014) keep(master match) nogen
 
 keep if !missing(oevk)
 *mvencode google* kozvelemeny*, mv(0) override
@@ -49,35 +49,83 @@ gen aranycb = ln_arany2010^3
 
 forval t=1/5 {
 	di in gre "Teltip: " in ye "`t'"
-	areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 ln_kozvelemeny2014 if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(cluster id2010)
+	areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 /*ln_kozvelemeny2014*/ if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(cluster id2010)
 	predict `becsult'
 	replace becsult_szavazat = `becsult' if telkat==`t'
 	* egyeb partokat nehez becsulni
 	replace becsult_szavazat = ln_arany2010 if telkat==`t' & partnev=="egyeb"
 	drop `becsult'
+	* egyutthatok elmentese
+	scalar LA`t' = _b[ln_arany2010]
+	scalar G`t' = _b[ln_google2014]
+	scalar LG`t' = _b[ln_google2010]
+	*scalar K`t' = _b[ln_kozvelemeny2014]
 }
 
 replace becsult_szavazat = exp(becsult_szavazat)
 egen total = sum(becsult_szavazat), by(szavazokor future)
 replace becsult_szavazat = int(becsult_szavazat/total*osszes2014)
 
-collapse (sum) szavazat2010 szavazat2014 becsult_szavazat, by(oevk partnev holdout future)
-foreach X of var szavazat???? becsult {
-	egen total_`X' = sum(`X'), by(oevk future)
-	gen arany_`X' = `X'/total_`X'*100
+tempfile csoport
+preserve
+	collapse (sum) szavazat2010 szavazat2014 becsult_szavazat, by(oevk partnev holdout future)
+	foreach X of var szavazat???? becsult {
+		egen total_`X' = sum(`X'), by(oevk future)
+		gen arany_`X' = `X'/total_`X'*100
+	}
+
+	reg arany_szavazat2014 arany_becsult if holdout & !future [fw=total_szavazat2014], 
+	reg arany_szavazat2014 arany_szavazat2010 if holdout & !future [fw=total_szavazat2014], 
+	scatter arany_szavazat2014 arany_becsult if holdout & !future, msize(tiny) scheme(s2mono)
+	graph export oevk_out_of_sample.png, width(800) replace
+	scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(tiny) scheme(s2mono)
+	graph export oevk_2010.png, width(800) replace
+restore
+keep if future
+ren becsult_szavazat csoport_becsult_szavazat
+
+keep oevk szavazokor megyekod telkat partnev szavazat2014 csoport_becsult_szavazat
+* uj partok letrehozasa: dk, egyutt, momentum, minden szavazokorben 3 uj sor
+expand 1+(partnev=="kispart")+2*(partnev=="baloldal"), gen(ujpart)
+replace szavazat2014=. if ujpart
+egen partid = seq(), by(szavazokor partnev ujpart)
+
+replace partnev="dk" if ujpart & partid==1 & partnev=="baloldal"
+replace partnev="egyutt" if ujpart & partid==2 & partnev=="baloldal"
+replace partnev="momentum" if ujpart & partnev=="kispart"
+replace partnev="mszp" if partnev=="baloldal"
+replace partnev="lmp" if partnev=="kispart"
+
+merge m:1 megyekod partnev using ../adat/part/google_trends, keepusing(google2018 google2014) keep(master match) nogen
+*merge m:1 partnev using ../adat/part/kozvelemeny, keepusing(kozvelemeny2014) keep(master match) nogen
+foreach X of var google* {
+	gen ln_`X' = ln(0.5+`X')
 }
 
-reg arany_szavazat2014 arany_becsult if holdout & !future [fw=total_szavazat2014], 
-reg arany_szavazat2014 arany_szavazat2010 if holdout & !future [fw=total_szavazat2014], 
-scatter arany_szavazat2014 arany_becsult if holdout & !future, msize(tiny) scheme(s2mono)
-graph export oevk_out_of_sample.png, width(800) replace
-scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(tiny) scheme(s2mono)
-graph export oevk_2010.png, width(800) replace
+* az uj partok tamogatottsagat csoporton belul osztjuk el a google trends aranyaban
+gen csoport = partnev
+replace csoport="kispart" if inlist(csoport,"lmp","momentum")
+replace csoport="baloldal" if inlist(csoport,"mszp","dk","egyutt")
 
-keep if future
-keep oevk partnev szavazat2014 becsult_szavazat arany_szavazat2010 arany_szavazat2014 arany_becsult_szavazat
+gen part_arany2018 = .
+forval t=1/5 {
+	replace part_arany2018 = exp(G`t'*ln_google2018 + LG`t'*ln_google2014) if telkat==`t'
+}
+local t 2018
+capture drop total`t'
+egen total`t' = sum(part_arany`t'), by(szavazokor csoport)
+replace part_arany`t' = part_arany`t'/total`t'*100
+replace part_arany`t' = 100 if missing(part_arany`t')
 
-export delimited listas_106.csv, replace
+gen becsult_szavazat = int(csoport_becsult_szavazat*part_arany2018/100)
+collapse (sum) szavazat2014 becsult_szavazat, by(oevk partnev csoport ujpart)
+replace szavazat2014=. if ujpart
+egen total=sum(szavazat2014), by(oevk)
+foreach X of var szavazat2014 becsult_szavazat {
+	gen arany_`X' = `X'/total*100
+}
+drop total
+export delimited listas_106_ujpartok.csv, replace
 
 collapse (sum) szavazat2014 becsult_szavazat, by(partnev)
 egen total=sum(szavazat2014)

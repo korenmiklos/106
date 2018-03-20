@@ -30,6 +30,7 @@ ren search_term part
 ren search_volume google
 
 preserve
+	replace part="mszp" if part=="pm"
 	collapse (sum) google, by(part megye month)
 
 	gen date = monthly(month,"YM")

@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/elorej
 > elzes.txt
   log type:  text
- opened on:  20 Mar 2018, 19:53:19
+ opened on:  20 Mar 2018, 21:32:56
 
 . 
 . use szavazokor_szintu
@@ -23,8 +23,8 @@ variable partnev was str6 now str8
 . 
 . gen megyekod = real(substr(id2010,2,2))
 
-. merge m:1 megyekod partnev using ../adat/part/google_trends2014, keep(master match
-> ) nogen
+. merge m:1 megyekod partnev using ../adat/part/google_trends2014, keepusing(google2
+> 010 google2014) keep(master match) nogen
 
     Result                           # of obs.
     -----------------------------------------
@@ -35,7 +35,8 @@ variable partnev was str6 now str8
     matched                            41,544  
     -----------------------------------------
 
-. merge m:1 partnev using ../adat/part/kozvelemeny, keep(master match) nogen
+. merge m:1 partnev using ../adat/part/kozvelemeny, keepusing(kozvelemeny2014) keep(
+> master match) nogen
 (note: variable partnev was str8, now str9 to accommodate using data's values)
 
     Result                           # of obs.
@@ -62,20 +63,6 @@ variable partnev was str6 now str8
 . foreach X of var google* kozvelemeny* arany* {
   2.         gen ln_`X' = ln(0.5+`X')
   3. }
-(51,930 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
-(10,386 missing values generated)
 (10,386 missing values generated)
 (10,386 missing values generated)
 (10,386 missing values generated)
@@ -127,36 +114,40 @@ variable partnev was str6 now str8
 . 
 . forval t=1/5 {
   2.         di in gre "Teltip: " in ye "`t'"
-  3.         areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 ln_kozveleme
-> ny2014 if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(clus
-> ter id2010)
+  3.         areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 /*ln_kozvele
+> meny2014*/ if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(
+> cluster id2010)
   4.         predict `becsult'
   5.         replace becsult_szavazat = `becsult' if telkat==`t'
   6.         * egyeb partokat nehez becsulni
 .         replace becsult_szavazat = ln_arany2010 if telkat==`t' & partnev=="egyeb"
   7.         drop `becsult'
-  8. }
+  8.         * egyutthatok elmentese
+.         scalar LA`t' = _b[ln_arany2010]
+  9.         scalar G`t' = _b[ln_google2014]
+ 10.         scalar LG`t' = _b[ln_google2010]
+ 11.         *scalar K`t' = _b[ln_kozvelemeny2014]
+. }
 Teltip: 1
 
 Linear regression, absorbing indicators         Number of obs     =  1,604,140
-                                                F(   4,   1359)   =    8408.71
+                                                F(   3,   1359)   =    9474.75
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.9171
-                                                Adj R-squared     =     0.9170
-                                                Root MSE          =     0.3482
+                                                R-squared         =     0.9149
+                                                Adj R-squared     =     0.9148
+                                                Root MSE          =     0.3527
 
-                                  (Std. Err. adjusted for 1,360 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .6976072    .014056    49.63   0.000     .6700334     .725181
-    ln_google2014 |   .5229153   .0165856    31.53   0.000     .4903791    .5554515
-    ln_google2010 |   .0463836   .0099762     4.65   0.000     .0268131     .065954
-ln_kozveleme~2014 |   .1058056   .0123317     8.58   0.000     .0816143     .129997
-            _cons |  -1.121005   .0341303   -32.84   0.000    -1.187959   -1.054051
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (1443 categories)
+                              (Std. Err. adjusted for 1,360 clusters in id2010)
+-------------------------------------------------------------------------------
+              |               Robust
+ ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+ ln_arany2010 |   .7809891   .0062857   124.25   0.000     .7686584    .7933197
+ln_google2014 |   .4866917   .0144732    33.63   0.000     .4582995     .515084
+ln_google2010 |   .0803919    .009136     8.80   0.000     .0624698    .0983141
+        _cons |  -1.123789   .0354049   -31.74   0.000    -1.193243   -1.054335
+--------------+----------------------------------------------------------------
+   szavazokor |   absorbed                                    (1443 categories)
 (option xb assumed; fitted values)
 (20,772 missing values generated)
 (17,152 real changes made)
@@ -164,24 +155,23 @@ ln_kozveleme~2014 |   .1058056   .0123317     8.58   0.000     .0816143     .129
 Teltip: 2
 
 Linear regression, absorbing indicators         Number of obs     =  5,936,000
-                                                F(   4,    514)   =    6124.50
+                                                F(   3,    514)   =    7282.44
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.9395
-                                                Adj R-squared     =     0.9394
-                                                Root MSE          =     0.2626
+                                                R-squared         =     0.9393
+                                                Adj R-squared     =     0.9393
+                                                Root MSE          =     0.2629
 
-                                    (Std. Err. adjusted for 515 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .8144693   .0160636    50.70   0.000      .782911    .8460276
-    ln_google2014 |    .418675   .0132887    31.51   0.000      .392568    .4447819
-    ln_google2010 |    .067162   .0081089     8.28   0.000     .0512313    .0830927
-ln_kozveleme~2014 |  -.0270678    .011563    -2.34   0.020    -.0497844   -.0043512
-            _cons |  -.8938279    .031789   -28.12   0.000    -.9562802   -.8313756
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (1210 categories)
+                                (Std. Err. adjusted for 515 clusters in id2010)
+-------------------------------------------------------------------------------
+              |               Robust
+ ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+ ln_arany2010 |   .7887462   .0073733   106.97   0.000     .7742608    .8032317
+ln_google2014 |   .4280476   .0117912    36.30   0.000     .4048827    .4512126
+ln_google2010 |   .0595588    .007422     8.02   0.000     .0449777      .07414
+        _cons |  -.8820093   .0310913   -28.37   0.000    -.9430909   -.8209278
+--------------+----------------------------------------------------------------
+   szavazokor |   absorbed                                    (1210 categories)
 (option xb assumed; fitted values)
 (20,772 missing values generated)
 (15,728 real changes made)
@@ -189,24 +179,23 @@ ln_kozveleme~2014 |  -.0270678    .011563    -2.34   0.020    -.0497844   -.0043
 Teltip: 3
 
 Linear regression, absorbing indicators         Number of obs     = 28,266,256
-                                                F(   4,    163)   =    4336.23
+                                                F(   3,    163)   =    4615.30
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.9265
-                                                Adj R-squared     =     0.9265
-                                                Root MSE          =     0.2514
+                                                R-squared         =     0.9231
+                                                Adj R-squared     =     0.9231
+                                                Root MSE          =     0.2571
 
-                                    (Std. Err. adjusted for 164 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .9130432   .0248773    36.70   0.000     .8639199    .9621665
-    ln_google2014 |   .3976918   .0205195    19.38   0.000     .3571734    .4382101
-    ln_google2010 |    .035749   .0147579     2.42   0.017     .0066077    .0648903
-ln_kozveleme~2014 |  -.1078121   .0166794    -6.46   0.000    -.1407476   -.0748765
-            _cons |  -.8533767   .0562889   -15.16   0.000    -.9645261   -.7422273
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (1330 categories)
+                                (Std. Err. adjusted for 164 clusters in id2010)
+-------------------------------------------------------------------------------
+              |               Robust
+ ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+ ln_arany2010 |   .7981408   .0098658    80.90   0.000     .7786596    .8176221
+ln_google2014 |   .4299825   .0196906    21.84   0.000     .3911009    .4688641
+ln_google2010 |  -.0085784   .0116911    -0.73   0.464    -.0316639    .0145071
+        _cons |  -.7018179   .0489147   -14.35   0.000    -.7984061   -.6052297
+--------------+----------------------------------------------------------------
+   szavazokor |   absorbed                                    (1330 categories)
 (option xb assumed; fitted values)
 (20,772 missing values generated)
 (16,528 real changes made)
@@ -214,24 +203,23 @@ ln_kozveleme~2014 |  -.1078121   .0166794    -6.46   0.000    -.1407476   -.0748
 Teltip: 4
 
 Linear regression, absorbing indicators         Number of obs     = 40,193,880
-                                                F(   4,     26)   =     638.94
+                                                F(   3,     26)   =     727.30
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.9090
-                                                Adj R-squared     =     0.9090
-                                                Root MSE          =     0.2550
+                                                R-squared         =     0.9003
+                                                Adj R-squared     =     0.9003
+                                                Root MSE          =     0.2670
 
-                                     (Std. Err. adjusted for 27 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   1.029179   .0627543    16.40   0.000      .900186    1.158173
-    ln_google2014 |   .3120493   .0436179     7.15   0.000     .2223915    .4017071
-    ln_google2010 |   .1272789   .0365434     3.48   0.002     .0521628     .202395
-ln_kozveleme~2014 |  -.1725958   .0456662    -3.78   0.001     -.266464   -.0787275
-            _cons |  -1.092147   .1100914    -9.92   0.000    -1.318443   -.8658505
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                     (688 categories)
+                                 (Std. Err. adjusted for 27 clusters in id2010)
+-------------------------------------------------------------------------------
+              |               Robust
+ ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+ ln_arany2010 |   .8123098   .0204314    39.76   0.000     .7703125    .8543071
+ln_google2014 |   .3864938   .0415312     9.31   0.000     .3011251    .4718624
+ln_google2010 |   .0023394   .0206734     0.11   0.911    -.0401553    .0448341
+        _cons |  -.6443669    .111252    -5.79   0.000    -.8730486   -.4156851
+--------------+----------------------------------------------------------------
+   szavazokor |   absorbed                                     (688 categories)
 (option xb assumed; fitted values)
 (20,772 missing values generated)
 (8,384 real changes made)
@@ -239,24 +227,23 @@ ln_kozveleme~2014 |  -.1725958   .0456662    -3.78   0.001     -.266464   -.0787
 Teltip: 5
 
 Linear regression, absorbing indicators         Number of obs     =  576902576
-                                                F(   4,     39)   =     630.31
+                                                F(   3,     39)   =     649.95
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.9040
-                                                Adj R-squared     =     0.9040
-                                                Root MSE          =     0.2278
+                                                R-squared         =     0.8880
+                                                Adj R-squared     =     0.8880
+                                                Root MSE          =     0.2460
 
-                                     (Std. Err. adjusted for 40 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .9215021   .0334285    27.57   0.000     .8538865    .9891177
-    ln_google2014 |   .4590316   .0292967    15.67   0.000     .3997734    .5182899
-    ln_google2010 |   .0153965   .0204766     0.75   0.457    -.0260213    .0568143
-ln_kozveleme~2014 |  -.1670636   .0165391   -10.10   0.000    -.2005171   -.1336102
-            _cons |  -.8732442   .1023749    -8.53   0.000    -1.080317   -.6661715
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (2604 categories)
+                                 (Std. Err. adjusted for 40 clusters in id2010)
+-------------------------------------------------------------------------------
+              |               Robust
+ ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+ ln_arany2010 |   .7512219   .0270987    27.72   0.000     .6964095    .8060343
+ln_google2014 |     .49285   .0358462    13.75   0.000     .4203441    .5653558
+ln_google2010 |  -.1146308   .0407465    -2.81   0.008    -.1970483   -.0322132
+        _cons |  -.4168175   .1301512    -3.20   0.003    -.6800732   -.1535619
+--------------+----------------------------------------------------------------
+   szavazokor |   absorbed                                    (2604 categories)
 (option xb assumed; fitted values)
 (20,772 missing values generated)
 (25,296 real changes made)
@@ -272,34 +259,38 @@ ln_kozveleme~2014 |  -.1670636   .0165391   -10.10   0.000    -.2005171   -.1336
 (103,859 real changes made)
 
 . 
-. collapse (sum) szavazat2010 szavazat2014 becsult_szavazat, by(oevk partnev holdout
->  future)
+. tempfile csoport
 
-. foreach X of var szavazat???? becsult {
-  2.         egen total_`X' = sum(`X'), by(oevk future)
-  3.         gen arany_`X' = `X'/total_`X'*100
-  4. }
+. preserve
+
+.         collapse (sum) szavazat2010 szavazat2014 becsult_szavazat, by(oevk partnev
+>  holdout future)
+
+.         foreach X of var szavazat???? becsult {
+  2.                 egen total_`X' = sum(`X'), by(oevk future)
+  3.                 gen arany_`X' = `X'/total_`X'*100
+  4.         }
 
 . 
-. reg arany_szavazat2014 arany_becsult if holdout & !future [fw=total_szavazat2014],
->  
+.         reg arany_szavazat2014 arany_becsult if holdout & !future [fw=total_szavaz
+> at2014], 
 
       Source |       SS           df       MS      Number of obs   = 7,025,285
 -------------+----------------------------------   F(1, 7025283)   >  99999.00
-       Model |  1.7860e+09         1  1.7860e+09   Prob > F        =    0.0000
-    Residual |  28827856.3 7,025,283  4.10344413   R-squared       =    0.9841
--------------+----------------------------------   Adj R-squared   =    0.9841
-       Total |  1.8149e+09 7,025,284  258.334679   Root MSE        =    2.0257
+       Model |  1.7785e+09         1  1.7785e+09   Prob > F        =    0.0000
+    Residual |  36394422.7 7,025,283  5.18049205   R-squared       =    0.9799
+-------------+----------------------------------   Adj R-squared   =    0.9799
+       Total |  1.8149e+09 7,025,284  258.334679   Root MSE        =    2.2761
 
 -----------------------------------------------------------------------------------
 arany_szavaz~2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 ------------------+----------------------------------------------------------------
-arany_becsult_s~t |   .9307373   .0000446  2.1e+04   0.000     .9306498    .9308247
-            _cons |   1.385254   .0011748  1179.12   0.000     1.382952    1.387557
+arany_becsult_s~t |   .9233518   .0000498  1.9e+04   0.000     .9232541    .9234495
+            _cons |   1.532964   .0013156  1165.23   0.000     1.530385    1.535542
 -----------------------------------------------------------------------------------
 
-. reg arany_szavazat2014 arany_szavazat2010 if holdout & !future [fw=total_szavazat2
-> 014], 
+.         reg arany_szavazat2014 arany_szavazat2010 if holdout & !future [fw=total_s
+> zavazat2014], 
 
       Source |       SS           df       MS      Number of obs   = 7,025,285
 -------------+----------------------------------   F(1, 7025283)   >  99999.00
@@ -315,28 +306,130 @@ arany_szavaz~2010 |   .8172803   .0000863  9470.29   0.000     .8171112    .8174
             _cons |   3.654394    .002377  1537.38   0.000     3.649735    3.659053
 -----------------------------------------------------------------------------------
 
-. scatter arany_szavazat2014 arany_becsult if holdout & !future, msize(tiny) scheme(
-> s2mono)
+.         scatter arany_szavazat2014 arany_becsult if holdout & !future, msize(tiny)
+>  scheme(s2mono)
 
-. graph export oevk_out_of_sample.png, width(800) replace
+.         graph export oevk_out_of_sample.png, width(800) replace
 (file oevk_out_of_sample.png written in PNG format)
 
-. scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(tiny) sc
-> heme(s2mono)
+.         scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(
+> tiny) scheme(s2mono)
 
-. graph export oevk_2010.png, width(800) replace
+.         graph export oevk_2010.png, width(800) replace
 (file oevk_2010.png written in PNG format)
 
-. 
+. restore
+
 . keep if future
-(530 observations deleted)
+(51,930 observations deleted)
 
-. keep oevk partnev szavazat2014 becsult_szavazat arany_szavazat2010 arany_szavazat2
-> 014 arany_becsult_szavazat
+. ren becsult_szavazat csoport_becsult_szavazat
 
 . 
-. export delimited listas_106.csv, replace
-file listas_106.csv saved
+. keep oevk szavazokor megyekod telkat partnev szavazat2014 csoport_becsult_szavazat
+
+. * uj partok letrehozasa: dk, egyutt, momentum, minden szavazokorben 3 uj sor
+. expand 1+(partnev=="kispart")+2*(partnev=="baloldal"), gen(ujpart)
+(31,158 observations created)
+
+. replace szavazat2014=. if ujpart
+(31,158 real changes made, 31,158 to missing)
+
+. egen partid = seq(), by(szavazokor partnev ujpart)
+
+. 
+. replace partnev="dk" if ujpart & partid==1 & partnev=="baloldal"
+(10,386 real changes made)
+
+. replace partnev="egyutt" if ujpart & partid==2 & partnev=="baloldal"
+(10,386 real changes made)
+
+. replace partnev="momentum" if ujpart & partnev=="kispart"
+(10,386 real changes made)
+
+. replace partnev="mszp" if partnev=="baloldal"
+(10,386 real changes made)
+
+. replace partnev="lmp" if partnev=="kispart"
+(10,386 real changes made)
+
+. 
+. merge m:1 megyekod partnev using ../adat/part/google_trends, keepusing(google2018 
+> google2014) keep(master match) nogen
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        10,386
+        from master                    10,386  
+        from using                          0  
+
+    matched                            72,702  
+    -----------------------------------------
+
+. *merge m:1 partnev using ../adat/part/kozvelemeny, keepusing(kozvelemeny2014) keep
+> (master match) nogen
+. foreach X of var google* {
+  2.         gen ln_`X' = ln(0.5+`X')
+  3. }
+(10,386 missing values generated)
+(10,386 missing values generated)
+
+. 
+. * az uj partok tamogatottsagat csoporton belul osztjuk el a google trends aranyaba
+> n
+. gen csoport = partnev
+
+. replace csoport="kispart" if inlist(csoport,"lmp","momentum")
+(20,772 real changes made)
+
+. replace csoport="baloldal" if inlist(csoport,"mszp","dk","egyutt")
+(31,158 real changes made)
+
+. 
+. gen part_arany2018 = .
+(83,088 missing values generated)
+
+. forval t=1/5 {
+  2.         replace part_arany2018 = exp(G`t'*ln_google2018 + LG`t'*ln_google2014) 
+> if telkat==`t'
+  3. }
+(15,008 real changes made)
+(13,762 real changes made)
+(14,462 real changes made)
+(7,336 real changes made)
+(22,134 real changes made)
+
+. local t 2018
+
+. capture drop total`t'
+
+. egen total`t' = sum(part_arany`t'), by(szavazokor csoport)
+
+. replace part_arany`t' = part_arany`t'/total`t'*100
+(72,702 real changes made)
+
+. replace part_arany`t' = 100 if missing(part_arany`t')
+(10,386 real changes made)
+
+. 
+. gen becsult_szavazat = int(csoport_becsult_szavazat*part_arany2018/100)
+
+. collapse (sum) szavazat2014 becsult_szavazat, by(oevk partnev csoport ujpart)
+
+. replace szavazat2014=. if ujpart
+(318 real changes made, 318 to missing)
+
+. egen total=sum(szavazat2014), by(oevk)
+
+. foreach X of var szavazat2014 becsult_szavazat {
+  2.         gen arany_`X' = `X'/total*100
+  3. }
+(318 missing values generated)
+
+. drop total
+
+. export delimited listas_106_ujpartok.csv, replace
+file listas_106_ujpartok.csv saved
 
 . 
 . collapse (sum) szavazat2014 becsult_szavazat, by(partnev)
