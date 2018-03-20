@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/elorej
 > elzes.txt
   log type:  text
- opened on:  20 Mar 2018, 19:32:40
+ opened on:  20 Mar 2018, 19:53:19
 
 . 
 . use szavazokor_szintu
@@ -23,8 +23,8 @@ variable partnev was str6 now str8
 . 
 . gen megyekod = real(substr(id2010,2,2))
 
-. merge m:1 megyekod partnev using ../adat/part/google_trends, keep(master match) no
-> gen
+. merge m:1 megyekod partnev using ../adat/part/google_trends2014, keep(master match
+> ) nogen
 
     Result                           # of obs.
     -----------------------------------------
@@ -328,30 +328,24 @@ arany_szavaz~2010 |   .8172803   .0000863  9470.29   0.000     .8171112    .8174
 (file oevk_2010.png written in PNG format)
 
 . 
-. BRK
-command BRK is unrecognized
-r(199);
-
-end of do-file
-
-r(199);
-
-. edit
-
-. keep if !future 
+. keep if future
 (530 observations deleted)
 
-. collapse (sum) szavazat2014 becsult_szavazat, by(partnev)
+. keep oevk partnev szavazat2014 becsult_szavazat arany_szavazat2010 arany_szavazat2
+> 014 arany_becsult_szavazat
 
 . 
-. edit
+. export delimited listas_106.csv, replace
+file listas_106.csv saved
+
+. 
+. collapse (sum) szavazat2014 becsult_szavazat, by(partnev)
 
 . egen total=sum(szavazat2014)
 
 . foreach X of var szavazat2014 becsult_szavazat {
-  2. gen arany_`X' = `X'/total*100
+  2.         gen arany_`X' = `X'/total*100
   3. }
 
 . 
-. edit
-
+. capture log close

@@ -10,7 +10,7 @@ replace part="kispart" if inlist(part,"lmp","momentum")
 collapse (sum) szavazat2010 szavazat2014 arany2010 arany2014 (mean) osszes2010 osszes2014, by(szavazokor id2010 oevk partnev)
 
 gen megyekod = real(substr(id2010,2,2))
-merge m:1 megyekod partnev using ../adat/part/google_trends, keep(master match) nogen
+merge m:1 megyekod partnev using ../adat/part/google_trends2014, keep(master match) nogen
 merge m:1 partnev using ../adat/part/kozvelemeny, keep(master match) nogen
 
 keep if !missing(oevk)
@@ -74,7 +74,6 @@ graph export oevk_out_of_sample.png, width(800) replace
 scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(tiny) scheme(s2mono)
 graph export oevk_2010.png, width(800) replace
 
-BRK
 keep if future
 keep oevk partnev szavazat2014 becsult_szavazat arany_szavazat2010 arany_szavazat2014 arany_becsult_szavazat
 

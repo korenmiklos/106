@@ -2,7 +2,7 @@ clear all
 
 scalar decay = 0.33
 
-tempvar nagypartok
+tempfile nagypartok kispart baloldal
 import delimited ../adat/part/google_trends/nagypartok.csv, clear varnames(1) encoding("utf-8")
 ren search_volume search_volume1
 save `nagypartok', replace
@@ -29,28 +29,47 @@ keep megye month search_term search_volume
 ren search_term part
 ren search_volume google
 
+preserve
+	collapse (sum) google, by(part megye month)
+
+	gen date = monthly(month,"YM")
+	egen group = group(megye part)
+	tsset group date, monthly
+
+	local X google
+	gen ma = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
+
+	keep if substr(month,6,2)=="03"
+	gen year = substr(month,1,4)
+
+	keep year megye part ma
+	ren ma google
+	reshape wide google, i(part megye) j(year) string
+	ren megye megyekod
+	ren part partnev
+	save ../adat/part/google_trends, replace
+restore
 replace part="baloldal" if inlist(part,"mszp","dk","egyutt")
 replace part="kispart" if inlist(part,"lmp","momentum")
-collapse (sum) google, by(part megye month)
+	collapse (sum) google, by(part megye month)
 
+	gen date = monthly(month,"YM")
+	egen group = group(megye part)
+	tsset group date, monthly
 
-gen date = monthly(month,"YM")
-egen group = group(megye part)
-tsset group date, monthly
+	local X google
+	gen ma = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
 
-local X google
-gen ma = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
+	keep if substr(month,6,2)=="03"
+	gen year = substr(month,1,4)
 
-keep if substr(month,6,2)=="03"
-gen year = substr(month,1,4)
+	keep year megye part ma
+	ren ma google
+	reshape wide google, i(part megye) j(year) string
+	ren megye megyekod
+	ren part partnev
+	save ../adat/part/google_trends2014, replace
 
-keep year megye part ma
-ren ma google
-reshape wide google, i(part megye) j(year) string
-ren megye megyekod
-ren part partnev
-
-save ../adat/part/google_trends, replace
 
 import delimited "../adat/part/kozvelemenykutatok/biztos_valasztok.csv", clear varnames(1) encoding("utf-8")
 replace part="baloldal" if inlist(part,"mszp","dk","egyutt")
