@@ -76,7 +76,7 @@ import delimited "../adat/part/kozvelemenykutatok/biztos_valasztok.csv", clear v
 replace part="baloldal" if inlist(part,"mszp","dk","egyutt")
 replace part="kispart" if inlist(part,"lmp","momentum")
 collapse (sum) szazalek, by(part datum kutato)
-
+mvdecode szazalek, mv(0) 
 gen honap = monthly(substr(datum,1,7),"YM")
 format honap %tm
 egen i = group(part kutato)
@@ -90,9 +90,38 @@ egen i = group(part)
 tsset i honap, monthly
 local X szazalek
 gen kozvelemeny = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
-
 * FIXME: egyelore csak januari adatok vannak
-replace datum = "2018-03" if datum=="2018-01"
+replace datum = "2018-03" if substr(datum,1,7)=="2018-01"
+keep if substr(datum,6,2)=="03"
+gen year = substr(datum,1,4)
+drop datum honap szazalek
+reshape wide kozvelemeny, i(part) j(year) string
+ren part partnev
+
+save ../adat/part/kozvelemeny2014, replace
+
+
+
+
+
+import delimited "../adat/part/kozvelemenykutatok/biztos_valasztok.csv", clear varnames(1) encoding("utf-8")
+collapse (sum) szazalek, by(part datum kutato)
+mvdecode szazalek, mv(0) 
+gen honap = monthly(substr(datum,1,7),"YM")
+format honap %tm
+egen i = group(part kutato)
+tsset i honap, monthly
+
+replace szazalek = L.szazalek if missing(szazalek) & !missing(L.szazalek)
+
+collapse (mean) szazalek , by(part datum honap)
+
+egen i = group(part)
+tsset i honap, monthly
+local X szazalek
+gen kozvelemeny = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
+* FIXME: egyelore csak januari adatok vannak
+replace datum = "2018-03" if substr(datum,1,7)=="2018-01"
 keep if substr(datum,6,2)=="03"
 gen year = substr(datum,1,4)
 drop datum honap szazalek
