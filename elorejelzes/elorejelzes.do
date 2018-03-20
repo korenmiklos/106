@@ -30,10 +30,10 @@ gen byte buda = inlist(budapest_kerulet,"01","02","11","12","22")
 gen byte pest = megye==1 & !buda
 
 gen telkat = telepules_meret
-recode telkat min/3000=1 3000/10000=2 10000/70000=3 70000/max=4
+recode telkat min/3000=1 3000/10000=2 10000/50000=3 50000/100000=4 100000/max=5
 gen byte nagyvaros = (telepules_meret>100000)|(megyekod==1)
 replace telkat = 5 if buda
-replace telkat = 6 if pest
+replace telkat = 5 if pest
 gen becsult_szavazat = .
 tempvar becsult
 
@@ -47,9 +47,9 @@ foreach X in ln_arany ln_google ln_kozvelemeny {
 gen aranysq = ln_arany2010^2
 gen aranycb = ln_arany2010^3
 
-forval t=1/6 {
+forval t=1/5 {
 	di in gre "Teltip: " in ye "`t'"
-	areg ln_arany2014 ln_arany2010 arany?? ln_google2014 ln_google2010 ln_kozvelemeny2014 if telkat==`t' & !holdout & !future [fw=osszes2014], a(szavazokor) vce(cluster id2010)
+	areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 ln_kozvelemeny2014 if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(cluster id2010)
 	predict `becsult'
 	replace becsult_szavazat = `becsult' if telkat==`t'
 	* egyeb partokat nehez becsulni
@@ -74,6 +74,7 @@ graph export oevk_out_of_sample.png, width(800) replace
 scatter arany_szavazat2014 arany_szavazat2010 if holdout & !future, msize(tiny) scheme(s2mono)
 graph export oevk_2010.png, width(800) replace
 
+BRK
 keep if future
 keep oevk partnev szavazat2014 becsult_szavazat arany_szavazat2010 arany_szavazat2014 arany_becsult_szavazat
 
