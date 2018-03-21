@@ -10,7 +10,7 @@ Jelolt-id: 2014 / OEVK # / jelolt sorszam
 
 EGYENI_RE = re.compile(r'<p>d\) Érvényes szavazatok száma jelöltenként</p>(.*?</table>)', re.UNICODE and re.DOTALL)
 LISTAS_RE = re.compile(r'<p>d\) Érvényes szavazatok száma listánként</p>(.*?</table>)', re.UNICODE and re.DOTALL)
-RESZVETEL_RE = re.compile(r'(<td><font color="#4e3f12">A</font></td>.*?<td><font color="#4e3f12">M</font></td>.*?</table>)', re.UNICODE and re.DOTALL)
+RESZVETEL_RE = re.compile(r'<p>a\) A választók nyilvántartása</p>(.*?</div>\n<p>d\) Érvényes szavazatok száma jelöltenként</p>)', re.M and re.UNICODE and re.DOTALL)
 NONPRINTABLE_RE = re.compile(r'[\W_]+', re.UNICODE)
 
 
@@ -23,14 +23,21 @@ def clean_cell(text):
 def numeric_value(text):
     return int(NONPRINTABLE_RE.sub('', text))
 
-def html_table(etree_elements):
+def html_table(etree_elements, header=1):
     output = []
     for element in etree_elements:
-        # first <td> element is used as header
-        headers = [clean_cell(col.text_content()) for col in element.xpath('tr[td]')[0]]
-        for row in element.xpath('tr[td]')[1:]:
-            values = [clean_cell(col.text_content()) for col in row]
-            output.append(dict(zip(headers, values)))
+        if header==1:
+            # first <td> element is used as header
+            headers = [clean_cell(col.text_content()) for col in element.xpath('tr[td]')[0]]
+            for row in element.xpath('tr[td]')[1:]:
+                values = [clean_cell(col.text_content()) for col in row]
+                output.append(dict(zip(headers, values)))
+        else:
+            # second <td> element is used as header
+            headers = [clean_cell(col.text_content()) for col in element.xpath('tr[td]')[1]]
+            for row in element.xpath('tr[td]')[2:]:
+                values = [clean_cell(col.text_content()) for col in row]
+                output.append(dict(zip(headers, values)))
     return output
 
 def find_tables(html, regex):
@@ -68,13 +75,13 @@ def store_listas(row, szervezet_lista, eredmeny_lista):
     eredmeny_lista.append(dict(szavazokor=row['szavazokor'], part=jid, szavazat=numeric_value(row['Kapottérvényesszavazat'])))
 
 def store_reszvetel(row, reszvetel_lista):
-    if 'EE' in row:
-        # kulkepviseletes
-        row['valasztopolgarok'] = numeric_value(row['EE'])
+    if 'E' in row:
+        # kulkepviselet
+        row['valasztopolgarok'] = numeric_value(row['E'])
     else:
-        row['valasztopolgarok'] = numeric_value(row['AE'])
-    row['ervenyes'] = numeric_value(row['NE'])
-    row['ervenytelen'] = numeric_value(row['ME'])
+        row['valasztopolgarok'] = numeric_value(row['C'])
+    row['ervenyes'] = numeric_value(row['M'])
+    row['ervenytelen'] = numeric_value(row['L'])
     reszvetel_lista.append(dict(szavazokor=row['szavazokor'], 
         valasztopolgarok=row['valasztopolgarok'],
         ervenyes=row['ervenyes'],
@@ -89,13 +96,14 @@ def parse_file(filename, datastore):
     print(szavazokor_id)
 
     for fajl in fuggvenyek.keys():
-        output = html_table(find_tables(html, fuggvenyek[fajl]))
         if fajl=='reszvetel':
+            output = html_table(find_tables(html, fuggvenyek[fajl]), header=2)
             row = {}
             [row.update(table) for table in output]
             row['szavazokor'] = szavazokor_id
             store_reszvetel(row, datastore['reszvetel'])
         else:
+            output = html_table(find_tables(html, fuggvenyek[fajl]), header=1)
             for row in output:
                 row['szavazokor'] = szavazokor_id
                 if fajl=='egyeni':
@@ -111,7 +119,7 @@ def write_csv(list_name, datastore):
     for row in data:
         writer.writerow(row)
 
-fuggvenyek = {'egyeni': EGYENI_RE, 'listas': LISTAS_RE}
+fuggvenyek = {'egyeni': EGYENI_RE, 'listas': LISTAS_RE, 'reszvetel': RESZVETEL_RE}
 
 if __name__ == '__main__':
 
@@ -122,5 +130,5 @@ if __name__ == '__main__':
     for filename in file_list:
         parse_file(filename, datastore)
 
-    for key in ['jelolt', 'egyeni', 'szervezet', 'listas']:
+    for key in ['jelolt', 'egyeni', 'szervezet', 'listas', 'reszvetel']:
         write_csv(key, datastore)
