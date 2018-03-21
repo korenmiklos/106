@@ -6,7 +6,7 @@ use szavazokor_szintu
 
 replace part="baloldal" if inlist(part,"mszp","dk","egyutt")
 replace part="kispart" if inlist(part,"lmp","momentum")
-replace part="egye" if partnev=="mdf"
+replace part="egyeb" if partnev=="mdf"
 
 collapse (sum) szavazat2010 szavazat2014 arany2010 arany2014 (mean) osszes2010 osszes2014, by(szavazokor id2010 oevk partnev)
 
@@ -14,6 +14,7 @@ gen megyekod = real(substr(id2010,2,2))
 merge m:1 megyekod partnev using ../adat/part/google_trends2014, keepusing(google2010 google2014) keep(master match) nogen
 merge m:1 partnev using ../adat/part/kozvelemeny2014, keepusing(kozvelemeny2014) keep(master match) nogen
 keep if !missing(oevk)
+
 
 gen kerulet = real(substr(oevk,6,2))
 * paros szamu oevk-k kihagyva minden megyeben
@@ -48,19 +49,18 @@ gen aranycb = ln_arany2010^3
 
 forval t=1/5 {
 	di in gre "Teltip: " in ye "`t'"
+	* steady-state osszefugges szetosztashoz
+	reg ln_arany2014 ln_google2014 ln_kozvelemeny2014 [fw=osszes2014 ]
+	* egyutthatok elmentese
+	scalar G`t' = _b[ln_google2014]
+	scalar K`t' = _b[ln_kozvelemeny2014]
+
 	areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 ln_kozvelemeny2014 if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(cluster id2010)
 	predict `becsult'
 	replace becsult_szavazat = `becsult' if telkat==`t'
 	* egyeb partokat nehez becsulni
 	replace becsult_szavazat = ln_arany2010 if telkat==`t' & partnev=="egyeb"
 	drop `becsult'
-	/*
-	* egyutthatok elmentese
-	scalar LA`t' = _b[ln_arany2010]
-	scalar G`t' = _b[ln_google2014]
-	scalar LG`t' = _b[ln_google2010]
-	scalar K`t' = _b[ln_kozvelemeny2014]
-	*/
 }
 replace becsult_szavazat = exp(becsult_szavazat)
 egen total = sum(becsult_szavazat), by(szavazokor future)
@@ -107,8 +107,8 @@ replace csoport="baloldal" if inlist(csoport,"mszp","dk","egyutt")
 
 gen part_arany2018 = .
 forval t=1/5 {
-	* valtoztathato sulyok
-	replace part_arany2018 = (0.0*google2014 + 0.0*google2018 + 1.0*kozvelemeny2018) if telkat==`t'
+	* becsult sulyok
+	replace part_arany2018 = exp(G`t'*ln_google2018 + K`t'*ln_kozvelemeny2018) if telkat==`t'
 }
 local t 2018
 capture drop total`t'
