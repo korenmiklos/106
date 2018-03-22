@@ -8,7 +8,7 @@ replace part="baloldal" if inlist(part,"mszp","dk","egyutt")
 replace part="kispart" if inlist(part,"lmp","momentum")
 replace part="egyeb" if partnev=="mdf"
 
-collapse (sum) szavazat2010 szavazat2014 arany2010 arany2014 (mean) osszes2010 osszes2014, by(szavazokor id2010 oevk partnev)
+collapse (sum) szavazat2010 szavazat2014 arany2010 arany2014 (mean) osszes2010 osszes2014 reszveteli_arany2010 reszveteli_arany2014, by(szavazokor id2010 oevk partnev)
 
 gen megyekod = real(substr(id2010,2,2))
 merge m:1 megyekod partnev using ../adat/part/google_trends2014, keepusing(google2010 google2014) keep(master match) nogen
@@ -20,7 +20,7 @@ gen kerulet = real(substr(oevk,6,2))
 * paros szamu oevk-k kihagyva minden megyeben
 gen byte holdout_sample = int(kerulet/3)*3==kerulet
 
-foreach X of var google* kozvelemeny* arany* {
+foreach X of var google* kozvelemeny* *arany* {
 	gen ln_`X' = ln(0.5+`X')
 }
 egen telepules_meret = sum(osszes2014), by(id2010)
@@ -28,6 +28,10 @@ egen telepules_meret = sum(osszes2014), by(id2010)
 gen str budapest_kerulet = substr(id2010,7,2) if megye==1
 gen byte buda = inlist(budapest_kerulet,"01","02","11","12","22")
 gen byte pest = megye==1 & !buda
+
+* kulonbozo reszveteli aranyu telepulesek
+gen polkat = reszveteli_arany2010
+recode polkat 0/50=0 50/60=1 60/80=2 80/max=3
 
 gen telkat = telepules_meret
 recode telkat min/3000=1 3000/10000=2 10000/50000=3 50000/100000=4 100000/max=5
@@ -50,7 +54,7 @@ gen aranycb = ln_arany2010^3
 forval t=1/5 {
 	di in gre "Teltip: " in ye "`t'"
 	* steady-state osszefugges szetosztashoz
-	reg ln_arany2014 ln_google2014 ln_kozvelemeny2014 [fw=osszes2014 ]
+	reg ln_arany2014 ln_google2014 ln_kozvelemeny2014 if telkat==`t' [fw=osszes2014 ]
 	* egyutthatok elmentese
 	scalar G`t' = _b[ln_google2014]
 	scalar K`t' = _b[ln_kozvelemeny2014]

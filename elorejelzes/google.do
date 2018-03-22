@@ -120,8 +120,8 @@ egen i = group(part)
 tsset i honap, monthly
 local X szazalek
 gen kozvelemeny = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
-* FIXME: egyelore csak januari adatok vannak
-replace datum = "2018-03" if substr(datum,1,7)=="2018-01"
+* FIXME: egyelore csak februari adatok vannak
+replace datum = "2018-03" if substr(datum,1,7)=="2018-02"
 keep if substr(datum,6,2)=="03"
 gen year = substr(datum,1,4)
 drop datum honap szazalek
