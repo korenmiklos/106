@@ -16,11 +16,12 @@ library(mfx)
 library(data.table)
 library(readstata13)
 library(dplyr)
-
+library(rgenoud)
+library(anchors)
 
 # CHECK  WORKING DIRECTORY
 getwd()
-setwd('C:/Users/adasan01/OneDrive - ARM/Desktop/TacticalVoting/Capstone')
+setwd('C:/Users/adasan01/OneDrive - ARM/Documents/GitHub')
 
 # LOAD  DATA
 data <- read.csv("106/adat/jelolt/vote_counts_precincts_2a.csv")
@@ -113,7 +114,112 @@ by_oevk_2014 <- by_szavazokor_2014[, list(szavazok = sum(szavazok),
 
 write.csv(by_oevk_2014, 'oevk2014_clean.csv')
 
-new_by_oevk_2014 <- read.csv("oevk2014_clean_new.csv")
+new_by_oevk_2014 <- read.csv("106/adat/jelolt/oevk2014_clean_new.csv")
+
+
+
+
+######2010-es adatok beolvasása és merge-ölése
+
+data_2010 <- read.csv("106/adat/2010/listas.csv")
+
+data2_2010 <- read.csv("106/adat/2010/szervezet.csv")
+
+data_reszvetel_2010 <- read.csv("106/adat/2010/reszvetel.csv")
+
+colnames(data2_2010)[1] <- "part"
+
+data_2010_merge <- join(data_2010, data2_2010, type="left")
+
+#filter 4 pártra - merge and cleanse az osszes elnevezes variaciojat
+
+data_2010_merge <- as.data.table(data_2010_merge)
+
+data_2010_merge_MSZP <- data_2010_merge[szervezet == "MSZP"]
+
+data_2010_merge_MSZP2 <- data_2010_merge[szervezet == "MAGYAR SZOCIALISTA PÃRT"] 
+data_2010_merge_MSZP2$szervezet[data_2010_merge_MSZP2$szervezet=='MAGYAR SZOCIALISTA PÃRT'] <- 'MSZP'
+
+data_2010_merge_MSZP3 <- data_2010_merge[szervezet == "Magyar Szocialista PÃ¡rt"] 
+data_2010_merge_MSZP3$szervezet[data_2010_merge_MSZP3$szervezet=='Magyar Szocialista PÃ¡rt'] <- 'MSZP'
+
+data_2010_merge_MSZP_all<-rbind(data_2010_merge_MSZP, data_2010_merge_MSZP2, data_2010_merge_MSZP3)
+
+data_2010_merge_LMP <- data_2010_merge[szervezet == "LMP"] 
+
+data_2010_merge_LMP2 <- data_2010_merge[szervezet == "Lehet MÃ¡s a Politika"] 
+data_2010_merge_LMP2$szervezet[data_2010_merge_LMP2$szervezet=='Lehet MÃ¡s a Politika'] <- 'LMP'
+
+data_2010_merge_LMP3 <- data_2010_merge[szervezet == "LEHET MÃS A POLITIKA"]
+data_2010_merge_LMP3$szervezet[data_2010_merge_LMP3$szervezet=='LEHET MÃS A POLITIKA'] <- 'LMP'
+
+data_2010_merge_LMP_all <-rbind(data_2010_merge_LMP, data_2010_merge_LMP2, data_2010_merge_LMP3)
+
+data_2010_merge_JOBBIK <- data_2010_merge[szervezet == "JOBBIK"]
+
+data_2010_merge_JOBBIK2 <- data_2010_merge[szervezet == "Jobbik"]
+data_2010_merge_JOBBIK2$szervezet[data_2010_merge_JOBBIK2$szervezet=='Jobbik'] <- 'JOBBIK'
+
+data_2010_merge_JOBBIK_all <-rbind(data_2010_merge_JOBBIK, data_2010_merge_JOBBIK2)
+
+data_2010_merge_FIDESZ <- data_2010_merge[szervezet == "FIDESZ-KDNP"]
+data_2010_merge_FIDESZ$szervezet <- as.character(as.factor(data_2010_merge_FIDESZ$szervezet))
+data_2010_merge_FIDESZ$szervezet[data_2010_merge_FIDESZ$szervezet=='FIDESZ-KDNP'] <- 'FIDESZ'
+data_2010_merge_FIDESZ$szervezet <- as.factor(as.character(data_2010_merge_FIDESZ$szervezet))
+
+data_2010_merge_FIDESZ2 <- data_2010_merge[szervezet == "FIDESZ - KDNP"] 
+data_2010_merge_FIDESZ2$szervezet <- as.character(as.factor(data_2010_merge_FIDESZ2$szervezet))
+data_2010_merge_FIDESZ2$szervezet[data_2010_merge_FIDESZ2$szervezet == "FIDESZ - KDNP"] <- 'FIDESZ'
+data_2010_merge_FIDESZ2$szervezet <- as.factor(as.character(data_2010_merge_FIDESZ2$szervezet))
+
+
+data_2010_merge_FIDESZ3 <- data_2010_merge[szervezet == "Fidesz-KDNP"] 
+data_2010_merge_FIDESZ3$szervezet <- as.character(as.factor(data_2010_merge_FIDESZ3$szervezet))
+data_2010_merge_FIDESZ3$szervezet[data_2010_merge_FIDESZ3$szervezet == "Fidesz-KDNP"] <- 'FIDESZ'
+data_2010_merge_FIDESZ3$szervezet <- as.factor(as.character(data_2010_merge_FIDESZ3$szervezet))
+
+data_2010_merge_FIDESZ_all <-rbind(data_2010_merge_FIDESZ, data_2010_merge_FIDESZ2, data_2010_merge_FIDESZ3)
+
+#átnevezni az oszlopokat, hogy egy oszlop 1 párt szavazata legyen a merge-nél
+
+colnames(data_2010_merge_MSZP_all)[2] <- "MSZP_2010"
+
+colnames(data_2010_merge_FIDESZ_all)[2] <- "FIDESZ_2010"
+
+colnames(data_2010_merge_JOBBIK_all)[2] <- "JOBBIK_2010"
+
+colnames(data_2010_merge_LMP_all)[2] <- "LMP_2010"
+
+data_2010_all <- merge(data_2010_merge_FIDESZ_all, data_2010_merge_JOBBIK_all, by="szavazokor")
+
+data_2010_all_2 <- merge(data_2010_all, data_2010_merge_MSZP_all, by="szavazokor")
+
+data_2010_all_3 <- merge(data_2010_all_2, data_2010_merge_LMP_all, by="szavazokor")
+
+data_reszvetel_2010 <- as.data.table(data_reszvetel_2010)
+
+data_2010_clean <- subset(data_2010_all_3, select = c(szavazokor, FIDESZ_2010, JOBBIK_2010, MSZP_2010, LMP_2010))
+
+data_2010_clean <-  merge(data_2010_clean, data_reszvetel_2010, by="szavazokor")
+
+### MERGING 2010 és 2014 by szavazokor
+
+colnames(data_2010_clean)[1] <- "id"
+
+
+data_2010_2014 <- merge(by_szavazokor_2014, data_2010_clean, by="id")
+
+
+#### TB CONTINUED - GLM by szavazokor és OEVK - addolni OEVK profilokat, ha lehet
+
+
+
+
+### REGRESSION TEST
+
+data_telepules_baloldal <- data_telepules_clean[partnev == "baloldal"]
+
+data_telepules_baloldal <- data_telepules_baloldal[, baloldal := szavazat2014] 
 
 regression_fidesz_test <- glm(egyeni_fidesz_pc ~ szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=new_by_oevk_2014)
 summary(regression_fidesz_test)
