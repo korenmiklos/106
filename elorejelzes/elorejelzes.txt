@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/elorej
 > elzes.txt
   log type:  text
- opened on:  22 Mar 2018, 22:07:36
+ opened on:  22 Mar 2018, 22:30:24
 
 . 
 . use szavazokor_szintu
@@ -55,6 +55,33 @@
 (2,582 observations deleted)
 
 . 
+. * korrekciok 2014 orszagos listas eredmenyek alapjan
+. local partok fidesz baloldal jobbik lmp
+
+. local Kfidesz 0.915
+
+. local Kbaloldal 0.759
+
+. local Kjobbik 1.253
+
+. local Klmp 1.343
+
+. local Gfidesz 1.809
+
+. local Gbaloldal 0.790
+
+. local Gjobbik 0.567
+
+. local Glmp 0.865
+
+. 
+. /*foreach p in `partok' {
+>         replace kozvelemeny2014 = kozvelemeny2014*`K`p'' if partnev=="`p'"
+>         replace google2014 = google2014*`G`p'' if partnev=="`p'"
+>         replace google2010 = google2010*`G`p'' if partnev=="`p'"
+> }*/
+. egen P = group(partnev)
+
 . 
 . gen kerulet = real(substr(oevk,6,2))
 
@@ -102,11 +129,6 @@
 . replace telkat = 5 if pest
 (375 real changes made)
 
-. gen becsult_szavazat = .
-(51,930 missing values generated)
-
-. tempvar becsult
-
 . 
 . * create prediction for 2018
 . expand 2, gen(future)
@@ -123,6 +145,8 @@
 . gen aranycb = ln_arany2010^3
 
 . 
+. local valtozok ln_arany2010 ln_google2014 ln_google2010 ln_kozvelemeny2014
+
 . forval t=1/5 {
   2.         di in gre "Teltip: " in ye "`t'"
   3.         * steady-state osszefugges szetosztashoz
@@ -131,16 +155,11 @@
   4.         * egyutthatok elmentese
 .         scalar G`t' = _b[ln_google2014]
   5.         scalar K`t' = _b[ln_kozvelemeny2014]
-  6. 
-.         areg ln_arany2014 ln_arany2010 ln_google2014 ln_google2010 ln_kozvelemeny2
-> 014 if telkat==`t' & !holdout & !future [fw=osszes2010], a(szavazokor) vce(cluster
->  id2010)
-  7.         predict `becsult'
-  8.         replace becsult_szavazat = `becsult' if telkat==`t'
-  9.         * egyeb partokat nehez becsulni
-.         replace becsult_szavazat = ln_arany2010 if telkat==`t' & partnev=="egyeb"
- 10.         drop `becsult'
- 11. }
+  6.         
+.         foreach X in `valtozok' {
+  7.                 gen t`t'_`X' = (telkat==`t')*`X'
+  8.         }
+  9. }
 Teltip: 1
 
       Source |       SS           df       MS      Number of obs   = 3,906,072
@@ -157,30 +176,9 @@ Teltip: 1
 ln_kozveleme~2014 |   .8221046   .0005261  1562.73   0.000     .8210736    .8231357
             _cons |  -1.108144   .0012519  -885.20   0.000    -1.110597    -1.10569
 -----------------------------------------------------------------------------------
-
-Linear regression, absorbing indicators         Number of obs     =  1,604,140
-                                                F(   4,   1359)   =    7297.44
-                                                Prob > F          =     0.0000
-                                                R-squared         =     0.9190
-                                                Adj R-squared     =     0.9189
-                                                Root MSE          =     0.3441
-
-                                  (Std. Err. adjusted for 1,360 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .6822944   .0112505    60.65   0.000     .6602241    .7043647
-    ln_google2014 |   .3810144   .0189005    20.16   0.000     .3439371    .4180918
-    ln_google2010 |   .1194109    .011652    10.25   0.000     .0965529    .1422688
-ln_kozveleme~2014 |   .1886555   .0177662    10.62   0.000     .1538033    .2235077
-            _cons |  -1.197848   .0366509   -32.68   0.000    -1.269747    -1.12595
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (1443 categories)
-(option xb assumed; fitted values)
 (20,772 missing values generated)
-(17,152 real changes made)
-(4,288 real changes made)
+(20,772 missing values generated)
+(20,772 missing values generated)
 Teltip: 2
 
       Source |       SS           df       MS      Number of obs   = 6,757,320
@@ -197,30 +195,9 @@ Teltip: 2
 ln_kozveleme~2014 |   .7176272   .0003296  2177.45   0.000     .7169813    .7182732
             _cons |   -.651992    .000746  -873.98   0.000    -.6534541   -.6505299
 -----------------------------------------------------------------------------------
-
-Linear regression, absorbing indicators         Number of obs     =  5,936,000
-                                                F(   4,    514)   =    6125.73
-                                                Prob > F          =     0.0000
-                                                R-squared         =     0.9438
-                                                Adj R-squared     =     0.9438
-                                                Root MSE          =     0.2531
-
-                                    (Std. Err. adjusted for 515 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .6494177   .0124487    52.17   0.000     .6249612    .6738742
-    ln_google2014 |   .3263501   .0133583    24.43   0.000     .3001066    .3525936
-    ln_google2010 |   .1139586   .0095366    11.95   0.000     .0952232     .132694
-ln_kozveleme~2014 |   .2126712   .0153691    13.84   0.000     .1824771    .2428652
-            _cons |  -.9608326   .0294471   -32.63   0.000    -1.018684   -.9029812
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (1210 categories)
-(option xb assumed; fitted values)
 (20,772 missing values generated)
-(15,728 real changes made)
-(3,932 real changes made)
+(20,772 missing values generated)
+(20,772 missing values generated)
 Teltip: 3
 
       Source |       SS           df       MS      Number of obs   = 8,416,928
@@ -237,30 +214,9 @@ Teltip: 3
 ln_kozveleme~2014 |   .6888396   .0002414  2853.53   0.000     .6883665    .6893127
             _cons |  -.0737365   .0005365  -137.44   0.000     -.074788    -.072685
 -----------------------------------------------------------------------------------
-
-Linear regression, absorbing indicators         Number of obs     = 28,266,256
-                                                F(   4,    163)   =    3969.62
-                                                Prob > F          =     0.0000
-                                                R-squared         =     0.9262
-                                                Adj R-squared     =     0.9262
-                                                Root MSE          =     0.2523
-
-                                    (Std. Err. adjusted for 164 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .6790404   .0269145    25.23   0.000     .6258944    .7321864
-    ln_google2014 |   .3511662   .0223868    15.69   0.000     .3069607    .3953717
-    ln_google2010 |   .0305323   .0161896     1.89   0.061    -.0014361    .0625008
-ln_kozveleme~2014 |   .1579383   .0279083     5.66   0.000       .10283    .2130466
-            _cons |   -.693951   .0470178   -14.76   0.000    -.7867935   -.6011085
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (1330 categories)
-(option xb assumed; fitted values)
 (20,772 missing values generated)
-(16,528 real changes made)
-(4,132 real changes made)
+(20,772 missing values generated)
+(20,772 missing values generated)
 Teltip: 4
 
       Source |       SS           df       MS      Number of obs   = 4,615,720
@@ -277,30 +233,9 @@ Teltip: 4
 ln_kozveleme~2014 |   .6679493    .000265  2520.90   0.000     .6674299    .6684686
             _cons |   .3157071   .0005945   531.05   0.000     .3145419    .3168723
 -----------------------------------------------------------------------------------
-
-Linear regression, absorbing indicators         Number of obs     = 40,193,880
-                                                F(   4,     26)   =    1079.11
-                                                Prob > F          =     0.0000
-                                                R-squared         =     0.9063
-                                                Adj R-squared     =     0.9063
-                                                Root MSE          =     0.2595
-
-                                     (Std. Err. adjusted for 27 clusters in id2010)
------------------------------------------------------------------------------------
-                  |               Robust
-     ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
-------------------+----------------------------------------------------------------
-     ln_arany2010 |   .6007394   .0491527    12.22   0.000     .4997046    .7017742
-    ln_google2014 |   .2895172   .0491451     5.89   0.000      .188498    .3905363
-    ln_google2010 |   .0402191   .0240133     1.67   0.106     -.009141    .0895791
-ln_kozveleme~2014 |   .2299599    .046926     4.90   0.000     .1335022    .3264177
-            _cons |  -.5101533   .1100507    -4.64   0.000    -.7363656   -.2839409
-------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                     (688 categories)
-(option xb assumed; fitted values)
 (20,772 missing values generated)
-(8,384 real changes made)
-(2,096 real changes made)
+(20,772 missing values generated)
+(20,772 missing values generated)
 Teltip: 5
 
       Source |       SS           df       MS      Number of obs   =  15499088
@@ -317,38 +252,72 @@ Teltip: 5
 ln_kozveleme~2014 |   .7272553   .0001501  4845.96   0.000     .7269612    .7275495
             _cons |   1.006474   .0004098  2456.06   0.000     1.005671    1.007277
 -----------------------------------------------------------------------------------
+(20,772 missing values generated)
+(20,772 missing values generated)
+(20,772 missing values generated)
 
-Linear regression, absorbing indicators         Number of obs     =  576902576
-                                                F(   4,     39)   =    1335.96
+. areg ln_arany2014 t?_* i.P if !holdout & !future [fw=osszes2010], a(szavazokor) vc
+> e(cluster id2010)
+note: 5.P omitted because of collinearity
+
+Linear regression, absorbing indicators         Number of obs     =  652902852
+                                                F(  22,   2105)   =    3443.23
                                                 Prob > F          =     0.0000
-                                                R-squared         =     0.8883
-                                                Adj R-squared     =     0.8883
-                                                Root MSE          =     0.2464
+                                                R-squared         =     0.9154
+                                                Adj R-squared     =     0.9154
+                                                Root MSE          =     0.2209
 
-                                     (Std. Err. adjusted for 40 clusters in id2010)
+                                  (Std. Err. adjusted for 2,106 clusters in id2010)
 -----------------------------------------------------------------------------------
                   |               Robust
      ln_arany2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 ------------------+----------------------------------------------------------------
-     ln_arany2010 |   .7015749   .0711492     9.86   0.000      .557662    .8454878
-    ln_google2014 |   .4541964   .0814147     5.58   0.000     .2895195    .6188732
-    ln_google2010 |  -.1129438   .0476702    -2.37   0.023    -.2093659   -.0165217
-ln_kozveleme~2014 |   .0588073   .0739511     0.80   0.431    -.0907729    .2083876
-            _cons |  -.3254898   .1826208    -1.78   0.082    -.6948752    .0438955
+  t1_ln_arany2010 |   .8615378   .0145281    59.30   0.000     .8330468    .8900288
+ t1_ln_google2014 |   .0808078   .0423654     1.91   0.057    -.0022745    .1638902
+ t1_ln_google2010 |   .1191257   .0170189     7.00   0.000     .0857501    .1525014
+t1_ln_kozvel~2014 |   .3776643    .036542    10.34   0.000     .3060021    .4493264
+  t2_ln_arany2010 |   .9063985   .0185099    48.97   0.000     .8700989    .9426982
+ t2_ln_google2014 |   .0604684   .0363366     1.66   0.096     -.010791    .1317277
+ t2_ln_google2010 |   .0880093   .0165708     5.31   0.000     .0555124    .1205062
+t2_ln_kozvel~2014 |   .3508713   .0315672    11.12   0.000      .288965    .4127775
+  t3_ln_arany2010 |   .9715604   .0275108    35.32   0.000     .9176091    1.025512
+ t3_ln_google2014 |   .0974785   .0361133     2.70   0.007     .0266571    .1682999
+ t3_ln_google2010 |   .0190065   .0237113     0.80   0.423    -.0274935    .0655066
+t3_ln_kozvel~2014 |   .2892988   .0353941     8.17   0.000     .2198877    .3587098
+  t4_ln_arany2010 |    .972206   .0446482    21.77   0.000     .8846467    1.059765
+ t4_ln_google2014 |   .0317975   .0447246     0.71   0.477    -.0559115    .1195065
+ t4_ln_google2010 |   .0949855    .027712     3.43   0.001     .0406397    .1493312
+t4_ln_kozvel~2014 |   .3212561   .0515619     6.23   0.000     .2201385    .4223738
+  t5_ln_arany2010 |   .9811883   .0564278    17.39   0.000     .8705282    1.091848
+ t5_ln_google2014 |   .1289706   .0491032     2.63   0.009     .0326747    .2252665
+ t5_ln_google2010 |  -.0146992   .0150252    -0.98   0.328    -.0441649    .0147665
+t5_ln_kozvel~2014 |    .242736   .0317207     7.65   0.000     .1805287    .3049433
+                  |
+                P |
+               3  |  -.5945631   .0321673   -18.48   0.000    -.6576462     -.53148
+               4  |   .0360105   .0475265     0.76   0.449    -.0571934    .1292143
+               5  |          0  (omitted)
+                  |
+            _cons |  -.8957191   .0866514   -10.34   0.000     -1.06565   -.7257877
 ------------------+----------------------------------------------------------------
-       szavazokor |   absorbed                                    (2604 categories)
+       szavazokor |   absorbed                                    (7275 categories)
+
+. predict becsult_szavazat
 (option xb assumed; fitted values)
 (20,772 missing values generated)
-(25,296 real changes made)
-(6,324 real changes made)
 
+. * egyeb partokat nehez becsulni
+. replace becsult_szavazat = ln_arany2010 if partnev=="egyeb"
+(20,772 real changes made)
+
+. 
 . replace becsult_szavazat = exp(becsult_szavazat)
 (103,860 real changes made)
 
 . egen total = sum(becsult_szavazat), by(szavazokor future)
 
 . replace becsult_szavazat = int(becsult_szavazat/total*osszes2014)
-(103,858 real changes made)
+(103,856 real changes made)
 
 . 
 . preserve
@@ -367,16 +336,16 @@ ln_kozveleme~2014 |   .0588073   .0739511     0.80   0.431    -.0907729    .2083
 
       Source |       SS           df       MS      Number of obs   = 7,025,285
 -------------+----------------------------------   F(1, 7025283)   >  99999.00
-       Model |  1.8148e+09         1  1.8148e+09   Prob > F        =    0.0000
-    Residual |  33476813.5 7,025,283  4.76519074   R-squared       =    0.9819
--------------+----------------------------------   Adj R-squared   =    0.9819
-       Total |  1.8483e+09 7,025,284  263.086393   Root MSE        =    2.1829
+       Model |  1.8183e+09         1  1.8183e+09   Prob > F        =    0.0000
+    Residual |  29976782.8 7,025,283   4.2669858   R-squared       =    0.9838
+-------------+----------------------------------   Adj R-squared   =    0.9838
+       Total |  1.8483e+09 7,025,284  263.086393   Root MSE        =    2.0657
 
 -----------------------------------------------------------------------------------
 arany_szavaz~2014 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
 ------------------+----------------------------------------------------------------
-arany_becsult_s~t |   .9350953   .0000479  2.0e+04   0.000     .9350014    .9351892
-            _cons |   1.298093   .0012636  1027.30   0.000     1.295617     1.30057
+arany_becsult_s~t |   .9635387   .0000467  2.1e+04   0.000     .9634472    .9636302
+            _cons |   .7292265   .0012161   599.65   0.000     .7268431      .73161
 -----------------------------------------------------------------------------------
 
 .         reg arany_szavazat2014 arany_szavazat2010 if holdout & !future [fw=total_s
@@ -467,6 +436,14 @@ arany_szavaz~2010 |   .8225701   .0000886  9282.08   0.000     .8223964    .8227
     matched                            72,702  
     -----------------------------------------
 
+. 
+. /*foreach p in `partok' {
+>         replace kozvelemeny2018 = kozvelemeny2018*`K`p'' if partnev=="`p'"
+>         replace google2014 = google2014*`G`p'' if partnev=="`p'"
+>         replace google2018 = google2018*`G`p'' if partnev=="`p'"
+> }*/
+. 
+. 
 . foreach X of var google* kozvelemeny* {
   2.         gen ln_`X' = ln(0.5+`X')
   3. }
