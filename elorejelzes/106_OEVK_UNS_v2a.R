@@ -136,17 +136,17 @@ data_UNS <- data_UNS[, reszvetel_2014 := 60.99]
 #frissítheto új adatok alapján
 
 data_UNS <- data_UNS[, Fidesz_2018_orszagos := 43.5] 
-data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 14]
-data_UNS <- data_UNS[, Jobbik_2018_orszagos := 20.5]
-data_UNS <- data_UNS[, LMP_2018_orszagos := 9]
-data_UNS <- data_UNS[, DK_2018_orszagos := 6.5]
-data_UNS <- data_UNS[, Momentum_2018_orszagos := 2.5]
-data_UNS <- data_UNS[, Egyutt_2018 := 1]
+data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 13]
+data_UNS <- data_UNS[, Jobbik_2018_orszagos := 21]
+data_UNS <- data_UNS[, LMP_2018_orszagos := 8.5]
+data_UNS <- data_UNS[, DK_2018_orszagos := 7.5]
+data_UNS <- data_UNS[, Momentum_2018_orszagos := 3]
+data_UNS <- data_UNS[, Egyutt_2018 := 2]
 data_uns <- data_UNS[, MKKP_2018 := 1]
-#egyeb 3%
+#egyeb 0.5%
 
 
-data_UNS <- data_UNS[, reszvetel_2018 := 63]  
+data_UNS <- data_UNS[, reszvetel_2018 := 64]  
 
 #kiegeszito 2014-es benchmarkok az MSZP-P, DK, es Momentum adataihoz
 
@@ -170,9 +170,9 @@ by_oevk_UNS_2018 <- data_UNS[, list(Fidesz_2014 = sum(egyeni_fidesz),
                             MSZP_P_2018 = sum(egyeni_kormanyvaltok * (MSZP_P_2018_orszagos / Kormanyvaltok_2014_orszagos) * reszvetel_2018_szorzo),
                             DK_2018 = sum(egyeni_kormanyvaltok * (DK_2018_orszagos / Kormanyvaltok_2014_orszagos) * reszvetel_2018_szorzo),
                             LMP_2018 = sum(egyeni_lmp * (LMP_2018_orszagos / LMP_2014_orszagos) * reszvetel_2018_szorzo),
-                            Momentum_2018 = sum((egyeni_lmp * 0.1) + (egyeb * 0.5) + (Kormanyvaltok_2014_orszagos * 0.075) * reszvetel_2018_szorzo),
-                            Egyutt_2018 = sum((egyeni_lmp * 0.05) + (egyeb * 0.25) + (Kormanyvaltok_2014_orszagos * 0.05) * reszvetel_2018_szorzo),
-                            MKKP_2018 = sum((egyeni_lmp * 0.05) + (egyeb * 0.25) + (Kormanyvaltok_2014_orszagos * 0.075) * reszvetel_2018_szorzo)),
+                            Momentum_2018 = sum((egyeni_lmp * 0.6) * reszvetel_2018_szorzo),
+                            Egyutt_2018 = sum((egyeni_lmp * 0.4) * reszvetel_2018_szorzo),
+                            MKKP_2018 = sum((egyeni_lmp * 0.2) * reszvetel_2018_szorzo)),
                      by = oevk][order(oevk)]
 
 Fidesz_2018_votes <- sum(by_oevk_UNS_2018$Fidesz_2018)
@@ -210,7 +210,7 @@ osszes_szavazat <- by_oevk_UNS_2018[, list(Fidesz = round(sum(Fidesz_2018), digi
 rowSums(osszes_szavazat)
 
 
-write.csv(by_oevk_UNS_2018,'2018_UNS_12_March.csv')
+write.csv(by_oevk_UNS_2018,'2018_UNS_19_March.csv')
 
 ##### TEST PART - playing with some regressions on szavazokor nagysaga
 

@@ -16,11 +16,15 @@ library(mfx)
 library(data.table)
 library(readstata13)
 library(dplyr)
-
+library(rgenoud)
+library(anchors)
+library(descr)
+library(dplyr)
+library(plyr)
 
 # CHECK  WORKING DIRECTORY
 getwd()
-setwd('C:/Users/adasan01/OneDrive - ARM/Desktop/TacticalVoting/Capstone')
+setwd('C:/Users/adasan01/OneDrive - ARM/Documents/GitHub')
 
 # LOAD  DATA
 data <- read.csv("106/adat/jelolt/vote_counts_precincts_2a.csv")
@@ -42,18 +46,18 @@ data_clean <- subset(data2, select = c(id, telepules_id, atjelentkezettek, szava
 
 ###NEW STUFF - telepules szintu adatok + KSH kodok addolása
 
-data_telepules_kodok <- read.csv("106/adat/telepules/telepules_kodok.csv")
+#data_telepules_kodok <- read.csv("106/adat/telepules/telepules_kodok.csv")
 
-data_telepules_listas_arany <- read.csv("106/adat/telepules/telepules_listas_arany.csv")
+#data_telepules_listas_arany <- read.csv("106/adat/telepules/telepules_listas_arany.csv")
 
 
-data_telepules_merged <- merge(data_telepules_kodok, data_telepules_listas_arany, by = "id2010")
+#data_telepules_merged <- merge(data_telepules_kodok, data_telepules_listas_arany, by = "id2010")
 
-data_telepules_clean <- subset(data_telepules_merged, select = c(telepules_nev, telepules_id, ksh_kod, nuts3, partnev, szavazat2014, osszes2014, arany2014))
+#data_telepules_clean <- subset(data_telepules_merged, select = c(telepules_nev, telepules_id, ksh_kod, nuts3, partnev, szavazat2014, osszes2014, arany2014))
 
-data_telepules_clean <- as.data.table(data_telepules_clean)
+#data_telepules_clean <- as.data.table(data_telepules_clean)
 
-osszes_listas_szavazat <- data_telepules_clean[, sum(szavazat2014), by = partnev]
+#osszes_listas_szavazat <- data_telepules_clean[, sum(szavazat2014), by = partnev]
 
 
 #szavazasra jogosultak szama / szavazokor
@@ -113,7 +117,235 @@ by_oevk_2014 <- by_szavazokor_2014[, list(szavazok = sum(szavazok),
 
 write.csv(by_oevk_2014, 'oevk2014_clean.csv')
 
-new_by_oevk_2014 <- read.csv("oevk2014_clean_new.csv")
+new_by_oevk_2014 <- read.csv("106/adat/jelolt/oevk2014_clean_new.csv")
+
+
+
+
+######2010-es adatok beolvasása és merge-ölése
+
+data_2010 <- read.csv("106/adat/2010/listas.csv")
+
+data2_2010 <- read.csv("106/adat/2010/szervezet.csv")
+
+data_reszvetel_2010 <- read.csv("106/adat/2010/reszvetel.csv")
+
+colnames(data2_2010)[1] <- "part"
+
+data_2010_merge <- join(data_2010, data2_2010, type="left")
+
+#filter 4 pártra - merge and cleanse az osszes elnevezes variaciojat
+
+data_2010_merge <- as.data.table(data_2010_merge)
+
+data_2010_merge_MSZP <- data_2010_merge[szervezet == "MSZP"]
+
+data_2010_merge_MSZP2 <- data_2010_merge[szervezet == "MAGYAR SZOCIALISTA PÃRT"] 
+data_2010_merge_MSZP2$szervezet[data_2010_merge_MSZP2$szervezet=='MAGYAR SZOCIALISTA PÃRT'] <- 'MSZP'
+
+data_2010_merge_MSZP3 <- data_2010_merge[szervezet == "Magyar Szocialista PÃ¡rt"] 
+data_2010_merge_MSZP3$szervezet[data_2010_merge_MSZP3$szervezet=='Magyar Szocialista PÃ¡rt'] <- 'MSZP'
+
+data_2010_merge_MSZP_all<-rbind(data_2010_merge_MSZP, data_2010_merge_MSZP2, data_2010_merge_MSZP3)
+
+data_2010_merge_LMP <- data_2010_merge[szervezet == "LMP"] 
+
+data_2010_merge_LMP2 <- data_2010_merge[szervezet == "Lehet MÃ¡s a Politika"] 
+data_2010_merge_LMP2$szervezet[data_2010_merge_LMP2$szervezet=='Lehet MÃ¡s a Politika'] <- 'LMP'
+
+data_2010_merge_LMP3 <- data_2010_merge[szervezet == "LEHET MÃS A POLITIKA"]
+data_2010_merge_LMP3$szervezet[data_2010_merge_LMP3$szervezet=='LEHET MÃS A POLITIKA'] <- 'LMP'
+
+data_2010_merge_LMP_all <-rbind(data_2010_merge_LMP, data_2010_merge_LMP2, data_2010_merge_LMP3)
+
+data_2010_merge_JOBBIK <- data_2010_merge[szervezet == "JOBBIK"]
+
+data_2010_merge_JOBBIK2 <- data_2010_merge[szervezet == "Jobbik"]
+data_2010_merge_JOBBIK2$szervezet[data_2010_merge_JOBBIK2$szervezet=='Jobbik'] <- 'JOBBIK'
+
+data_2010_merge_JOBBIK_all <-rbind(data_2010_merge_JOBBIK, data_2010_merge_JOBBIK2)
+
+data_2010_merge_FIDESZ <- data_2010_merge[szervezet == "FIDESZ-KDNP"]
+data_2010_merge_FIDESZ$szervezet <- as.character(as.factor(data_2010_merge_FIDESZ$szervezet))
+data_2010_merge_FIDESZ$szervezet[data_2010_merge_FIDESZ$szervezet=='FIDESZ-KDNP'] <- 'FIDESZ'
+data_2010_merge_FIDESZ$szervezet <- as.factor(as.character(data_2010_merge_FIDESZ$szervezet))
+
+data_2010_merge_FIDESZ2 <- data_2010_merge[szervezet == "FIDESZ - KDNP"] 
+data_2010_merge_FIDESZ2$szervezet <- as.character(as.factor(data_2010_merge_FIDESZ2$szervezet))
+data_2010_merge_FIDESZ2$szervezet[data_2010_merge_FIDESZ2$szervezet == "FIDESZ - KDNP"] <- 'FIDESZ'
+data_2010_merge_FIDESZ2$szervezet <- as.factor(as.character(data_2010_merge_FIDESZ2$szervezet))
+
+
+data_2010_merge_FIDESZ3 <- data_2010_merge[szervezet == "Fidesz-KDNP"] 
+data_2010_merge_FIDESZ3$szervezet <- as.character(as.factor(data_2010_merge_FIDESZ3$szervezet))
+data_2010_merge_FIDESZ3$szervezet[data_2010_merge_FIDESZ3$szervezet == "Fidesz-KDNP"] <- 'FIDESZ'
+data_2010_merge_FIDESZ3$szervezet <- as.factor(as.character(data_2010_merge_FIDESZ3$szervezet))
+
+data_2010_merge_FIDESZ_all <-rbind(data_2010_merge_FIDESZ, data_2010_merge_FIDESZ2, data_2010_merge_FIDESZ3)
+
+#átnevezni az oszlopokat, hogy egy oszlop 1 párt szavazata legyen a merge-nél
+
+colnames(data_2010_merge_MSZP_all)[2] <- "MSZP_2010"
+
+colnames(data_2010_merge_FIDESZ_all)[2] <- "FIDESZ_2010"
+
+colnames(data_2010_merge_JOBBIK_all)[2] <- "JOBBIK_2010"
+
+colnames(data_2010_merge_LMP_all)[2] <- "LMP_2010"
+
+data_2010_all <- merge(data_2010_merge_FIDESZ_all, data_2010_merge_JOBBIK_all, by="szavazokor")
+
+data_2010_all_2 <- merge(data_2010_all, data_2010_merge_MSZP_all, by="szavazokor")
+
+data_2010_all_3 <- merge(data_2010_all_2, data_2010_merge_LMP_all, by="szavazokor")
+
+data_reszvetel_2010 <- as.data.table(data_reszvetel_2010)
+
+data_2010_clean <- subset(data_2010_all_3, select = c(szavazokor, FIDESZ_2010, JOBBIK_2010, MSZP_2010, LMP_2010))
+
+data_2010_clean <-  merge(data_2010_clean, data_reszvetel_2010, by="szavazokor")
+
+### MERGING 2010 és 2014 by szavazokor
+
+colnames(data_2010_clean)[1] <- "id"
+
+
+data_2010_2014 <- merge(by_szavazokor_2014, data_2010_clean, by="id")
+
+
+data_2010_2014 <- data_2010_2014[, reszvetel_2010 := round(ervenyes / (valasztopolgarok /100), digits = 2)] 
+
+colnames(data_2010_2014)[3] <- "szavazo_2014"
+colnames(data_2010_2014)[4] <- "reszvetel_2014"
+colnames(data_2010_2014)[5] <- "ossz_szavazo_2014"
+colnames(data_2010_2014)[6] <- "FIDESZ_2014"
+colnames(data_2010_2014)[7] <- "LMP_2014"
+colnames(data_2010_2014)[8] <- "MSZP_2014"
+colnames(data_2010_2014)[9] <- "JOBBIK_2014"
+colnames(data_2010_2014)[15] <- "ossz_szavazo_2010"
+colnames(data_2010_2014)[16] <- "szavazo_2010"
+colnames(data_2010_2014)[18] <- "reszvetel_2010"
+
+data_2010_2014 <- data_2010_2014[, FIDESZ_2010_pc := round((FIDESZ_2010 / ossz_szavazo_2010), digits = 4)] 
+data_2010_2014 <- data_2010_2014[, MSZP_2010_pc := round((MSZP_2010 / ossz_szavazo_2010), digits = 4)] 
+data_2010_2014 <- data_2010_2014[, JOBBIK_2010_pc := round((JOBBIK_2010 / ossz_szavazo_2010), digits = 4)]  
+data_2010_2014 <- data_2010_2014[, LMP_2010_pc := round((LMP_2010 / ossz_szavazo_2010), digits = 4)] 
+
+data_2010_2014 <- data_2010_2014[, FIDESZ_2014_pc := round((FIDESZ_2014 / ossz_szavazo_2014), digits = 4)] 
+data_2010_2014 <- data_2010_2014[, MSZP_2014_pc := round((MSZP_2014 / ossz_szavazo_2014), digits = 4)] 
+data_2010_2014 <- data_2010_2014[, JOBBIK_2014_pc := round((JOBBIK_2014 / ossz_szavazo_2014), digits = 4)]  
+data_2010_2014 <- data_2010_2014[, LMP_2014_pc := round((LMP_2014 / ossz_szavazo_2014), digits = 4)] 
+
+## MERGE szavazokori profilok 2014-bol - városok aránya, telepulesszam, stb.
+
+data_2010_2014_szavazokor <-  merge(data_2010_2014, new_by_oevk_2014, by="oevk")
+
+###GLM by szavazokor és OEVK - profil, varos, 2010-2014-es adat összehasonlítva
+
+##GLM SZAVAZOKOR
+
+regression_2010_2014_fidesz <- glm(FIDESZ_2014_pc ~ FIDESZ_2010_pc + szavazokorok_szama.x + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_szavazokor)
+summary(regression_2010_2014_fidesz)
+coeftest(regression_2010_2014_fidesz)
+
+logitcoeffs_fidesz_2010_2014 <- glm(FIDESZ_2014_pc ~ FIDESZ_2010_pc + szavazokorok_szama.x + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_szavazokor, family='binomial')
+
+summary(logitcoeffs_fidesz_2010_2014)
+
+data_2010_2014_szavazokor$pred_logit <- predict.glm(logitcoeffs_fidesz_2010_2014, type="response")
+
+ggplot(data = data_2010_2014_szavazokor, aes(x=FIDESZ_2014_pc, y= pred_logit)) + xlim(0, 0.75) + ylim(0, 0.75) +
+  geom_line(aes(x=pred_logit, y=pred_logit), colour="orange") +
+  geom_point()
+
+
+## GLM OEVK
+
+data_2010_2014_OEVK <- data_2010_2014_szavazokor[, list(szavazo_2014 = sum(szavazo_2014),
+                                          reszvetel_2014 = sum(szavazo_2014) / sum(ossz_szavazo_2014),
+                                          reszvetel_2010 = sum(szavazo_2010) / sum(ossz_szavazo_2010),
+                                          FIDESZ_2010 = sum(FIDESZ_2010),
+                                          FIDESZ_2014 = sum(FIDESZ_2014),
+                                          LMP_2010 = sum(LMP_2010),
+                                          LMP_2014 = sum(LMP_2014),
+                                          MSZP_2010 = sum(MSZP_2010),
+                                          MSZP_2014 = sum(MSZP_2014),
+                                          JOBBIK_2010 = sum(JOBBIK_2010),
+                                          JOBBIK_2014 = sum(JOBBIK_2014),
+                                          FIDESZ_2010_pc = sum(FIDESZ_2010) / (sum(FIDESZ_2010) + sum(LMP_2010) + sum(MSZP_2010) + sum(JOBBIK_2010)),
+                                          FIDESZ_2014_pc = sum(FIDESZ_2014) / (sum(FIDESZ_2014) + sum(LMP_2014) + sum(MSZP_2014) + sum(JOBBIK_2014)),
+                                          MSZP_2010_pc = sum(MSZP_2010) / (sum(FIDESZ_2010) + sum(LMP_2010) + sum(MSZP_2010) + sum(JOBBIK_2010)),
+                                          MSZP_2014_pc = sum(MSZP_2014) / (sum(FIDESZ_2014) + sum(LMP_2014) + sum(MSZP_2014) + sum(JOBBIK_2014)),
+                                          JOBBIK_2010_pc = sum(JOBBIK_2010) / (sum(FIDESZ_2010) + sum(LMP_2010) + sum(MSZP_2010) + sum(JOBBIK_2010)),
+                                          JOBBIK_2014_pc = sum(JOBBIK_2014) / (sum(FIDESZ_2014) + sum(LMP_2014) + sum(MSZP_2014) + sum(JOBBIK_2014)),
+                                          LMP_2010_pc = sum(LMP_2010) / (sum(FIDESZ_2010) + sum(LMP_2010) + sum(MSZP_2010) + sum(JOBBIK_2010)),
+                                          LMP_2014_pc = sum(LMP_2014) / (sum(FIDESZ_2014) + sum(LMP_2014) + sum(MSZP_2014) + sum(JOBBIK_2014)),
+                                          szavazokorok_szama = szavazokorok_szama.x,
+                                          profil = profil,
+                                          telepulesek_szama = telepulesek_szama,
+                                          varos_aranya = varos_aranya),
+                                   by = oevk][order(oevk)] 
+
+data_2010_2014_OEVK <- unique(data_2010_2014_OEVK, by = "oevk")
+
+regression_2010_2014_fidesz_OEVK <- glm(FIDESZ_2014_pc ~ FIDESZ_2010_pc + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_OEVK)
+summary(regression_2010_2014_fidesz_OEVK)
+coeftest(regression_2010_2014_fidesz_OEVK)
+
+##FIDESZ
+
+logitcoeffs_FIDESZ_2010_2014_OEVK <- glm(FIDESZ_2014_pc ~ FIDESZ_2010_pc + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_OEVK, family='binomial')
+
+summary(logitcoeffs_FIDESZ_2010_2014_OEVK)
+
+data_2010_2014_OEVK$pred_logit_FIDESZ <- predict.glm(logitcoeffs_FIDESZ_2010_2014_OEVK, type="response")
+
+ggplot(data = data_2010_2014_OEVK, aes(x=FIDESZ_2014_pc, y= pred_logit_FIDESZ)) + xlim(0.3, 0.6) + ylim(0.3, 0.6) +
+  geom_line(aes(x=pred_logit_FIDESZ, y=pred_logit_FIDESZ), colour="orange") +
+  geom_point()
+
+##MSZP
+
+logitcoeffs_MSZP_2010_2014_OEVK <- glm(MSZP_2014_pc ~ MSZP_2010_pc + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_OEVK, family='binomial')
+
+summary(logitcoeffs_MSZP_2010_2014_OEVK)
+
+data_2010_2014_OEVK$pred_logit_MSZP <- predict.glm(logitcoeffs_MSZP_2010_2014_OEVK, type="response")
+
+ggplot(data = data_2010_2014_OEVK, aes(x=MSZP_2014_pc, y= pred_logit_MSZP)) + xlim(0.15, 0.55) + ylim(0.15, 0.55) +
+  geom_line(aes(x=pred_logit_MSZP, y=pred_logit_MSZP), colour="red") +
+  geom_point()
+
+#JOBBIK
+
+logitcoeffs_JOBBIK_2010_2014_OEVK <- glm(JOBBIK_2014_pc ~ JOBBIK_2010_pc + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_OEVK, family='binomial')
+
+summary(logitcoeffs_JOBBIK_2010_2014_OEVK)
+
+data_2010_2014_OEVK$pred_logit_JOBBIK <- predict.glm(logitcoeffs_JOBBIK_2010_2014_OEVK, type="response")
+
+ggplot(data = data_2010_2014_OEVK, aes(x=JOBBIK_2014_pc, y= pred_logit_JOBBIK)) + xlim(0.05, 0.4) + ylim(0.05, 0.4) +
+  geom_line(aes(x=pred_logit_JOBBIK, y=pred_logit_JOBBIK), colour="blue") +
+  geom_point()
+
+#LMP
+
+logitcoeffs_LMP_2010_2014_OEVK <- glm(LMP_2014_pc ~ LMP_2010_pc + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_OEVK, family='binomial')
+
+summary(logitcoeffs_JOBBIK_2010_2014_OEVK)
+
+data_2010_2014_OEVK$pred_logit_LMP <- predict.glm(logitcoeffs_LMP_2010_2014_OEVK, type="response")
+
+ggplot(data = data_2010_2014_OEVK, aes(x=LMP_2014_pc, y= pred_logit_LMP)) + xlim(0.00, 0.15) + ylim(0.00, 0.15) +
+  geom_line(aes(x=pred_logit_LMP, y=pred_logit_LMP), colour="pink") +
+  geom_point()
+
+
+### REGRESSION TEST
+
+data_telepules_baloldal <- data_telepules_clean[partnev == "baloldal"]
+
+data_telepules_baloldal <- data_telepules_baloldal[, baloldal := szavazat2014] 
 
 regression_fidesz_test <- glm(egyeni_fidesz_pc ~ szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=new_by_oevk_2014)
 summary(regression_fidesz_test)
