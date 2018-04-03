@@ -52,7 +52,7 @@ def write_csv(list_name, datastore, mappings):
 
 if __name__ == '__main__':
 
-    tablak = ['reszvetel', 'nagypartok', 'kispartok']
+    tablak = ['nagypartok', 'kispartok', 'minipartok']
     mappings = dict(
         geo=value_mapping('key.csv', 'google_nev', 'megye'),
         search_term=value_mapping('term.csv', 'search_term', 'partnev'),
