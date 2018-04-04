@@ -2,14 +2,18 @@ clear all
 
 scalar decay = 0.33
 
-tempfile nagypartok kispart baloldal
+tempfile nagypartok kispartok baloldal
 import delimited ../adat/part/google_trends/nagypartok.csv, clear varnames(1) encoding("utf-8")
 ren search_volume search_volume1
 save `nagypartok', replace
 import delimited ../adat/part/google_trends/kispartok.csv, clear varnames(1) encoding("utf-8")
 ren search_volume search_volume2
+save `kispartok', replace
+import delimited ../adat/part/google_trends/minipartok.csv, clear varnames(1) encoding("utf-8")
+ren search_volume search_volume3
 
-merge 1:1 geo month search_term using `nagypartok', 
+merge 1:1 geo month search_term using `nagypartok', nogen
+merge 1:1 geo month search_term using `kispartok', nogen
 gen megye=real(substr(geo,2,2))
 
 * use common scaling. "mszp" are in both samples
@@ -20,7 +24,13 @@ forval m=1/20 {
 	predict `sv',
 	replace search_volume = `sv' if megye==`m' & missing(search_volume2)
 	drop `sv'
+
+	reg search_volume2 search_volume3 if megye==`m', nocons
+	predict `sv',
+	replace search_volume = `sv' if megye==`m' & missing(search_volume)
+	drop `sv'
 }
+
 egen `sv' = sum(search_volume), by(geo month)
 replace search_volume = search_volume/`sv'*100
 drop `sv'
