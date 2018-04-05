@@ -1,0 +1,8 @@
+oevk,eselyes
+M04/E04,baloldal
+M05/E05,jobbik
+M11/E01,baloldal
+M14/E05,baloldal
+M14/E08,baloldal
+M18/E01,baloldal
+

@@ -30,11 +30,11 @@ M03/E06,fidesz
 M04/E01,baloldal
 M04/E02,fidesz
 M04/E03,fidesz
-M04/E04,fidesz
+M04/E04,baloldal
 M05/E01,baloldal
 M05/E02,baloldal
 M05/E03,jobbik
-M05/E04,fidesz
+M05/E04,jobbik
 M05/E05,fidesz
 M05/E06,jobbik
 M05/E07,jobbik
@@ -61,7 +61,7 @@ M09/E06,fidesz
 M10/E01,fidesz
 M10/E02,fidesz
 M10/E03,jobbik
-M11/E01,fidesz
+M11/E01,baloldal
 M11/E02,fidesz
 M11/E03,fidesz
 M11/E04,fidesz
@@ -74,10 +74,10 @@ M14/E01,baloldal
 M14/E02,fidesz
 M14/E03,fidesz
 M14/E04,fidesz
-M14/E05,fidesz
+M14/E05,baloldal
 M14/E06,fidesz
 M14/E07,fidesz
-M14/E08,fidesz
+M14/E08,baloldal
 M14/E09,fidesz
 M14/E10,fidesz
 M14/E11,fidesz
@@ -95,7 +95,7 @@ M16/E06,fidesz
 M17/E01,fidesz
 M17/E02,fidesz
 M17/E03,fidesz
-M18/E01,fidesz
+M18/E01,baloldal
 M18/E02,fidesz
 M18/E03,fidesz
 M19/E01,fidesz
