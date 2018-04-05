@@ -77,7 +77,7 @@ use `v2014'
 drop szervezet part id
 collapse (sum) szavazat2014=szavazat ervenyes valasztopolgarok, by(szavazokor partnev oevk id2010 ev)
 gen reszveteli_arany2014 = ervenyes/valasztopolgarok*100
-drop ervenyes valaszto
+*drop ervenyes valaszto
 
 egen osszes2014 = sum(szavazat), by(szavazokor)
 gen arany2014 = szavazat2014/osszes2014*100
@@ -85,4 +85,12 @@ gen arany2014 = szavazat2014/osszes2014*100
 merge m:1 id2010 partnev using `v2010', nogen
 
 save szavazokor_szintu, replace
+drop if inlist(partnev,"egyeb","mdf")
+collapse (sum) szavazat2014 ervenyes valasztopolgarok (mean) arany2010 (first) reszveteli_arany2010, by(partnev oevk id2010)
+gen reszveteli_arany2014 = ervenyes/valasztopolgarok*100
+egen osszes2014 = sum(szavazat2014), by(id2010 oevk)
+gen arany2014 = szavazat2014/osszes2014*100
 
+keep id2010 oevk partnev *arany2010 *arany2014 osszes2014
+reshape wide arany2010 arany2014, i(oevk id2010) j(partnev) string
+export delimited using ../adat/telepules/szavazati_aranyok_2014.csv, replace
