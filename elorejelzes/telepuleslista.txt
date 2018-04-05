@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/telepu
 > leslista.txt
   log type:  text
- opened on:   5 Apr 2018, 20:14:37
+ opened on:   5 Apr 2018, 20:18:51
 
 . tempfile telepules1 oevk
 
@@ -90,9 +90,9 @@ file /var/folders/7b/svcv81g94n3fm6nrj7ckr15c0000gn/T//S_29310.000002 saved
 
 . 
 . 
-. scalar max_atszavazas = 75
+. scalar max_atszavazas = 40
 
-. scalar min_atszavazas = 20
+. scalar min_atszavazas = 0
 
 . gen atszavaz = 0
 
@@ -118,19 +118,19 @@ file /var/folders/7b/svcv81g94n3fm6nrj7ckr15c0000gn/T//S_29310.000002 saved
 
   1 partnev |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-   baloldal |         15       19.23       19.23
-     fidesz |         63       80.77      100.00
+   baloldal |         15       15.79       15.79
+     fidesz |         80       84.21      100.00
 ------------+-----------------------------------
-      Total |         78      100.00
+      Total |         95      100.00
 
 . tab partnev2 if oevk_tag & atbillen
 
   2 partnev |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-   baloldal |         22       78.57       78.57
-     jobbik |          6       21.43      100.00
+   baloldal |         10       90.91       90.91
+     jobbik |          1        9.09      100.00
 ------------+-----------------------------------
-      Total |         28      100.00
+      Total |         11      100.00
 
 . 
 . tab nyerheto kiegyensulyozott if oevk_tag 
@@ -205,15 +205,15 @@ file telepules_szintu_listas_elorejelzes.csv saved
 
 . 
 . replace partnev1=partnev2 if atbillen
-(504 real changes made)
+(102 real changes made)
 
 . tab partnev1 if oevk_tag 
 
   1 partnev |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-   baloldal |         37       34.91       34.91
-     fidesz |         63       59.43       94.34
-     jobbik |          6        5.66      100.00
+   baloldal |         25       23.58       23.58
+     fidesz |         80       75.47       99.06
+     jobbik |          1        0.94      100.00
 ------------+-----------------------------------
       Total |        106      100.00
 

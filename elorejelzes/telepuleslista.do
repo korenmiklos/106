@@ -30,8 +30,8 @@ gen byte nyerheto = (partnev1=="fidesz") & (becsult_arany1<50) & (szukseges_atsz
 gen byte kiegyensulyozott = nyerheto & abs(becsult_arany2-becsult_arany3)<15
 
 
-scalar max_atszavazas = 75
-scalar min_atszavazas = 20
+scalar max_atszavazas = 40
+scalar min_atszavazas = 0
 gen atszavaz = 0
 forval i=3/6 {
 	gen gap`i' = (becsult_arany2-becsult_arany`i')/becsult_arany2
