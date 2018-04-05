@@ -1,0 +1,223 @@
+------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/telepu
+> leslista.txt
+  log type:  text
+ opened on:   5 Apr 2018, 20:12:28
+
+. tempfile telepules1 oevk
+
+. import delimited ../adat/telepules/telepules_kodok.csv, clear varnames(1) encoding
+> ("utf-8")
+(5 vars, 3,176 obs)
+
+. save `telepules1'
+file /var/folders/7b/svcv81g94n3fm6nrj7ckr15c0000gn/T//S_29310.000001 saved
+
+. 
+. import delimited listas_106_ujpartok.csv, clear varnames(1) encoding("utf-8")
+(8 vars, 848 obs)
+
+. 
+. replace partnev = "baloldal" if inlist(partnev,"dk","mszp","egyutt")
+(318 real changes made)
+
+. collapse (sum) becsult_szavazat, by(oevk partnev)
+
+. 
+. egen rank = rank(-becsult_szavazat), by(oevk)
+
+. egen total = sum(becsult_szavazat), by(oevk)
+
+. gen becsult_arany = becsult_szavazat/total*100
+
+. keep oevk rank partnev becsult_arany
+
+. reshape wide becsult_arany partnev, i(oevk) j(rank)
+(note: j = 1 2 3 4 5 6)
+
+Data                               long   ->   wide
+-----------------------------------------------------------------------------
+Number of obs.                      636   ->     106
+Number of variables                   4   ->      13
+j variable (6 values)              rank   ->   (dropped)
+xij variables:
+                          becsult_arany   ->   becsult_arany1 becsult_arany2 ... bec
+> sult_arany6
+                                partnev   ->   partnev1 partnev2 ... partnev6
+-----------------------------------------------------------------------------
+
+. save `oevk'
+file /var/folders/7b/svcv81g94n3fm6nrj7ckr15c0000gn/T//S_29310.000002 saved
+
+. 
+. 
+. import delimited ../adat/telepules/szavazati_aranyok_2014.csv, clear varnames(1) e
+> ncoding("utf-8")
+(13 vars, 3,193 obs)
+
+. merge m:m id2010 using `telepules1', nogen
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                             0
+    matched                             3,195  
+    -----------------------------------------
+
+. merge m:1 oevk using `oevk', nogen
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                             0
+    matched                             3,195  
+    -----------------------------------------
+
+. 
+. gen valasztopolgarok = int(osszes2014/reszveteli_arany2014*100)
+
+. 
+. * a 3. es tovabbi helyezett hany szazaleka kell a 2.-ra szavazzon, hogy megelozzek
+>  az 1-t?
+. gen szukseges_atszavazas = (becsult_arany1-becsult_arany2)/(100-becsult_arany1-bec
+> sult_arany2)*100 if partnev1=="fidesz"
+(25 missing values generated)
+
+. * 2/3-nal nagyobb atszavazassal szamolni remenytelen
+. gen byte nyerheto = (partnev1=="fidesz") & (becsult_arany1<50) & (szukseges_atszav
+> azas<=66)
+
+. gen byte kiegyensulyozott = nyerheto & abs(becsult_arany2-becsult_arany3)<15
+
+. 
+. 
+. scalar max_atszavazas = 66
+
+. scalar min_atszavazas = 0
+
+. gen atszavaz = 0
+
+. forval i=3/6 {
+  2.         gen gap`i' = (becsult_arany2-becsult_arany`i')/becsult_arany2
+  3.         * minel egyertelmubb a rangsor, annal szivesebben szavaznak at
+.         replace atszavaz = atszavaz + (min_atszavazas+gap`i'*(max_atszavazas-min_a
+> tszavazas)) * becsult_arany`i' / 100
+  4. }
+(3,195 real changes made)
+(3,195 real changes made)
+(3,195 real changes made)
+(3,191 real changes made)
+
+. gen byte atbillen = (becsult_arany2+atszavaz)>becsult_arany1 & partnev1=="fidesz"
+
+. 
+. egen oevk_tag = tag(oevk)
+
+. 
+. * ad-hoc atszavazsi modellel az OEVK-k elorejlezese
+. tab partnev1  if oevk_tag & !atbillen
+
+  1 partnev |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   baloldal |         15       17.86       17.86
+     fidesz |         69       82.14      100.00
+------------+-----------------------------------
+      Total |         84      100.00
+
+. tab partnev2 if oevk_tag & atbillen
+
+  2 partnev |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   baloldal |         17       77.27       77.27
+     jobbik |          5       22.73      100.00
+------------+-----------------------------------
+      Total |         22      100.00
+
+. 
+. tab nyerheto kiegyensulyozott if oevk_tag 
+
+           |   kiegyensulyozott
+  nyerheto |         0          1 |     Total
+-----------+----------------------+----------
+         0 |        50          0 |        50 
+         1 |         3         53 |        56 
+-----------+----------------------+----------
+     Total |        53         53 |       106 
+
+
+. tab nyerheto kiegyensulyozott 
+
+           |   kiegyensulyozott
+  nyerheto |         0          1 |     Total
+-----------+----------------------+----------
+         0 |     1,809          0 |     1,809 
+         1 |         8      1,378 |     1,386 
+-----------+----------------------+----------
+     Total |     1,817      1,378 |     3,195 
+
+
+. tab nyerheto kiegyensulyozott [fw=osszes2014]
+
+           |   kiegyensulyozott
+  nyerheto |         0          1 |     Total
+-----------+----------------------+----------
+         0 | 2,191,041          0 | 2,191,041 
+         1 |   148,026  2,425,643 | 2,573,669 
+-----------+----------------------+----------
+     Total | 2,339,067  2,425,643 | 4,764,710 
+
+
+. tab nyerheto kiegyensulyozott [fw=valasztopolgarok]
+
+           |   kiegyensulyozott
+  nyerheto |         0          1 |     Total
+-----------+----------------------+----------
+         0 | 3,595,939          0 | 3,595,939 
+         1 |   207,113  4,008,269 | 4,215,382 
+-----------+----------------------+----------
+     Total | 3,803,052  4,008,269 | 7,811,321 
+
+
+. 
+. preserve
+
+. keep if nyerheto & kiegyensulyozott
+(1,817 observations deleted)
+
+. sort telepules_nev
+
+. gen str location = telepules_nev + ", Hungary"
+
+. 
+. export delimited location if partnev2=="baloldal" & valasztopolgarok>=500 using ba
+> loldal.csv, replace
+file baloldal.csv saved
+
+. export delimited location if partnev2=="jobbik" & valasztopolgarok>=500 using jobb
+> ik.csv, replace
+file jobbik.csv saved
+
+. restore
+
+. sort oevk id2010
+
+. export delimited telepules_szintu_listas_elorejelzes.csv, replace
+file telepules_szintu_listas_elorejelzes.csv saved
+
+. 
+. replace partnev1=partnev2 if atbillen
+(352 real changes made)
+
+. tab partnev1 if oevk_tag 
+
+  1 partnev |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   baloldal |         32       30.19       30.19
+     fidesz |         69       65.09       95.28
+     jobbik |          5        4.72      100.00
+------------+-----------------------------------
+      Total |        106      100.00
+
+. export delimited oevk partnev1 if oevk_tag using oevk_elorejelzes.csv, replace
+file oevk_elorejelzes.csv saved
+
+. capture log close

@@ -1,8 +1,10 @@
+capture log close
+log using telepuleslista.txt, text replace
 tempfile telepules1 oevk
-import delimited telepules_kodok.csv, clear varnames(1) encoding("utf-8")
+import delimited ../adat/telepules/telepules_kodok.csv, clear varnames(1) encoding("utf-8")
 save `telepules1'
 
-import delimited ../../elorejelzes/listas_106_ujpartok.csv, clear varnames(1) encoding("utf-8")
+import delimited listas_106_ujpartok.csv, clear varnames(1) encoding("utf-8")
 
 replace partnev = "baloldal" if inlist(partnev,"dk","mszp","egyutt")
 collapse (sum) becsult_szavazat, by(oevk partnev)
@@ -15,7 +17,7 @@ reshape wide becsult_arany partnev, i(oevk) j(rank)
 save `oevk'
 
 
-import delimited szavazati_aranyok_2014.csv, clear varnames(1) encoding("utf-8")
+import delimited ../adat/telepules/szavazati_aranyok_2014.csv, clear varnames(1) encoding("utf-8")
 merge m:m id2010 using `telepules1', nogen
 merge m:1 oevk using `oevk', nogen
 
@@ -63,3 +65,4 @@ export delimited telepules_szintu_listas_elorejelzes.csv, replace
 replace partnev1=partnev2 if atbillen
 tab partnev1 if oevk_tag 
 export delimited oevk partnev1 if oevk_tag using oevk_elorejelzes.csv, replace
+capture log close
