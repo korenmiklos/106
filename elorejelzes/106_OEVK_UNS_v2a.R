@@ -19,7 +19,7 @@ library(readstata13)
 
 # CHECK  WORKING DIRECTORY
 getwd()
-setwd('C:/Users/adasan01/OneDrive - ARM/Desktop/TacticalVoting/Capstone')
+setwd('C:/Users/adasan01/OneDrive - ARM/Documents/GitHub')
 
 # LOAD  DATA
 data <- read.csv("106/adat/jelolt/vote_counts_precincts.csv")
@@ -135,9 +135,9 @@ data_UNS <- data_UNS[, reszvetel_2014 := 60.99]
 
 #frissítheto új adatok alapján
 
-data_UNS <- data_UNS[, Fidesz_2018_orszagos := 43.5] 
-data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 13]
-data_UNS <- data_UNS[, Jobbik_2018_orszagos := 21]
+data_UNS <- data_UNS[, Fidesz_2018_orszagos := 42] 
+data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 12.5]
+data_UNS <- data_UNS[, Jobbik_2018_orszagos := 22]
 data_UNS <- data_UNS[, LMP_2018_orszagos := 8.5]
 data_UNS <- data_UNS[, DK_2018_orszagos := 7.5]
 data_UNS <- data_UNS[, Momentum_2018_orszagos := 3]
@@ -210,7 +210,7 @@ osszes_szavazat <- by_oevk_UNS_2018[, list(Fidesz = round(sum(Fidesz_2018), digi
 rowSums(osszes_szavazat)
 
 
-write.csv(by_oevk_UNS_2018,'2018_UNS_19_March.csv')
+write.csv(by_oevk_UNS_2018,'2018_UNS_31_March.csv')
 
 ##### TEST PART - playing with some regressions on szavazokor nagysaga
 
