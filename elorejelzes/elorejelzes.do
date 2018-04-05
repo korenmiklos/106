@@ -83,6 +83,12 @@ predict becsult_szavazat
 replace becsult_szavazat = ln_arany2010 if partnev=="egyeb"
 
 replace becsult_szavazat = exp(becsult_szavazat)
+* republikon Aprilis 5 becslese alapjan
+replace becsult_szavazat = 41/46*becsult_szavazat if partnev=="fidesz" & future
+replace becsult_szavazat = 21/20*becsult_szavazat if partnev=="jobbik" & future
+replace becsult_szavazat = 25/22.4*becsult_szavazat if partnev=="baloldal" & future
+replace becsult_szavazat = 11/8.4*becsult_szavazat if partnev=="kispart" & future
+
 egen total = sum(becsult_szavazat), by(szavazokor future)
 replace becsult_szavazat = int(becsult_szavazat/total*osszes2014)
 

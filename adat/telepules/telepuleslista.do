@@ -28,8 +28,8 @@ gen byte nyerheto = (partnev1=="fidesz") & (becsult_arany1<50) & (szukseges_atsz
 gen byte kiegyensulyozott = nyerheto & abs(becsult_arany2-becsult_arany3)<15
 
 
-scalar max_atszavazas = 75
-scalar min_atszavazas = 33
+scalar max_atszavazas = 66
+scalar min_atszavazas = 0
 gen atszavaz = 0
 forval i=3/6 {
 	gen gap`i' = (becsult_arany2-becsult_arany`i')/becsult_arany2
@@ -59,3 +59,7 @@ export delimited location if partnev2=="jobbik" & valasztopolgarok>=500 using jo
 restore
 sort oevk id2010
 export delimited telepules_szintu_listas_elorejelzes.csv, replace
+
+replace partnev1=partnev2 if atbillen
+tab partnev1 if oevk_tag 
+export delimited oevk partnev1 if oevk_tag using oevk_elorejelzes.csv, replace

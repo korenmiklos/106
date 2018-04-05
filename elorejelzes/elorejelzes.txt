@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/elorej
 > elzes.txt
   log type:  text
- opened on:   5 Apr 2018, 14:48:05
+ opened on:   5 Apr 2018, 16:53:04
 
 . 
 . use szavazokor_szintu
@@ -353,6 +353,21 @@ t7_ln_kozvel~2014 |  -.6233032   .1012976    -6.15   0.000     -.821957   -.4246
 . replace becsult_szavazat = exp(becsult_szavazat)
 (103,860 real changes made)
 
+. * republikon Aprilis 5 becslese alapjan
+. replace becsult_szavazat = 41/46*becsult_szavazat if partnev=="fidesz" & future
+(10,386 real changes made)
+
+. replace becsult_szavazat = 21/20*becsult_szavazat if partnev=="jobbik" & future
+(10,386 real changes made)
+
+. replace becsult_szavazat = 25/22.4*becsult_szavazat if partnev=="baloldal" & futur
+> e
+(10,386 real changes made)
+
+. replace becsult_szavazat = 11/8.4*becsult_szavazat if partnev=="kispart" & future
+(10,386 real changes made)
+
+. 
 . egen total = sum(becsult_szavazat), by(szavazokor future)
 
 . replace becsult_szavazat = int(becsult_szavazat/total*osszes2014)
