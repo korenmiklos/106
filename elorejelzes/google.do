@@ -1,15 +1,19 @@
 clear all
 
-scalar decay = 0.33
+scalar decay = 0.5
 
-tempfile nagypartok kispart baloldal
+tempfile nagypartok kispartok baloldal
 import delimited ../adat/part/google_trends/nagypartok.csv, clear varnames(1) encoding("utf-8")
 ren search_volume search_volume1
 save `nagypartok', replace
 import delimited ../adat/part/google_trends/kispartok.csv, clear varnames(1) encoding("utf-8")
 ren search_volume search_volume2
+save `kispartok', replace
+import delimited ../adat/part/google_trends/minipartok.csv, clear varnames(1) encoding("utf-8")
+ren search_volume search_volume3
 
-merge 1:1 geo month search_term using `nagypartok', 
+merge 1:1 geo month search_term using `nagypartok', nogen
+merge 1:1 geo month search_term using `kispartok', nogen
 gen megye=real(substr(geo,2,2))
 
 * use common scaling. "mszp" are in both samples
@@ -20,7 +24,13 @@ forval m=1/20 {
 	predict `sv',
 	replace search_volume = `sv' if megye==`m' & missing(search_volume2)
 	drop `sv'
+
+	reg search_volume2 search_volume3 if megye==`m', nocons
+	predict `sv',
+	replace search_volume = `sv' if megye==`m' & missing(search_volume)
+	drop `sv'
 }
+
 egen `sv' = sum(search_volume), by(geo month)
 replace search_volume = search_volume/`sv'*100
 drop `sv'
@@ -90,8 +100,7 @@ egen i = group(part)
 tsset i honap, monthly
 local X szazalek
 gen kozvelemeny = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
-* FIXME: egyelore csak januari adatok vannak
-replace datum = "2018-03" if substr(datum,1,7)=="2018-01"
+
 keep if substr(datum,6,2)=="03"
 gen year = substr(datum,1,4)
 drop datum honap szazalek
@@ -120,8 +129,7 @@ egen i = group(part)
 tsset i honap, monthly
 local X szazalek
 gen kozvelemeny = (`X'+decay*L.`X'+decay^2*L2.`X'+decay^3*L3.`X')/(1+decay+decay^2+decay^3)
-* FIXME: egyelore csak januari adatok vannak
-replace datum = "2018-03" if substr(datum,1,7)=="2018-01"
+
 keep if substr(datum,6,2)=="03"
 gen year = substr(datum,1,4)
 drop datum honap szazalek

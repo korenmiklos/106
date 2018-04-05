@@ -13,7 +13,7 @@ SHEETS = dict(
 			jobbik='269899118',
 			lmp='1232469361',
 			egyutt='1887552498',
-			parbeszed='1647908331',
+			pm='1647908331',
 			dk='549675480',
 			liberalis='1030782975',
 			ketfarku='1917250250',
@@ -27,12 +27,12 @@ SHEETS = dict(
 			jobbik='1224790716',
 			lmp='1308644628',
 			egyutt='576367741',
-			parbeszed='446987244',
+			pm='446987244',
 			dk='1701849270',
 			liberalis='810680759',
 			ketfarku='2082367707',
 			momentum='1610294492')))
-PARTOK = 'fidesz mszp jobbik lmp egyutt parbeszed dk liberalis ketfarku momentum'.split()
+PARTOK = 'fidesz mszp jobbik lmp egyutt pm dk liberalis ketfarku momentum'.split()
 KUTATOK = 'Ipsos Medián Nézőpont Századvég Tárki Publicus Iránytű Republikon IDEA'.split()
 DATUM_RE = re.compile(r'(\d{4})\.(\d{2})\.(\d{2})')
 
@@ -56,6 +56,9 @@ def iso_datum(text):
 def parse_row(row):
 	for key in row.keys():
 		if key=='datum':
+			# eliras a kozvelemenykutatok.hu-n
+			if row[key]=='2017.09.02.':
+				row[key]='2017.10.01.'
 			row[key] = iso_datum(row[key])
 		kutato = get_kutato(key)
 		if kutato in KUTATOK:
@@ -66,7 +69,7 @@ def store_row(row, part, fajl, datastore):
 	for key, value in row.items():
 		if key in KUTATOK:
 			datastore[fajl].append(dict(
-				datum=iso_datum(row['datum']),
+				datum=row['datum'],
 				part=part,
 				kutato=key,
 				szazalek=value))
@@ -78,7 +81,7 @@ if __name__ == '__main__':
 	for sheet in SHEETS.keys():
 		for part in PARTOK:
 			for row in get_csv(sheet, part):
-				store_row(row, part, sheet, datastore)
+				store_row(parse_row(row), part, sheet, datastore)
 		writer = csv.DictWriter(open('{}.csv'.format(sheet), 'w'), fieldnames=datastore[sheet][0].keys())
 		writer.writeheader()
 		for row in datastore[sheet]:
