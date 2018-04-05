@@ -15,23 +15,6 @@ merge m:1 megyekod partnev using ../adat/part/google_trends2014, keepusing(googl
 merge m:1 partnev using ../adat/part/kozvelemeny2014, keepusing(kozvelemeny2014) keep(master match) nogen
 keep if !missing(oevk)
 
-* korrekciok 2014 orszagos listas eredmenyek alapjan
-local partok fidesz baloldal jobbik lmp
-local Kfidesz 0.915
-local Kbaloldal 0.759
-local Kjobbik 1.253
-local Klmp 1.343
-local Gfidesz 1.809
-local Gbaloldal 0.790
-local Gjobbik 0.567
-local Glmp 0.865
-
-/*foreach p in `partok' {
-	replace kozvelemeny2014 = kozvelemeny2014*`K`p'' if partnev=="`p'"
-	replace google2014 = google2014*`G`p'' if partnev=="`p'"
-	replace google2010 = google2010*`G`p'' if partnev=="`p'"
-}*/
-egen P = group(partnev)
 
 gen kerulet = real(substr(oevk,6,2))
 * paros szamu oevk-k kihagyva minden megyeben
@@ -53,13 +36,13 @@ recode polkat 0/50=0 50/60=1 60/80=2 80/max=3
 gen telkat = telepules_meret
 recode telkat min/3000=1 3000/10000=2 10000/50000=3 50000/100000=4 100000/max=5
 gen byte nagyvaros = (telepules_meret>100000)|(megyekod==1)
-replace telkat = 5 if buda
-replace telkat = 5 if pest
+replace telkat = 6 if buda
+replace telkat = 7 if pest
 
 * create prediction for 2018
 expand 2, gen(future)
 
-foreach X in ln_arany ln_google ln_kozvelemeny {
+foreach X in *arany *google *kozvelemeny {
 	capture replace `X'2010=`X'2014 if future
 	capture replace `X'2014=`X'2018 if future
 }
@@ -67,24 +50,45 @@ gen aranysq = ln_arany2010^2
 gen aranycb = ln_arany2010^3
 
 local valtozok ln_arany2010 ln_google2014 ln_google2010 ln_kozvelemeny2014
-forval t=1/5 {
+local partok fidesz jobbik baloldal kispart
+foreach p in `partok' {
+	gen byte `p' = partnev=="`p'"
+	foreach X in `valtozok' {
+		gen `p'_`X' = (`p')*`X'
+	}
+}
+forval t=1/7 {
 	di in gre "Teltip: " in ye "`t'"
 	* steady-state osszefugges szetosztashoz
-	reg ln_arany2014 ln_google2014 ln_kozvelemeny2014 if telkat==`t' [fw=osszes2014 ]
-	* egyutthatok elmentese
-	scalar G`t' = _b[ln_google2014]
-	scalar K`t' = _b[ln_kozvelemeny2014]
-	
+	if (`t'<=5) {
+		reg ln_arany2014 ln_google2014 ln_kozvelemeny2014 if telkat==`t' [fw=osszes2014 ]
+		* egyutthatok elmentese
+		scalar G`t' = _b[ln_google2014]
+		scalar K`t' = _b[ln_kozvelemeny2014]
+	}
+	else {
+		* buda es pest egy "megyeben" van, nincs terbeli variacio
+		reg ln_arany2014 ln_google2014 if telkat==`t' [fw=osszes2014 ]
+		* egyutthatok elmentese
+		scalar G`t' = _b[ln_google2014]
+		scalar K`t' = 0
+	}
 	foreach X in `valtozok' {
 		gen t`t'_`X' = (telkat==`t')*`X'
 	}
 }
-areg ln_arany2014 t?_* i.P if !holdout & !future [fw=osszes2010], a(szavazokor) vce(cluster id2010)
+areg ln_arany2014 t?_* if !holdout & !future [fw=osszes2014], a(szavazokor) vce(cluster id2010)
 predict becsult_szavazat
 * egyeb partokat nehez becsulni
 replace becsult_szavazat = ln_arany2010 if partnev=="egyeb"
 
 replace becsult_szavazat = exp(becsult_szavazat)
+* republikon Aprilis 5 becslese alapjan
+replace becsult_szavazat = 41/46*becsult_szavazat if partnev=="fidesz" & future
+replace becsult_szavazat = 21/20*becsult_szavazat if partnev=="jobbik" & future
+replace becsult_szavazat = 25/22.4*becsult_szavazat if partnev=="baloldal" & future
+replace becsult_szavazat = 11/8.4*becsult_szavazat if partnev=="kispart" & future
+
 egen total = sum(becsult_szavazat), by(szavazokor future)
 replace becsult_szavazat = int(becsult_szavazat/total*osszes2014)
 
@@ -136,9 +140,10 @@ replace csoport="kispart" if inlist(csoport,"lmp","momentum")
 replace csoport="baloldal" if inlist(csoport,"mszp","dk","egyutt")
 
 gen part_arany2018 = .
-forval t=1/5 {
+forval t=1/7 {
 	* becsult sulyok
 	replace part_arany2018 = exp(G`t'*ln_google2018 + K`t'*ln_kozvelemeny2018) if telkat==`t'
+	*replace part_arany2018 = kozvelemeny2018 if telkat==`t'
 }
 local t 2018
 capture drop total`t'
