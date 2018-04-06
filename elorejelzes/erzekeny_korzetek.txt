@@ -1,18 +1,13 @@
-oevk,eselyes,megye,mzp_part,mzp_nev
-M04/E01,baloldal,Békés,jobbik,Kocziha Tünde
-M04/E04,baloldal,Békés,jobbik,dr. Szabó Ervin
-M05/E01,baloldal,Borsod-Abaúj-Zemplén,jobbik,Jakab Péter Dénes
-M05/E03,jobbik,Borsod-Abaúj-Zemplén,jobbik,Farkas Péter Barnabás
-M05/E04,jobbik,Borsod-Abaúj-Zemplén,jobbik,Egyed Zsolt
-M05/E07,jobbik,Borsod-Abaúj-Zemplén,jobbik,Lukács Attila
-M06/E02,baloldal,Csongrád,mszp,Joób Márton
-M08/E01,baloldal,Győr-Moson-Sopron,dk,Gázer Tímea
-M10/E03,jobbik,Heves,jobbik,Sneider Tamás
-M11/E01,baloldal,Jász-Nagykun-Szolnok,jobbik,dr. Csikós Attila
+oevk,eselyes,megye,mzp_part,mzp_nev,url
+M05/E03,jobbik,Borsod-Abaúj-Zemplén,jobbik,Farkas Péter Barnabás,https://goo.gl/RVp2my
+M05/E04,jobbik,Borsod-Abaúj-Zemplén,jobbik,Egyed Zsolt,https://goo.gl/6ENnKY
+M05/E07,jobbik,Borsod-Abaúj-Zemplén,jobbik,Lukács Attila,https://goo.gl/XVuui7
+M06/E02,baloldal,Csongrád,mszp,Joób Márton,https://goo.gl/Q9tjSr
+M08/E01,baloldal,Győr-Moson-Sopron,dk,Gázer Tímea,https://goo.gl/wQhyHn
+M10/E03,jobbik,Heves,jobbik,Sneider Tamás,https://goo.gl/AKjqNy
 M14/E01,baloldal,Pest,mszp,dr. Csőzik László
 M14/E05,baloldal,Pest,dk,Rónai Sándor
 M14/E08,baloldal,Pest,mszp,Stefanik Zsolt
-M15/E01,baloldal,Somogy,jobbik,Miháldinecz Gábor
 M16/E01,baloldal,Szabolcs-Szatmár-Bereg,mszp,Csabai Lászlóné
 M16/E02,jobbik,Szabolcs-Szatmár-Bereg,jobbik,dr. Fülöp Erik
 M18/E01,baloldal,Vas,mszp,dr. Nemény András
