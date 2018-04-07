@@ -29,13 +29,28 @@ gen szukseges_atszavazas = (becsult_arany1-becsult_arany2)/(100-becsult_arany1-b
 gen byte nyerheto = (partnev1=="fidesz") & (becsult_arany1<50) & (szukseges_atszavazas<=66)
 gen byte kiegyensulyozott = nyerheto & abs(becsult_arany2-becsult_arany3)<15
 
-
-scalar max_atszavazas = 40
-scalar min_atszavazas = 0
+* jobbikrol balra
+scalar max_atszavazas_JB = 33
+* balrol jobbikra
+scalar max_atszavazas_BJ = 66
+* balrol balra (sorry LMP)
+scalar max_atszavazas_BB = 75
+scalar min_atszavazas = 10
 gen atszavaz = 0
 forval i=3/6 {
 	gen gap`i' = (becsult_arany2-becsult_arany`i')/becsult_arany2
 	* minel egyertelmubb a rangsor, annal szivesebben szavaznak at
+	if (partnev2=="jobbik") {
+		scalar max_atszavazas = max_atszavazas_BJ
+	}
+	if (partnev2=="baloldal") {
+		if (partnev`i'=="jobbik") {
+			scalar max_atszavazas = max_atszavazas_JB
+		}
+		else {
+			scalar max_atszavazas = max_atszavazas_BB
+		}
+	}
 	replace atszavaz = atszavaz + (min_atszavazas+gap`i'*(max_atszavazas-min_atszavazas)) * becsult_arany`i' / 100
 }
 gen byte atbillen = (becsult_arany2+atszavaz)>becsult_arany1 & partnev1=="fidesz"

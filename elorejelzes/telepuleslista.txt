@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/telepu
 > leslista.txt
   log type:  text
- opened on:   6 Apr 2018, 17:26:01
+ opened on:   7 Apr 2018, 08:10:13
 
 . tempfile telepules1 oevk
 
@@ -89,19 +89,36 @@ file /var/folders/7b/svcv81g94n3fm6nrj7ckr15c0000gn/T//S_29310.000002 saved
 . gen byte kiegyensulyozott = nyerheto & abs(becsult_arany2-becsult_arany3)<15
 
 . 
-. 
-. scalar max_atszavazas = 40
+. * jobbikrol balra
+. scalar max_atszavazas_JB = 33
 
-. scalar min_atszavazas = 0
+. * balrol jobbikra
+. scalar max_atszavazas_BJ = 66
+
+. * balrol balra (sorry LMP)
+. scalar max_atszavazas_BB = 75
+
+. scalar min_atszavazas = 10
 
 . gen atszavaz = 0
 
 . forval i=3/6 {
   2.         gen gap`i' = (becsult_arany2-becsult_arany`i')/becsult_arany2
   3.         * minel egyertelmubb a rangsor, annal szivesebben szavaznak at
-.         replace atszavaz = atszavaz + (min_atszavazas+gap`i'*(max_atszavazas-min_a
-> tszavazas)) * becsult_arany`i' / 100
-  4. }
+.         if (partnev2=="jobbik") {
+  4.                 scalar max_atszavazas = max_atszavazas_BJ
+  5.         }
+  6.         if (partnev2=="baloldal") {
+  7.                 if (partnev`i'=="jobbik") {
+  8.                         scalar max_atszavazas = max_atszavazas_JB
+  9.                 }
+ 10.                 else {
+ 11.                         scalar max_atszavazas = max_atszavazas_BB
+ 12.                 }
+ 13.         }
+ 14.         replace atszavaz = atszavaz + (min_atszavazas+gap`i'*(max_atszavazas-mi
+> n_atszavazas)) * becsult_arany`i' / 100
+ 15. }
 (3,195 real changes made)
 (3,195 real changes made)
 (3,195 real changes made)
@@ -118,19 +135,19 @@ file /var/folders/7b/svcv81g94n3fm6nrj7ckr15c0000gn/T//S_29310.000002 saved
 
   1 partnev |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-   baloldal |         15       15.79       15.79
-     fidesz |         80       84.21      100.00
+   baloldal |         15       18.07       18.07
+     fidesz |         68       81.93      100.00
 ------------+-----------------------------------
-      Total |         95      100.00
+      Total |         83      100.00
 
 . tab partnev2 if oevk_tag & atbillen
 
   2 partnev |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-   baloldal |         10       90.91       90.91
-     jobbik |          1        9.09      100.00
+   baloldal |         18       78.26       78.26
+     jobbik |          5       21.74      100.00
 ------------+-----------------------------------
-      Total |         11      100.00
+      Total |         23      100.00
 
 . 
 . tab nyerheto kiegyensulyozott if oevk_tag 
@@ -205,15 +222,15 @@ file telepules_szintu_listas_elorejelzes.csv saved
 
 . 
 . replace partnev1=partnev2 if atbillen
-(102 real changes made)
+(362 real changes made)
 
 . tab partnev1 if oevk_tag 
 
   1 partnev |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-   baloldal |         25       23.58       23.58
-     fidesz |         80       75.47       99.06
-     jobbik |          1        0.94      100.00
+   baloldal |         33       31.13       31.13
+     fidesz |         68       64.15       95.28
+     jobbik |          5        4.72      100.00
 ------------+-----------------------------------
       Total |        106      100.00
 
