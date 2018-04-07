@@ -1,107 +1,107 @@
-oevk,partnev1
-M01/E01,baloldal
-M01/E02,baloldal
-M01/E03,baloldal
-M01/E04,baloldal
-M01/E05,baloldal
-M01/E06,baloldal
-M01/E07,baloldal
-M01/E08,baloldal
-M01/E09,baloldal
-M01/E10,baloldal
-M01/E11,baloldal
-M01/E12,baloldal
-M01/E13,baloldal
-M01/E14,baloldal
-M01/E15,baloldal
-M01/E16,baloldal
-M01/E17,baloldal
-M01/E18,baloldal
-M02/E01,baloldal
-M02/E02,baloldal
-M02/E03,fidesz
-M02/E04,fidesz
-M03/E01,fidesz
-M03/E02,fidesz
-M03/E03,fidesz
-M03/E04,fidesz
-M03/E05,fidesz
-M03/E06,fidesz
-M04/E01,fidesz
-M04/E02,fidesz
-M04/E03,fidesz
-M04/E04,fidesz
-M05/E01,fidesz
-M05/E02,baloldal
-M05/E03,fidesz
-M05/E04,fidesz
-M05/E05,fidesz
-M05/E06,jobbik
-M05/E07,fidesz
-M06/E01,baloldal
-M06/E02,fidesz
-M06/E03,fidesz
-M06/E04,fidesz
-M07/E01,baloldal
-M07/E02,fidesz
-M07/E03,fidesz
-M07/E04,baloldal
-M07/E05,fidesz
-M08/E01,fidesz
-M08/E02,fidesz
-M08/E03,fidesz
-M08/E04,fidesz
-M08/E05,fidesz
-M09/E01,fidesz
-M09/E02,fidesz
-M09/E03,fidesz
-M09/E04,fidesz
-M09/E05,fidesz
-M09/E06,fidesz
-M10/E01,fidesz
-M10/E02,fidesz
-M10/E03,fidesz
-M11/E01,fidesz
-M11/E02,fidesz
-M11/E03,fidesz
-M11/E04,fidesz
-M12/E01,baloldal
-M12/E02,fidesz
-M12/E03,fidesz
-M13/E01,fidesz
-M13/E02,fidesz
-M14/E01,fidesz
-M14/E02,fidesz
-M14/E03,fidesz
-M14/E04,fidesz
-M14/E05,fidesz
-M14/E06,fidesz
-M14/E07,fidesz
-M14/E08,fidesz
-M14/E09,fidesz
-M14/E10,fidesz
-M14/E11,fidesz
-M14/E12,fidesz
-M15/E01,fidesz
-M15/E02,fidesz
-M15/E03,fidesz
-M15/E04,fidesz
-M16/E01,fidesz
-M16/E02,fidesz
-M16/E03,fidesz
-M16/E04,fidesz
-M16/E05,fidesz
-M16/E06,fidesz
-M17/E01,fidesz
-M17/E02,fidesz
-M17/E03,fidesz
-M18/E01,fidesz
-M18/E02,fidesz
-M18/E03,fidesz
-M19/E01,fidesz
-M19/E02,fidesz
-M19/E03,fidesz
-M19/E04,fidesz
-M20/E01,fidesz
-M20/E02,fidesz
-M20/E03,fidesz
+oevk,oevk_nev,egyeni_gyoztes
+M01/E01,Budapest 01,baloldal
+M01/E02,Budapest 02,baloldal
+M01/E03,Budapest 03,baloldal
+M01/E04,Budapest 04,baloldal
+M01/E05,Budapest 05,baloldal
+M01/E06,Budapest 06,baloldal
+M01/E07,Budapest 07,baloldal
+M01/E08,Budapest 08,baloldal
+M01/E09,Budapest 09,baloldal
+M01/E10,Budapest 10,baloldal
+M01/E11,Budapest 11,baloldal
+M01/E12,Budapest 12,baloldal
+M01/E13,Budapest 13,baloldal
+M01/E14,Budapest 14,baloldal
+M01/E15,Budapest 15,baloldal
+M01/E16,Budapest 16,baloldal
+M01/E17,Budapest 17,baloldal
+M01/E18,Budapest 18,baloldal
+M02/E01,Baranya 01,baloldal
+M02/E02,Baranya 02,baloldal
+M02/E03,Baranya 03,fidesz
+M02/E04,Baranya 04,fidesz
+M03/E01,Bács-Kiskun 01,fidesz
+M03/E02,Bács-Kiskun 02,fidesz
+M03/E03,Bács-Kiskun 03,fidesz
+M03/E04,Bács-Kiskun 04,fidesz
+M03/E05,Bács-Kiskun 05,fidesz
+M03/E06,Bács-Kiskun 06,fidesz
+M04/E01,Békés 01,baloldal
+M04/E02,Békés 02,fidesz
+M04/E03,Békés 03,fidesz
+M04/E04,Békés 04,fidesz
+M05/E01,Borsod-Abaúj-Zemplén 01,baloldal
+M05/E02,Borsod-Abaúj-Zemplén 02,baloldal
+M05/E03,Borsod-Abaúj-Zemplén 03,jobbik
+M05/E04,Borsod-Abaúj-Zemplén 04,fidesz
+M05/E05,Borsod-Abaúj-Zemplén 05,fidesz
+M05/E06,Borsod-Abaúj-Zemplén 06,jobbik
+M05/E07,Borsod-Abaúj-Zemplén 07,jobbik
+M06/E01,Csongrád 01,baloldal
+M06/E02,Csongrád 02,baloldal
+M06/E03,Csongrád 03,fidesz
+M06/E04,Csongrád 04,fidesz
+M07/E01,Fejér 01,baloldal
+M07/E02,Fejér 02,fidesz
+M07/E03,Fejér 03,fidesz
+M07/E04,Fejér 04,baloldal
+M07/E05,Fejér 05,fidesz
+M08/E01,Győr-Moson-Sopron 01,baloldal
+M08/E02,Győr-Moson-Sopron 02,fidesz
+M08/E03,Győr-Moson-Sopron 03,fidesz
+M08/E04,Győr-Moson-Sopron 04,fidesz
+M08/E05,Győr-Moson-Sopron 05,fidesz
+M09/E01,Hajdú-Bihar 01,fidesz
+M09/E02,Hajdú-Bihar 02,fidesz
+M09/E03,Hajdú-Bihar 03,fidesz
+M09/E04,Hajdú-Bihar 04,fidesz
+M09/E05,Hajdú-Bihar 05,fidesz
+M09/E06,Hajdú-Bihar 06,fidesz
+M10/E01,Heves 01,fidesz
+M10/E02,Heves 02,fidesz
+M10/E03,Heves 03,jobbik
+M11/E01,Jász-Nagykun-Szolnok 01,fidesz
+M11/E02,Jász-Nagykun-Szolnok 02,fidesz
+M11/E03,Jász-Nagykun-Szolnok 03,fidesz
+M11/E04,Jász-Nagykun-Szolnok 04,fidesz
+M12/E01,Komárom-Esztergom 01,baloldal
+M12/E02,Komárom-Esztergom 02,fidesz
+M12/E03,Komárom-Esztergom 03,fidesz
+M13/E01,Nógrád 01,fidesz
+M13/E02,Nógrád 02,fidesz
+M14/E01,Pest 01,baloldal
+M14/E02,Pest 02,fidesz
+M14/E03,Pest 03,fidesz
+M14/E04,Pest 04,fidesz
+M14/E05,Pest 05,fidesz
+M14/E06,Pest 06,fidesz
+M14/E07,Pest 07,fidesz
+M14/E08,Pest 08,baloldal
+M14/E09,Pest 09,fidesz
+M14/E10,Pest 10,fidesz
+M14/E11,Pest 11,fidesz
+M14/E12,Pest 12,fidesz
+M15/E01,Somogy 01,baloldal
+M15/E02,Somogy 02,fidesz
+M15/E03,Somogy 03,fidesz
+M15/E04,Somogy 04,fidesz
+M16/E01,Szabolcs-Szatmár-Bereg 01,baloldal
+M16/E02,Szabolcs-Szatmár-Bereg 02,jobbik
+M16/E03,Szabolcs-Szatmár-Bereg 03,fidesz
+M16/E04,Szabolcs-Szatmár-Bereg 04,fidesz
+M16/E05,Szabolcs-Szatmár-Bereg 05,fidesz
+M16/E06,Szabolcs-Szatmár-Bereg 06,fidesz
+M17/E01,Tolna 01,fidesz
+M17/E02,Tolna 02,fidesz
+M17/E03,Tolna 03,fidesz
+M18/E01,Vas 01,fidesz
+M18/E02,Vas 02,fidesz
+M18/E03,Vas 03,fidesz
+M19/E01,Veszprém 01,fidesz
+M19/E02,Veszprém 02,fidesz
+M19/E03,Veszprém 03,fidesz
+M19/E04,Veszprém 04,fidesz
+M20/E01,Zala 01,fidesz
+M20/E02,Zala 02,fidesz
+M20/E03,Zala 03,fidesz
