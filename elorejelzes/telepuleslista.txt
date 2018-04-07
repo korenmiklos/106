@@ -3,7 +3,7 @@
        log:  /Users/koren/Dropbox (CEU MicroData)/projects/py/106/elorejelzes/telepu
 > leslista.txt
   log type:  text
- opened on:   7 Apr 2018, 08:23:41
+ opened on:   7 Apr 2018, 08:26:52
 
 . tempfile telepules1 oevk megye
 
