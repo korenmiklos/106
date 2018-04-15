@@ -1,0 +1,13 @@
+oevk,eselyes,megye,mzp_part,mzp_nev,url
+M05/E03,jobbik,Borsod-Abaúj-Zemplén,jobbik,Farkas Péter Barnabás,https://goo.gl/RVp2my
+M05/E04,jobbik,Borsod-Abaúj-Zemplén,jobbik,Egyed Zsolt,https://goo.gl/6ENnKY
+M05/E07,jobbik,Borsod-Abaúj-Zemplén,jobbik,Lukács Attila,https://goo.gl/XVuui7
+M06/E02,baloldal,Csongrád,mszp,Joób Márton,https://goo.gl/Q9tjSr
+M08/E01,baloldal,Győr-Moson-Sopron,dk,Gázer Tímea,https://goo.gl/wQhyHn
+M10/E03,jobbik,Heves,jobbik,Sneider Tamás,https://goo.gl/AKjqNy
+M14/E01,baloldal,Pest,mszp,dr. Csőzik László
+M14/E05,baloldal,Pest,dk,Rónai Sándor
+M14/E08,baloldal,Pest,mszp,Stefanik Zsolt
+M16/E01,baloldal,Szabolcs-Szatmár-Bereg,mszp,Csabai Lászlóné
+M16/E02,jobbik,Szabolcs-Szatmár-Bereg,jobbik,dr. Fülöp Erik
+M18/E01,baloldal,Vas,mszp,dr. Nemény András
