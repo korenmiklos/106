@@ -44,7 +44,7 @@ data2 <- merge(data, kamu2, by="id")
 
 data_clean <- subset(data2, select = c(id, telepules_id, atjelentkezettek, szavazokor, oevk, szavazok, reszvetel, fidesz, lmp, kormanyvaltok, jobbik, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb))
 
-###NEW STUFF - telepules szintu adatok + KSH kodok addolása
+###NEW STUFF - telepules szintu adatok + KSH kodok addol?sa
 
 #data_telepules_kodok <- read.csv("106/adat/telepules/telepules_kodok.csv")
 
@@ -122,7 +122,7 @@ new_by_oevk_2014 <- read.csv("106/adat/jelolt/oevk2014_clean_new.csv")
 
 
 
-######2010-es adatok beolvasása és merge-ölése
+######2010-es adatok beolvas?sa ?s merge-?l?se
 
 data_2010 <- read.csv("106/adat/2010/listas.csv")
 
@@ -134,7 +134,7 @@ colnames(data2_2010)[1] <- "part"
 
 data_2010_merge <- join(data_2010, data2_2010, type="left")
 
-#filter 4 pártra - merge and cleanse az osszes elnevezes variaciojat
+#filter 4 p?rtra - merge and cleanse az osszes elnevezes variaciojat
 
 data_2010_merge <- as.data.table(data_2010_merge)
 
@@ -183,7 +183,7 @@ data_2010_merge_FIDESZ3$szervezet <- as.factor(as.character(data_2010_merge_FIDE
 
 data_2010_merge_FIDESZ_all <-rbind(data_2010_merge_FIDESZ, data_2010_merge_FIDESZ2, data_2010_merge_FIDESZ3)
 
-#átnevezni az oszlopokat, hogy egy oszlop 1 párt szavazata legyen a merge-nél
+#?tnevezni az oszlopokat, hogy egy oszlop 1 p?rt szavazata legyen a merge-n?l
 
 colnames(data_2010_merge_MSZP_all)[2] <- "MSZP_2010"
 
@@ -205,7 +205,7 @@ data_2010_clean <- subset(data_2010_all_3, select = c(szavazokor, FIDESZ_2010, J
 
 data_2010_clean <-  merge(data_2010_clean, data_reszvetel_2010, by="szavazokor")
 
-### MERGING 2010 és 2014 by szavazokor
+### MERGING 2010 ?s 2014 by szavazokor
 
 colnames(data_2010_clean)[1] <- "id"
 
@@ -236,11 +236,11 @@ data_2010_2014 <- data_2010_2014[, MSZP_2014_pc := round((MSZP_2014 / ossz_szava
 data_2010_2014 <- data_2010_2014[, JOBBIK_2014_pc := round((JOBBIK_2014 / ossz_szavazo_2014), digits = 4)]  
 data_2010_2014 <- data_2010_2014[, LMP_2014_pc := round((LMP_2014 / ossz_szavazo_2014), digits = 4)] 
 
-## MERGE szavazokori profilok 2014-bol - városok aránya, telepulesszam, stb.
+## MERGE szavazokori profilok 2014-bol - v?rosok ar?nya, telepulesszam, stb.
 
 data_2010_2014_szavazokor <-  merge(data_2010_2014, new_by_oevk_2014, by="oevk")
 
-###GLM by szavazokor és OEVK - profil, varos, 2010-2014-es adat összehasonlítva
+###GLM by szavazokor ?s OEVK - profil, varos, 2010-2014-es adat ?sszehasonl?tva
 
 ##GLM SZAVAZOKOR
 
@@ -254,7 +254,7 @@ summary(logitcoeffs_fidesz_2010_2014)
 
 data_2010_2014_szavazokor$pred_logit <- predict.glm(logitcoeffs_fidesz_2010_2014, type="response")
 
-ggplot(data = data_2010_2014_szavazokor, aes(x=FIDESZ_2014_pc, y= pred_logit)) + xlim(0, 0.75) + ylim(0, 0.75) +
+ggplot(data = data_2010_2014_szavazokor, aes(x=FIDESZ_2014_pc, y= pred_logit)) + xlim(0.08, 0.55) + ylim(0.08, 0.55) +
   geom_line(aes(x=pred_logit, y=pred_logit), colour="orange") +
   geom_point()
 
@@ -361,25 +361,25 @@ coeftest(regression_jobbik_test)
 
 #uniform swing kalkulacio data_UNS
 
-#new inputs - orszagos pollok átlaga -4% Fidesz, frissítve március 2-án
+#new inputs - orszagos pollok ?tlaga -4% Fidesz, friss?tve m?rcius 2-?n
 
-#2014 eredmény Fidesz 
+#2014 eredm?ny Fidesz 
 # Fidesz 44.13
 # Jobbik 20.34
-# Kormányváltók 26.86
+# Korm?nyv?lt?k 26.86
 # LMP 4.98
-# Egyéb 3.69
+# Egy?b 3.69
 
-#2018 március 
+#2018 m?rcius 
 #Fidesz 45%, 
 #MSZP-P 17%
 #Jobbik 18% 
 #LMP 9%
 # DK 6%
 #Momentum 2%
-#Egyéb 3%
+#Egy?b 3%
 
-#állandó 2014-es párt szorzók
+#?lland? 2014-es p?rt szorz?k
 
 data_UNS <- data_clean[, Fidesz_2014_orszagos := 44.13] 
 data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
@@ -389,7 +389,7 @@ data_UNS <- data_UNS[, Egyeb_2014_orszagos := 3.69]
 
 data_UNS <- data_UNS[, reszvetel_2014 := 60.99] 
 
-#frissítheto új adatok alapján
+#friss?theto ?j adatok alapj?n
 
 data_UNS <- data_UNS[, Fidesz_2018_orszagos := 45] 
 data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 17]
@@ -514,168 +514,3 @@ regression_fidesz_kicsi <- lm(egyeni_fidesz_pc ~ szavazokor_size_binary, data=da
 summary(regression_fidesz_kicsi) #A Fidesz 10%-kal erÅ‘sebb kis szavazÃ³kÃ¶rÃ¶kben
 
 
-#####SPLIT DATA PART (az ID alapú matching elvész, a data_clean a stabil dataset)
-
-#TEST - create data by megye, szamold meg a szavazokat es szavazokoroket telepulesenkent
-
-#megye, telepules, szavazokor szetvalasztasa
-
-data_split <- separate(data_clean,
-         col = "id",
-         into = c("megye", "telepules_kerulet", "szavazokor_id"),
-         sep = "/")
-
-#data_clean_M01 <- data_clean[which(data_clean$megye=='M01')]
-#data_clean_M02 <- data_clean[which(data_clean$megye=='M02')]
-#data_clean_M03 <- data_clean[which(data_clean$megye=='M03')]
-#data_clean_M04 <- data_clean[which(data_clean$megye=='M04')]
-#data_clean_M05 <- data_clean[which(data_clean$megye=='M05')]
-
-data_split_M06 <- data_split[which(data_split$megye=='M06')]
-
-#data_clean_M07 <- data_clean[which(data_clean$megye=='M07')]
-#data_clean_M08 <- data_clean[which(data_clean$megye=='M08')]
-#data_clean_M09 <- data_clean[which(data_clean$megye=='M09')]
-#data_clean_M10 <- data_clean[which(data_clean$megye=='M10')]
-#data_clean_M11 <- data_clean[which(data_clean$megye=='M11')]
-#data_clean_M12 <- data_clean[which(data_clean$megye=='M12')]
-#data_clean_M13 <- data_clean[which(data_clean$megye=='M13')]
-#data_clean_M14 <- data_clean[which(data_clean$megye=='M14')]
-#data_clean_M15 <- data_clean[which(data_clean$megye=='M15')]
-#data_clean_M16 <- data_clean[which(data_clean$megye=='M16')]
-#data_clean_M17 <- data_clean[which(data_clean$megye=='M17')]
-#data_clean_M18 <- data_clean[which(data_clean$megye=='M18')]
-#data_clean_M19 <- data_clean[which(data_clean$megye=='M19')]
-#data_clean_M20 <- data_clean[which(data_clean$megye=='M20')]
-
-#PELDA - hodmezovasarhelyi 2014es adatok (2018-as majd kesobb addolva, egyelore Excelben van)
-
-
-hodmezo2014 <- data_split_M06[telepules_kerulet == "T024"]
-
-by_oevk_hodmezo <- hodmezo2014[, list(egyeni_fidesz, egyeni_jobbik, egyeni_lmp,
-                                      egyeni_kormanyvaltok = egyeni_kormanyvaltok), by = list(oevk, megye, szavazokor_id, telepules_kerulet)]
-
-hodmezo2014 <- hodmezo2014[, ossz_ellenzek := egyeni_jobbik + egyeni_lmp + egyeni_kormanyvaltok]
-
-hodmezo2014_fidesz_ellenzek <- subset(hodmezo2014, select = c(egyeni_fidesz, ossz_ellenzek))
-
-szavazokorok <- hodmezo2014[, hodmezo2014$egyeni_kormanyvaltok, by = szavazokor_id] 
-
-hodmezo_2014_baloldal <- szavazokorok[c(1:50)]
-
-baloldal_egyeni_ossz <- sum(hodmezo2014$egyeni_kormanyvaltok)
-baloldal_egyeni_ossz <- sum(hodmezo2014$egyeni_kormanyvaltok)
-
-
-#PELDA - csongrad 4-es korzet Hodmezovasarhely nelkul
-
-csongrad4 <- data_split_M06[oevk == "CSONGRÃD 04"] 
-
-csongrad4 <- csongrad4[, ossz_ellenzek := egyeni_jobbik + egyeni_lmp + egyeni_kormanyvaltok]
-
-csongrad_fidesz_ellenzek <- subset(csongrad4, select = c(telepules_kerulet, egyeni_fidesz, ossz_ellenzek))
-
-csongrad_fidesz_ellenzek_2 <- csongrad_fidesz_ellenzek[!telepules_kerulet %in% c("T024")]
-
-
-##### Tstar adatok
-
-data_telepules <- read.csv("106/adat/telepules/telepules_kodok.csv")
-
-data_koraranyok <- read.csv("106/adat/telepules/tstar/koraranyok.csv")
-
-data_tamogatottak <- read.csv("106/adat/telepules/tstar/tamogatottak.csv")
-
-data_munkaadok <- read.csv("106/adat/telepules/tstar/munkaadok.csv")
-
-data_nyugdijasok <- read.csv("106/adat/telepules/tstar/nyugdijasok.csv")
-
-data_allaskeresok <- read.csv("106/adat/telepules/tstar/allaskeresok.csv")
-
-data <- as.data.table(data)
-data_telepules <- as.data.table(data_telepules)
-data_koraranyok <- as.data.table(data_koraranyok)
-data_tamogatottak <- as.data.table(data_tamogatottak)
-data_munkaadok <- as.data.table(data_munkaadok)
-data_nyugdijasok <- as.data.table(data_nyugdijasok)
-data_allaskeresok <- as.data.table(data_allaskeresok)
-
-data_telepules <- data_telepules[, tazon := telepules_nev]
-
-write.csv(data_telepules, 'data_telepules_2018.csv')
-
-data_koraranyok_filtered <- data_koraranyok[ev.3 == "2014"] 
-data_koraranyok_filtered2 <- data_koraranyok[ev.3 == "2018"] 
-
-data_tamogatottak_filtered <- data_tamogatottak[ev.3 == "2014"] 
-data_tamogatottak_filtered2 <- data_tamogatottak[ev.3 == "2018"] 
-
-data_munkaadok_filtered <- data_munkaadok[ev.3 == "2014"] 
-data_munkaadok_filtered2 <- data_munkaadok[ev.3 == "2018"] 
-
-data_nyugdijasok_filtered <- data_nyugdijasok[ev.3 == "2014"]
-data_nyugdijasok_filtered2 <- data_nyugdijasok[ev.3 == "2018"] 
-
-data_allaskeresok_filtered <- data_allaskeresok[ev.3 == "2014"]
-data_allaskeresok_filtered2 <- data_allaskeresok[ev.3 == "2018"]
-
-write.csv(data_koraranyok_filtered,'data_koraranyok_filtered_2014.csv')
-write.csv(data_koraranyok_filtered2, 'data_koraranyok_filtered_2018.csv')
-
-write.csv(data_tamogatottak_filtered,'data_tamogatottak_filtered_2014.csv')
-write.csv(data_tamogatottak_filtered2,'data_tamogatottak_filtered_2018.csv')
-
-write.csv(data_munkaadok_filtered,'data_munkaadok_filtered_2014.csv')
-write.csv(data_munkaadok_filtered2, 'data_munkaadok_filtered_2018.csv')
-
-write.csv(data_nyugdijasok_filtered,'data_nyugdijasok_filtered_2014.csv')
-write.csv(data_nyugdijasok_filtered2,'data_nyugdijasok_filtered_2018.csv')
-
-write.csv(data_nyugdijasok_filtered,'data_nyugdijasok_filtered_2014.csv')
-write.csv(data_nyugdijasok_filtered2,'data_nyugdijasok_filtered_2018.csv')
-
-write.csv(data_allaskeresok_filtered,'data_allaskeresok_filtered_2014.csv')
-write.csv(data_allaskeresok_filtered2,'data_allaskeresok_filtered_2018.csv')
-
-#files merged in Excel
-
-data_koraranyok_new <- read.csv("data_koraranyok_merged.csv")
-
-data_nyugdijasok_new <- read.csv("data_nyugdijasok_merged.csv")
-
-data_tamogatottak_new <- read.csv("data_tamogatottak_merged.csv")
-
-data_allaskeresok_new <- read.csv("data_allaskeresok_merged.csv")
-
-data_munkaadok_new <- read.csv("data_munkaadok_merged.csv")
-
-data_koraranyok_new <- as.data.table(data_koraranyok_new)
-data_tamogatottak_new <- as.data.table(data_tamogatottak_new)
-data_munkaadok_new <- as.data.table(data_munkaadok_new)
-data_nyugdijasok_new <- as.data.table(data_nyugdijasok_new)
-data_allaskeresok_new <- as.data.table(data_allaskeresok_new)
-
-data_all_merge1 <- merge(data_telepules, data_nyugdijasok_new, by = "tazon")  #to be curated
-
-data_all_merge2 <- merge(data_all_merge1, data_koraranyok_new, by = "tazon", all.x = TRUE)  #to be curated
-
-write.csv(data_all_merge2, 'merge2.csv')
-
-data_all_merge2_clean <- read.csv("merge2_clean.csv")
-
-data_all_merge2_clean <- as.data.table(data_all_merge2_clean)
-
-data_all_merge2_clean[, id := "telepules_id"]
-
-data_2 <- read.csv("vote_counts_precincts_2.csv")
-
-date_merge_test <- merge(data_2, data_all_merge2_clean, by = "id", all.x = TRUE)  #to be curated
-
-data_all_merge3 <- merge(data_all_merge2, data_tamogatottak_new, by = "tazon", all.x = TRUE, allow.cartesian = TRUE)
-
-#data_all_merge4 <- merge(data_all_merge3, data_allaskeresok_new, by = "tazon", all.x = TRUE, allow.cartesian = TRUE)
-
-#data_all_merge5 <- data_all_merge4 %>% distinct(tazon, ev.x)
-
-#data_all_merge_all <- merge(data_all_merge4, data_munkaadok_new, by = "tazon", all.x = TRUE, allow.cartesian = TRUE)
