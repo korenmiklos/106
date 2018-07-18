@@ -262,7 +262,7 @@ egyeni_lista_by_oevk_2018 <- by_szavazokor_2018[, list(
 
 write.csv(egyeni_lista_by_oevk_2018,'2018_by_oevk.csv', fileEncoding = "UTF-8")
 
-### TELEPULES
+### TELEPULES szintű adatok
 
 egyeni_lista_by_telep_2018 <- by_szavazokor_2018[, list(
   megyeid = megyeid,
@@ -527,7 +527,7 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   
   
-  #TSTAR telepules adatok - (Budapest will be merged)
+  #TSTAR telepules adatok - (Budapest is merged)
   
   
   data_telepulesadatok_t_star <-read.csv("Telepulesadatok_t_star.csv")
@@ -535,13 +535,129 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   egyeni_lista_2018_telep_clean <- read.csv("2018_by_telep_clean.csv", fileEncoding = "UTF-8")
   
+  oevk_2014_telep_clean <- read.csv("oevk2014_telepules_clean.csv", fileEncoding = "UTF-8") 
+  
   
   t_star_telepules_2018 <- merge(data_telepulesadatok_t_star, egyeni_lista_2018_telep_clean, by.x = "telep_nev")
   
+  t_star_telepules_2014_2018 <- merge(oevk_2014_telep_clean, t_star_telepules_2018, by = "telep_nev")
+  
+  t_star_telepules_2014_2018$megye_ido_km <- as.numeric(t_star_telepules_2014_2018$megye_ido_km)
+  t_star_telepules_2014_2018$megyeszekhely_km <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_km)
+  t_star_telepules_2014_2018$megyeszekhely_min <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_min)
+  t_star_telepules_2014_2018$altisk <- as.numeric(t_star_telepules_2014_2018$altisk)
+  
+  t_star_telepules_2014_2018 <- as.data.table(t_star_telepules_2014_2018)
+  
+  
+  write.csv(t_star_telepules_2014_2018, '2014_2018_tstar_by_telep.csv')
+  
+  
   ###t_star_telepules_2018 is all basic t_star data with all towns (Budapest merged)
   
-  ###additional data tables t-star (unemployment rate, pensioners, people on benefits, etc)
+  
+  #### regression example - GLM
+  
+  ###applying quintiles to continuous variables to create categories for easier analysis
+  
+  t_star_telepules_2014_2018[is.na(t_star_telepules_2014_2018)] <- 0
+  
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, reszvetel_q <- as.integer(cut(reszvetel, quantile(reszvetel, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, kabeltv_arany_q <- as.integer(cut(kabeltv_arany, quantile(kabeltv_arany, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, budapest_ido_km_q <- as.integer(cut(budapest_ido_km, quantile(budapest_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, megye_ido_km_q <- as.integer(cut(megye_ido_km, quantile(megye_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, megyeszekhely_km_q <- as.integer(cut(megyeszekhely_km, quantile(megyeszekhely_km, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, megyeszekhely_min_q <- as.integer(cut(megyeszekhely_min, quantile(megyeszekhely_min, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, budapest_min_q <- as.integer(cut(budapest_min, quantile(budapest_min, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, altisk_q <- as.integer(cut(altisk, quantile(altisk, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, jovedelem_fo_q <- as.integer(cut(jovedelem_fo, quantile(jovedelem_fo, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, ujszulott_rate_q <- as.integer(cut(ujszulott_rate, quantile(ujszulott_rate, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, idosek_rate_q <- as.integer(cut(idosek_rate, quantile(idosek_rate, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, nepesseg_q <- as.integer(cut(nepesseg, quantile(nepesseg, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, elvandorlas_q <- as.integer(cut(elvandorlas, quantile(elvandorlas, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, odavanadorlas_q <- as.integer(cut(odavanadorlas, quantile(odavanadorlas, probs=0:10/10), include.lowest=TRUE)))
+  
 
+  
+  regression_test_2014_2018_tstar_mini <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + reszvetel_q + 
+                                               budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q, data=t_star_telepules_2014_2018, na.action = na.pass)
+  summary(regression_test_2014_2018_tstar_mini)
+  coeftest(regression_test_2014_2018_tstar_mini)
+  
+  ###Fidesz
+  
+  
+  logitcoeffs_regression_fidesz_2014_2018_tstar_mini <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + reszvetel_q + 
+                                                             budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                            budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                            idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q,  data=t_star_telepules_2014_2018, family='binomial'(link="logit"))
+  
+  summary(logitcoeffs_regression_fidesz_2014_2018_tstar_mini)
+  
+  
+  t_star_telepules_2014_2018$pred_logit_fidesz <- predict.glm(logitcoeffs_regression_fidesz_2014_2018_tstar_mini, type="response")
+  
+  ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+    geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+    ggsave(("fidesz_GLM_by_megye_id.png"), width = 25, height = 25, units = c("cm"))
+    
+    ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+      geom_text(aes(label=telep_nev), size = 1, check_overlap = FALSE) +
+      geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+      geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+    ggsave(("fidesz_GLM_by_town.png"), width = 25, height = 25, units = c("cm"))
+    
+### Jobbik
+    
+    logitcoeffs_regression_jobbik_2014_2018_tstar_mini <- glm(egyeni_jobbik_pc.y ~ egyeni_jobbik_pc.x + reszvetel_q + 
+                                                                kabeltv_arany_q + budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                                budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                                idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q,  data=t_star_telepules_2014_2018, family='binomial'(link="logit"))
+    
+    summary(logitcoeffs_regression_jobbik_2014_2018_tstar_mini)
+    
+    
+    t_star_telepules_2014_2018$pred_logit_jobbik <- predict.glm(logitcoeffs_regression_jobbik_2014_2018_tstar_mini, type="response")
+    
+    ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+      geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+      geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1)
+    theme_minimal() 
+    ggsave(("Jobbik_GLM_by_megye_id.png"), width = 25, height = 25, units = c("cm"))
+    
+    ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+      geom_text(aes(label=telep_nev), size = 1, check_overlap = FALSE) +
+      geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1)
+    theme_minimal() 
+    ggsave(("Jobbik_GLM_by_town.png"), width = 25, height = 25, units = c("cm"))
+ 
+
+  
+    
+  ###additional data tables t-star (unemployment rate, pensioners, people on benefits, etc)
+    
+    rm(list=ls())
+    
+    data_telepulesadatok_t_star <-read.csv("Telepulesadatok_t_star.csv")
+    colnames(data_telepulesadatok_t_star)[1] <- "telep_nev"
+    
+    egyeni_lista_2018_telep_clean <- read.csv("2018_by_telep_clean.csv", fileEncoding = "UTF-8")
+    
+    oevk_2014_telep_clean <- read.csv("oevk2014_telepules_clean.csv", fileEncoding = "UTF-8") 
+    
+    
+    t_star_telepules_2018 <- merge(data_telepulesadatok_t_star, egyeni_lista_2018_telep_clean, by.x = "telep_nev")
+    
+    t_star_telepules_2014_2018 <- merge(oevk_2014_telep_clean, t_star_telepules_2018, by = "telep_nev")
+    
   
   data_allaskeresok <- read.csv("tstar/allaskeresok.csv", fileEncoding = "UTF-8")
   data_allaskeresok <- as.data.table(data_allaskeresok)
@@ -564,26 +680,121 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   data_tamogatottak <- data_tamogatottak[ev.3 == 2018]  
   
   
-  colnames(t_star_telepules_2018)[1] <- "telnev"
+  colnames(t_star_telepules_2014_2018)[1] <- "telnev"
   
-  merge_all_t_star1 <- merge(data_allaskeresok, t_star_telepules_2018, by = "telnev")  
+  merge_all_t_star1 <- merge(data_allaskeresok, t_star_telepules_2014_2018, by = "telnev")  
   merge_all_t_star2 <- merge(data_koraranyok, merge_all_t_star1, by = c("telnev", "ev.3"))
   merge_all_t_star3 <- merge(data_munkaadok, merge_all_t_star2, by = c("telnev", "ev.3"))
   merge_all_t_star4 <- merge(data_nyugdijasok, merge_all_t_star3, by = c("telnev", "ev.3"))
   
-  merge_all_t_star4 <- subset(merge_all_t_star4, select = c(1:2, 4:5, 7:125))
+  merge_all_t_star4 <- subset(merge_all_t_star4, select = c(1:2, 4:5, 7:145))
   
   merge_all_t_star_all <-  merge(data_tamogatottak, merge_all_t_star4, by = c("telnev", "ev.3"))
   
-  ##merge_all_t_star_all is all data with 300 towns missing
+  merge_all_t_star_all$megye_ido_km <- as.numeric(t_star_telepules_2014_2018$megye_ido_km)
+  merge_all_t_star_all$megyeszekhely_km <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_km)
+  merge_all_t_star_all$megyeszekhely_min <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_min)
+  merge_all_t_star_all$altisk <- as.numeric(t_star_telepules_2014_2018$altisk)
+  
+  write.csv(merge_all_t_star_all, '2014_2018_tstar_all_by_telep.csv')
+  
+  
+  merge_all_t_star_all[is.na(merge_all_t_star_all)] <- 0
+  
+  merge_all_t_star_all <- within(merge_all_t_star_all, reszvetel_q <- as.integer(cut(reszvetel, quantile(reszvetel, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, kabeltv_arany_q <- as.integer(cut(kabeltv_arany, quantile(kabeltv_arany, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, budapest_ido_km_q <- as.integer(cut(budapest_ido_km, quantile(budapest_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, megye_ido_km_q <- as.integer(cut(megye_ido_km, quantile(megye_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, megyeszekhely_km_q <- as.integer(cut(megyeszekhely_km, quantile(megyeszekhely_km, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, megyeszekhely_min_q <- as.integer(cut(megyeszekhely_min, quantile(megyeszekhely_min, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, budapest_min_q <- as.integer(cut(budapest_min, quantile(budapest_min, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, altisk_q <- as.integer(cut(altisk, quantile(altisk, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, jovedelem_fo_q <- as.integer(cut(jovedelem_fo, quantile(jovedelem_fo, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, ujszulott_rate_q <- as.integer(cut(ujszulott_rate, quantile(ujszulott_rate, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, idosek_rate_q <- as.integer(cut(idosek_rate, quantile(idosek_rate, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, nepesseg_q <- as.integer(cut(nepesseg, quantile(nepesseg, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, elvandorlas_q <- as.integer(cut(elvandorlas, quantile(elvandorlas, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, odavanadorlas_q <- as.integer(cut(odavanadorlas, quantile(odavanadorlas, probs=0:10/10), include.lowest=TRUE)))
+  
+  ###GLM with all T-star data
+  
+  ## Fidesz
+  
+  logitcoeffs_regression_fidesz_2014_2018_tstar_all <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + kozmunka_aranya + nyudijas_ffi_arany +
+                                                             nyudijas_noi_arany + nok_30_39_aranya + nok_40_49_aranya + nok_65._aranya +
+                                                             ffi_30_39_aranya + ffi_40_49_aranya + ffi_65._aranya + allaskeresok_aranya_8osztaly +
+                                                             ervenytelen_szazalek + reszvetel_q + 
+                                                             budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                             budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                             idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q
+                                                          ,  data=merge_all_t_star_all, family='binomial'(link="logit"))
+  
+  
+  summary(logitcoeffs_regression_fidesz_2014_2018_tstar_all)
+  
+  
+  merge_all_t_star_all$pred_logit_fidesz <- predict.glm(logitcoeffs_regression_fidesz_2014_2018_tstar_all, type="response")
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+    geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+  theme_minimal() 
+  ggsave(("fidesz_GLM_by_megye_id_2.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+    geom_text(aes(label=telnev), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+  theme_minimal() 
+  ggsave(("fidesz_GLM_by_town_2.png"), width = 25, height = 25, units = c("cm"))
+  
+  
+  
+  ## Jobbik
+  
+  logitcoeffs_regression_jobbik_2014_2018_tstar_all <- glm(egyeni_jobbik_pc.y ~ egyeni_jobbik_pc.x + kozmunka_aranya + nyudijas_ffi_arany +
+                                                             nyudijas_noi_arany + nok_30_39_aranya + nok_40_49_aranya + nok_65._aranya +
+                                                             ffi_30_39_aranya + ffi_40_49_aranya + ffi_65._aranya + allaskeresok_aranya_8osztaly +
+                                                             ervenytelen_szazalek + reszvetel_q + 
+                                                             budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                             budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                             idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q
+                                                           ,  data=merge_all_t_star_all, family='binomial'(link="logit"))
+  
+  
+  summary(logitcoeffs_regression_jobbik_2014_2018_tstar_all)
+  
+  
+  merge_all_t_star_all$pred_logit_jobbik <- predict.glm(logitcoeffs_regression_jobbik_2014_2018_tstar_all, type="response")
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+    geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("Jobbik_GLM_by_megye_id_2.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+    geom_text(aes(label=telnev), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("Jobbik_GLM_by_town_2.png"), width = 25, height = 25, units = c("cm"))
   
 #### UNS predictions and deviation   
     
+  rm(list=ls())
+  
     ### TO BE CLEANED UP
  
   
   ###DATA PROCESSING from other file
+  
+  
     # LOAD  DATA
+
+  
     data <- read.csv("vote_counts_precincts_2b.csv")
   
   data <- as.data.table(data)
@@ -599,7 +810,7 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   #reszveteli adatok, 4 part listaja, egyeni, egyeb partok lista + megye, telepules, szavazokor kulon
   
-  data_clean <- subset(data2, select = c(id, telepules_id, atjelentkezettek, szavazokor, oevk_id, szavazok, reszvetel, fidesz, lmp, kormanyvaltok, jobbik, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb))
+  data_clean <- subset(data2, select = c(id, telepules_id, telep_nev, atjelentkezettek, szavazokor, oevk_id, szavazok, reszvetel, fidesz, lmp, kormanyvaltok, jobbik, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb))
   
   
   
@@ -639,22 +850,56 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   lmp_egyeni_ossz <- sum(data_clean$egyeni_lmp)
   lmp_egyeni_ossz
   
-  #oevk szintu eredmenyek (4 fobb part)
+  #oevk szintu, telepules szintu eredmenyek (4 fobb part)
   
-  by_szavazokor_2014 <- data_clean[, list(szavazok, reszvetel, ossz_szavazo, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb, szavazokorok_szama), 
+  data_clean <- as.data.table(data_clean)
+  
+  by_szavazokor_2014 <- data_clean[, list(telep_nev, ossz_szavazo, reszvetel, szavazok, fidesz, egyeni_fidesz, lmp, egyeni_lmp, kormanyvaltok, egyeni_kormanyvaltok, jobbik, egyeni_jobbik, egyeb, szavazokorok_szama), 
                                    by = list(oevk_id, id)]
+  
+  by_telepules_2014 <- data_clean[, list(szavazok = sum(szavazok),
+                                         reszvetel = sum(szavazok) / sum(ossz_szavazo),
+                                         ossz_szavazo = sum(szavazok),
+                                         egyeni_fidesz = sum(egyeni_fidesz),
+                                         egyeni_lmp = sum(egyeni_lmp),
+                                         egyeni_kormanyvaltok = sum(egyeni_kormanyvaltok),
+                                         egyeni_jobbik = sum(egyeni_jobbik),
+                                         egyeb = sum(egyeb),
+                                         orszagos_fidesz = sum(fidesz),
+                                         orszagos_fidesz_lmp = sum(lmp),
+                                         orszagos_fidesz_kormanyvaltok = sum(kormanyvaltok),
+                                         orszagos_fidesz_jobbik = sum(jobbik),
+                                         egyeni_fidesz_pc = sum(egyeni_fidesz) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
+                                         egyeni_lmp_pc = sum(egyeni_lmp) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
+                                         egyeni_kormanyvaltok_pc = sum(egyeni_kormanyvaltok) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
+                                         egyeni_jobbik_pc = sum(egyeni_jobbik) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
+                                         orszagos_fidesz_pc = sum(fidesz) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
+                                         orszagos_lmp_pc = sum(lmp) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
+                                         orszagos_kormanyvaltok_pc = sum(kormanyvaltok) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
+                                         orszagos_jobbik_pc = sum(jobbik) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb)),
+                                  by = telep_nev]
+  
+  write.csv(by_telepules_2014, 'oevk2014_telepules.csv')
   
   by_oevk_2014 <- by_szavazokor_2014[, list(szavazok = sum(szavazok),
                                             reszvetel = sum(szavazok) / sum(ossz_szavazo),
-                                            ossz_szavazo = sum(ossz_szavazo),
+                                            ossz_szavazo = sum(szavazok),
                                             egyeni_fidesz = sum(egyeni_fidesz),
                                             egyeni_lmp = sum(egyeni_lmp),
                                             egyeni_kormanyvaltok = sum(egyeni_kormanyvaltok),
                                             egyeni_jobbik = sum(egyeni_jobbik),
+                                            orszagos_fidesz = sum(fidesz),
+                                            orszagos_fidesz_lmp = sum(lmp),
+                                            orszagos_fidesz_kormanyvaltok = sum(kormanyvaltok),
+                                            orszagos_fidesz_jobbik = sum(jobbik),
                                             egyeni_fidesz_pc = sum(egyeni_fidesz) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
                                             egyeni_lmp_pc = sum(egyeni_lmp) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
                                             egyeni_kormanyvaltok_pc = sum(egyeni_kormanyvaltok) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
                                             egyeni_jobbik_pc = sum(egyeni_jobbik) / sum(egyeni_fidesz + egyeni_lmp + egyeni_kormanyvaltok + egyeni_jobbik + egyeb),
+                                            orszagos_fidesz_pc = sum(fidesz) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
+                                            orszagos_lmp_pc = sum(lmp) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
+                                            orszagos_kormanyvaltok_pc = sum(kormanyvaltok) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
+                                            orszagos_jobbik_pc = sum(jobbik) / sum(fidesz + lmp + kormanyvaltok + jobbik + egyeb),
                                             szavazokorok_szama = sqrt(sum(szavazokorok_szama))),
                                      by = oevk_id][order(oevk_id)] 
   
@@ -664,12 +909,13 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
 ###MERGING 2014 with 2018
   
   
-  ###### data of 2014 - to be merged with 2018 on OEVK level
-  
-  ##OUTPUT from 106_OEVK_2014_glm
+  ###### data of 2014 - to be merged with 2018 on OEVK level - some editing in Excel has been done
   
   new_by_oevk_2014 <- read.csv("oevk2014_clean_new.csv")
+  egyeni_lista_by_oevk_2018 <- read.csv("2018_by_oevk_clean.csv")
+  
   new_by_oevk_2014 <- as.data.table(new_by_oevk_2014)
+  egyeni_lista_by_oevk_2018 <- as.data.table(egyeni_lista_by_oevk_2018)
   
   
   oevk_2014_vs_2018 <- merge(new_by_oevk_2014, egyeni_lista_by_oevk_2018, by = "oevk_id")
@@ -678,20 +924,81 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
 #### regression example from 106_OEVK_2014_glm - will be appiled to 2014-2018 prediction
   
-  regression_2010_2014_fidesz <- glm(FIDESZ_2014_pc ~ FIDESZ_2010_pc + szavazokorok_szama.x + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_szavazokor)
-  summary(regression_2010_2014_fidesz)
-  coeftest(regression_2010_2014_fidesz)
+  oevk_2014_vs_2018_glm_fidesz <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=oevk_2014_vs_2018)
+  summary(oevk_2014_vs_2018_glm_fidesz)
+  coeftest(oevk_2014_vs_2018_glm_fidesz)
   
-  logitcoeffs_fidesz_2010_2014 <- glm(FIDESZ_2014_pc ~ FIDESZ_2010_pc + szavazokorok_szama.x + telepulesek_szama + profil + varos_aranya, data=data_2010_2014_szavazokor, family='binomial')
+  logitcoeffs_oevk_2014_vs_2018_glm_fidesz <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=oevk_2014_vs_2018, family='binomial')
   
-  summary(logitcoeffs_fidesz_2010_2014)
+  summary(logitcoeffs_oevk_2014_vs_2018_glm_fidesz)
   
-  data_2010_2014_szavazokor$pred_logit <- predict.glm(logitcoeffs_fidesz_2010_2014, type="response")
+  oevk_2014_vs_2018$pred_logit_fidesz <- predict.glm(logitcoeffs_oevk_2014_vs_2018_glm_fidesz, type="response")
   
-  ggplot(data = data_2010_2014_szavazokor, aes(x=FIDESZ_2014_pc, y= pred_logit)) + xlim(0.08, 0.55) + ylim(0.08, 0.55) +
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
     geom_line(aes(x=pred_logit, y=pred_logit), colour="orange") +
     geom_point()
   
+  
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
+    geom_text(aes(label=oevk_id), size = 1.5, check_overlap = FALSE) +
+    geom_point(color ="red") +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("fidesz_GLM_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  
+  ### UNIFORM SWING vote share
+  
+  oevk_2014_vs_2018 <- oevk_2014_vs_2018[, Fidesz_2014_orszagos_UNS := 44.13] 
+  data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
+  data_UNS <- data_UNS[, Jobbik_2014_orszagos := 20.34]
+  data_UNS <- data_UNS[, LMP_2014_orszagos := 4.98]
+  data_UNS <- data_UNS[, Egyeb_2014_orszagos := 3.69]
+  
+  data_UNS <- data_UNS[, reszvetel_2014 := 60.99] 
+  
+  #friss?theto ?j adatok alapj?n
+  
+  oevk_2014_vs_2018 <- oevk_2014_vs_2018[, Fidesz_2018_orszagos_UNS := 47.73] 
+  data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 12.46]
+  data_UNS <- data_UNS[, Jobbik_2018_orszagos := 19.96]
+  data_UNS <- data_UNS[, LMP_2018_orszagos := 7.43]
+  data_UNS <- data_UNS[, DK_2018_orszagos := 5.6]
+  data_UNS <- data_UNS[, Momentum_2018_orszagos := 3.18]
+  
+  data_UNS <- data_UNS[, reszvetel_2018 := 70.2]  
+  
+  
+  
+  oevk_2014_vs_2018$Fidesz_2018_UNS_egyeni_pc <- oevk_2014_vs_2018[, egyeni_fidesz_pc.x * (Fidesz_2018_orszagos_UNS / Fidesz_2014_orszagos_UNS)] 
+  
+  
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= Fidesz_2018_UNS_egyeni_pc)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
+    geom_text(aes(label=oevk_id), size = 1.5, check_overlap = FALSE) +
+    geom_point(color ="red") +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK") + xlab("2018 Fidesz vote %") + ylab("UNS prediction") +
+    geom_line(aes(x=Fidesz_2018_UNS_egyeni_pc, y=Fidesz_2018_UNS_pc), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("fidesz_UNS_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= Fidesz_2018_UNS_egyeni_pc)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
+    geom_text(aes(label=profil), size = 3, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK type") + xlab("2018 Fidesz vote %") + ylab("UNS prediction") +
+    geom_line(aes(x=Fidesz_2018_UNS_egyeni_pc, y=Fidesz_2018_UNS_pc), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("fidesz_UNS_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  
+
+### UNS deviation    
+  oevk_2014_vs_2018$Fidesz_2018_UNS_egyeni_pc_elteres <- oevk_2014_vs_2018[, egyeni_fidesz_pc.y - Fidesz_2018_UNS_egyeni_pc] 
+  
+  ggplot(oevk_2014_vs_2018, aes(egyeni_fidesz_pc.y, Fidesz_2018_UNS_egyeni_pc_elteres)) + geom_point(color ="red") +
+    geom_text(aes(label=oevk_id),
+              size = 1) + geom_smooth(method = "lm") + ggtitle("Fidesz actual vote share and prediction error by OEVK") +
+    xlab("Fidesz vote share") + ylab("Prediction error") +
+    xlim(0.25, 0.65) +
+    theme_minimal()
+  ggsave(("fidesz_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
   
 #### 2014-2018 UNS from 106_OEVK_2014_glm file
   
@@ -734,7 +1041,7 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   data_UNS <- data_UNS[, DK_2018_orszagos := 5.6]
   data_UNS <- data_UNS[, Momentum_2018_orszagos := 3.18]
   
-  data_UNS <- data_UNS[, reszvetel_2018 := 70.4]  
+  data_UNS <- data_UNS[, reszvetel_2018 := 70.2]  
   
   #kiegeszito 2014-es benchmarkok az MSZP-P, DK, es Momentum adataihoz
   
@@ -811,8 +1118,4 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   
   write.csv(by_oevk_UNS_2018,'2018_UNS.csv')
-  
-  
-  ### TO BE ADDED UNS deviation visuals
-  
   
