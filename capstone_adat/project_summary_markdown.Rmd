@@ -4,8 +4,10 @@ author: "Adam Sanyo"
 date: "31 July 2018"
 output: html_document
 ---
-## Data loading
-TEXT here
+## Loading packages and 2018 data
+
+The first task is to analyze the 2018 results from different perspectives (without comparing it to the 2014 data).
+
 ```{r echo=FALSE, results='hide',message=FALSE}
 rm(list=ls())
 
@@ -34,7 +36,1170 @@ data <- read.csv("2018_egyeni_listas_29May.csv")
 data[is.na(data)] <- 0
 ```
 
+## Part 1: Dividing 2018 results data by town and OEVK level
+
+I pulled together the results of all "business" or "fake" parties (that are not the 8 major parties who compete for seats) and also merged all national minority lists (expect for the German national minority list since they received once compensation seat).
+
+Then all the vote percentages have been calculated on OEVK and town-level. These vote shares include part list votes as well as OEVK results for all parties and major candidates (two independents candidates contested seats as strongest opposition candidates).
 ```{r warning=FALSE}
-###content here
+#kamupartok - nem 8 fo part - egyesitese es szurese
+egyeni_egyeb <- subset(data, select = c(megyeid, megye, oevk, telepid, szavazokor, egyeni_na, egyeni_haza_partja, egyeni_aqp, egyeni_civil_mozgalom, egyeni_csp, egyeni_demokrata_part, egyeni_dmp, egyeni_ecdp, egyeni_emmo, egyeni_ep, egyeni_erp, egyeni_eu_alternativa, egyeni_eu_rom, egyeni_fitip, egyeni_fkgp, egyeni_fuggetlen, egyeni_hajra_magyarorszag, egyeni_ham, egyeni_haza_mindenkie, egyeni_hhp, egyeni_ima, egyeni_iranytu, egyeni_jmp, egyeni_jo_ut_mpp, egyeni_kedn, egyeni_kpp, egyeni_kossz, egyeni_kozos_nevezo, egyeni_lendulettel, egyeni_mcp, egyeni_medete_part, egyeni_minokp, egyeni_miszep, egyeni_miep, egyeni_mmm, egyeni_moma, egyeni_munkaspart, egyeni_mvmp, egyeni_neem, egyeni_nemzet_beke, egyeni_nemzeti_zoldek, egyeni_nop, egyeni_np, egyeni_ocp, egyeni_op, egyeni_opre_roma, egyeni_rend_part, egyeni_sem, egyeni_szem_part, egyeni_szp, egyeni_tamp, egyeni_ebmp, egyeni_ertunk_ertetek, egyeni_umf))
+orsz_egyeb <- subset(data, select = c(megyeid, megye, oevk, telepid, szavazokor, orsz_csaladok_partja, orsz_eu_roma_keresztenyek, orsz_iranytu, orsz_kossz, orsz_kozos_nevezo, orsz_miep, orsz_magyar_munkaspart, orsz_ciganypart, orsz_mo_dolgozo_tanulo_emberek, orsz_net_part, orsz_rend_elszamoltatas, orsz_sportos_egeszseges_mo, orsz_szegeny_emberek_mo, orsz_tenni_akaras_mozgalom, orsz_osszefogas_part))
+nemzetisegi_lista <- subset(data, select = c(megyeid, megye, oevk, telepid, szavazokor, nemzetisegi_bolgar, nemzetisegi_gorog, nemzetisegi_horvat, nemzetisegi_lengyel, nemzetisegi_nemet, nemzetisegi_roma, nemzetisegi_roman, nemzetisegi_ruszin, nemzetisegi_szerb, nemzetisegi_szlovak, nemzetisegi_szloven, nemzetisegi_ukran, nemzetisegi_ormeny))
+
+egyeni_egyeb$egyeni_egyeb <- rowSums( egyeni_egyeb[, 6:59] )
+
+orsz_egyeb$orsz_egyeb <- rowSums( orsz_egyeb[, 6:20] )
+
+nemzetisegi_lista$nemzetisegi_osszes <- rowSums( nemzetisegi_lista[, 6:18] ) - rowSums( nemzetisegi_lista[, 10:11] )
+
+egyeni_egyeb2 <- subset(egyeni_egyeb, select = c(megyeid, megye, oevk, telepid, szavazokor, egyeni_egyeb))
+
+orsz_egyeb2 <- subset(orsz_egyeb, select = c(megyeid, megye, oevk, telepid, szavazokor, orsz_egyeb))
+
+nemzetisegi_2 <- subset(nemzetisegi_lista, select = c(megyeid, megye, oevk, telepid, szavazokor, nemzetisegi_nemet, nemzetisegi_osszes))
+
+data2 <- merge(data, egyeni_egyeb2, by=c("megyeid", "megye", "oevk", "telepid", "szavazokor"))
+
+data3 <- merge(data2, orsz_egyeb2, by=c("megyeid", "megye", "oevk", "telepid", "szavazokor"))
+
+data4 <- merge(data3, nemzetisegi_2, by=c("megyeid", "megye", "oevk", "telepid", "szavazokor"))
+
+#leszurni a fobb partokat + egyeb partokat + nemzetisegieket
+
+data4 <- as.data.table(data4)
+
+data_clean <- data4[, c("megyeid", "megye", "oevk", "telepid", "szavazokor", "telep", "nevjegyz", "megjel", "nevjegyz_atjel", "megjel_atjel", "boritek_atjel", "pecset_nelkul", "pecsettel", "tobblet_hiany", "ervenytelen", "ervenyes", "egyeni_dk", "egyeni_egyutt", "egyeni_fidesz", "egyeni_jobbik", "egyeni_lmp", "egyeni_mszp", "egyeni_momentum", "egyeni_mkkp", "mellar_tamas", "kesz_zoltan", "egyeni_egyeb", "orsz_dk", "orsz_egyutt", "orsz_fidesz", "orsz_jobbik", "orsz_lmp", "orsz_mszp", "orsz_momentum","orsz_mkkp", "orsz_egyeb", "nemzetisegi_nemet.y", "nemzetisegi_osszes")]
+
+
+data_clean <- rename(data_clean, nemzetisegi_nemet = nemzetisegi_nemet.y)
+
+write.csv(data_clean,'2018_egyeni_listas_clean.csv')
+
+#UJ VALTOZOK - partok szazalekos egyeni es orszagos eredmenye egymashoz viszonyitva 
+
+data_clean <- data_clean[, egyeni_fidesz_pc := egyeni_fidesz / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_jobbik_pc := egyeni_jobbik / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_mszp_pc := egyeni_mszp / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_dk_pc := egyeni_dk / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_lmp_pc := egyeni_lmp / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_momentum_pc := egyeni_momentum / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_egyutt_pc := egyeni_egyutt / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_mkkp_pc := egyeni_mkkp / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_egyeb_pc := egyeni_egyeb / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, egyeni_mellar_pc := mellar_tamas / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+data_clean <- data_clean[, kesz_zoltan_pc := kesz_zoltan / (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)] 
+
+#add mellar es kesz zoltan
+
+
+data_clean <- data_clean[, orsz_fidesz_pc := orsz_fidesz / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_jobbik_pc := orsz_jobbik / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_mszp_pc := orsz_mszp / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_dk_pc := orsz_dk / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_lmp_pc := orsz_lmp / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_momentum_pc := orsz_momentum / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_egyutt_pc := orsz_egyutt / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_mkkp_pc := orsz_mkkp / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+data_clean <- data_clean[, orsz_egyeb_pc := orsz_egyeb / (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)] 
+
+
+
+data_clean <- data_clean[,elteres_fidesz := egyeni_fidesz - (orsz_fidesz + nemzetisegi_nemet)]
+
+data_clean <- data_clean[,elteres_lmp :=  egyeni_lmp - orsz_lmp]
+
+data_clean <- data_clean[,elteres_mszp := egyeni_mszp - orsz_mszp]
+
+data_clean <- data_clean[,elteres_mszp_dk := (egyeni_mszp + egyeni_dk) - (orsz_mszp + orsz_dk)]
+
+data_clean <- data_clean[,elteres_dk := egyeni_dk - orsz_dk]
+
+data_clean <- data_clean[,elteres_jobbik := egyeni_jobbik - orsz_jobbik]
+
+data_clean <- data_clean[,elteres_momentum := egyeni_momentum - orsz_momentum]
+
+data_clean <- data_clean[,elteres_egyutt := egyeni_egyutt - orsz_egyutt]
+
+data_clean <- data_clean[,elteres_mkkp := egyeni_mkkp - orsz_mkkp]
+
+data_clean <- data_clean[,elteres_egyeb := egyeni_egyeb - orsz_egyeb]
+
+
+data_clean <- data_clean[,balodal_jobbik_kihivo := orsz_mszp + orsz_dk - orsz_jobbik]
+
+data_clean <- data_clean[, listas_hianyzo := (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb + nemzetisegi_osszes + nemzetisegi_nemet) - (kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)]
+
+data_clean <- data_clean[, osszes_listas := (orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)]
+
+data_clean <- data_clean[, listas_elteres := ((orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb + nemzetisegi_osszes + nemzetisegi_nemet)) - (megjel + megjel_atjel)]
+
+data_clean <- data_clean[, egyeni_elteres := ((kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)) - (megjel + megjel_atjel)]
+
+
+
+#Outputting number of votes to see that these are the right numbers (comparing them to official election website)
+
+fidesz_egyeni_ossz <- sum(data$egyeni_fidesz)
+fidesz_egyeni_ossz
+
+fidesz_orszagos_ossz <- sum(data$orsz_fidesz)
+fidesz_orszagos_ossz
+
+mszp_egyeni_ossz <- sum(data$egyeni_mszp)
+mszp_egyeni_ossz
+
+mszp_orszagos_ossz <- sum(data$orsz_mszp)
+mszp_orszagos_ossz
+
+jobbik_egyeni_ossz <- sum(data$egyeni_jobbik)
+jobbik_egyeni_ossz
+
+jobbik_orszagos_ossz <- sum(data$orsz_jobbik)
+jobbik_orszagos_ossz
+
+lmp_orszagos_ossz <- sum(data_clean$orsz_lmp)
+lmp_orszagos_ossz
+
+lmp_egyeni_ossz <- sum(data_clean$egyeni_lmp)
+lmp_egyeni_ossz
+
+data_clean$oevk_id <- paste(data_clean$megye, data_clean$oevk)
+
+by_szavazokor_2018 <- data_clean[, , by = list(megyeid, megye, telepid, szavazokor, telep)]
+
+write.csv(by_szavazokor_2018,'2018_by_szavazokor.csv', fileEncoding = "UTF-8")
+
+#OEVK results (8 main parties part)
+
+egyeni_lista_by_oevk_2018 <- by_szavazokor_2018[, list(
+                       #     megyeid = megyeid,
+                        #    megye = megye,
+                        #    telepid = telepid,
+                        #    telep = telep,
+                            szavazok = sum(nevjegyz + nevjegyz_atjel),
+
+                            ossz_szavazo = sum(megjel + megjel_atjel),
+                            
+                            tobblet_hiany = sum(tobblet_hiany),
+                            ervenytelen = sum(ervenytelen),
+                            ervenyes = sum(ervenyes),
+                            ervenytelen_szazalek = sum(ervenytelen) / (sum(ervenytelen) + sum(ervenyes)),
+                            
+                           egyeni_fidesz = sum(egyeni_fidesz),
+                           egyeni_lmp = sum(egyeni_lmp),
+                           egyeni_mszp = sum(egyeni_mszp),
+                           egyeni_dk = sum(egyeni_dk),
+                           egyeni_mszp_dk = sum(egyeni_mszp) + sum(egyeni_dk),
+                           egyeni_jobbik = sum(egyeni_jobbik),
+                           egyeni_momentum = sum(egyeni_momentum),
+                           egyeni_egyutt = sum(egyeni_egyutt),
+                           egyeni_mkkp = sum(egyeni_mkkp),
+                           egyeni_mellar = sum(mellar_tamas),
+                           egyeni_kesz = sum(kesz_zoltan),
+                           egyeni_egyeb = sum(egyeni_egyeb),
+                           
+                           egyeni_fidesz_pc = sum(egyeni_fidesz) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_lmp_pc = sum(egyeni_lmp) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_mszp_pc = sum(egyeni_mszp) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_dk_pc = sum(egyeni_dk) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_jobbik_pc = sum(egyeni_jobbik) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_momentum_pc = sum(egyeni_momentum) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_egyutt_pc = sum(egyeni_egyutt) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_mkkp_pc = sum(egyeni_mkkp) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_mellar_pc = sum(mellar_tamas) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_kesz_pc = sum(kesz_zoltan) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           egyeni_egyeb_pc = sum(egyeni_egyeb) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           
+                           orsz_fidesz = sum(orsz_fidesz),
+                           orsz_lmp = sum(orsz_lmp),
+                           orsz_mszp = sum(orsz_mszp),
+                           orsz_dk = sum(orsz_dk),
+                           orsz_mszp_dk = sum(orsz_mszp) + sum(orsz_dk),
+                           orsz_jobbik = sum(orsz_jobbik),
+                           orsz_momentum = sum(orsz_momentum),
+                           orsz_egyutt = sum(orsz_egyutt),
+                           orsz_mkkp = sum(orsz_mkkp),
+                           orsz_egyeb = sum(orsz_egyeb),
+                           
+                           nemzetisegi_osszes = sum(nemzetisegi_osszes),
+                           nemzetisegi_nemet = sum(nemzetisegi_nemet),
+                           
+                           orsz_fidesz_pc = sum(orsz_fidesz) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_lmp_pc = sum(orsz_lmp) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_mszp_pc = sum(orsz_mszp) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_dk_pc = sum(orsz_dk) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_jobbik_pc = sum(orsz_jobbik) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_momentum_pc = sum(orsz_momentum) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_egyutt_pc = sum(orsz_egyutt) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_mkkp_pc = sum(orsz_mkkp) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           orsz_egyeb_pc = sum(orsz_egyeb) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+                           
+                           
+                           elteres_fidesz = sum(egyeni_fidesz) - (sum(orsz_fidesz)),
+                           elteres_lmp = sum(egyeni_lmp) - sum(orsz_lmp),
+                           elteres_mszp = sum(egyeni_mszp) - sum(orsz_mszp),
+                           elteres_mszp_dk = (sum(egyeni_mszp) + sum(egyeni_dk)) - (sum(orsz_mszp) + sum(orsz_dk)),
+                           elteres_dk = sum(egyeni_dk) - sum(orsz_dk),
+                           elteres_jobbik = sum(egyeni_jobbik) - sum(orsz_jobbik),
+                           elteres_momentum = sum(egyeni_momentum) - sum(orsz_momentum),
+                           elteres_egyutt = sum(egyeni_egyutt) - sum(orsz_egyutt),
+                           elteres_mkkp = sum(egyeni_mkkp) - sum(orsz_mkkp),
+                           elteres_egyeb = sum(egyeni_egyeb) - sum(orsz_egyeb),
+                           elteres_nemzetisegi_osszes = sum(nemzetisegi_osszes) * -1,
+                           elteres_nemzetisegi_nemet = sum(nemzetisegi_nemet) * -1,
+                           
+                           listas_hianyzo = sum((orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb + nemzetisegi_osszes + nemzetisegi_nemet)) - sum((kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+                           
+                           balodal_jobbik_kihivo = sum(orsz_mszp) + sum(orsz_dk) - sum(orsz_jobbik)),
+
+                           by = oevk_id][order(oevk_id)] 
+
+write.csv(egyeni_lista_by_oevk_2018,'2018_by_oevk.csv', fileEncoding = "UTF-8")
 ```
 
+## Part 1/b: 2018 results by town (and Budapest district)
+```{r warning=FALSE}
+### TELEPULES szintű adatok
+
+egyeni_lista_by_telep_2018 <- by_szavazokor_2018[, list(
+  megyeid = megyeid,
+  megye = megye,
+  telepid = telepid,
+  telep = telep,
+  szavazok = sum(nevjegyz + nevjegyz_atjel),
+  
+  ossz_szavazo = sum(megjel + megjel_atjel),
+  
+  tobblet_hiany = sum(tobblet_hiany),
+  ervenytelen = sum(ervenytelen),
+  ervenyes = sum(ervenyes),
+  ervenytelen_szazalek = sum(ervenytelen) / (sum(ervenytelen) + sum(ervenyes)),
+  
+  egyeni_fidesz = sum(egyeni_fidesz),
+  egyeni_lmp = sum(egyeni_lmp),
+  egyeni_mszp = sum(egyeni_mszp),
+  egyeni_dk = sum(egyeni_dk),
+  egyeni_mszp_dk = sum(egyeni_mszp) + sum(egyeni_dk),
+  egyeni_jobbik = sum(egyeni_jobbik),
+  egyeni_momentum = sum(egyeni_momentum),
+  egyeni_egyutt = sum(egyeni_egyutt),
+  egyeni_mkkp = sum(egyeni_mkkp),
+  egyeni_mellar = sum(mellar_tamas),
+  egyeni_kesz = sum(kesz_zoltan),
+  egyeni_egyeb = sum(egyeni_egyeb),
+  
+  egyeni_fidesz_pc = sum(egyeni_fidesz) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_lmp_pc = sum(egyeni_lmp) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_mszp_pc = sum(egyeni_mszp) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_dk_pc = sum(egyeni_dk) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_jobbik_pc = sum(egyeni_jobbik) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_momentum_pc = sum(egyeni_momentum) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_egyutt_pc = sum(egyeni_egyutt) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_mkkp_pc = sum(egyeni_mkkp) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_mellar_pc = sum(mellar_tamas) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_kesz_pc = sum(kesz_zoltan) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  egyeni_egyeb_pc = sum(egyeni_egyeb) / (sum(kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  
+  orsz_fidesz = sum(orsz_fidesz),
+  orsz_lmp = sum(orsz_lmp),
+  orsz_mszp = sum(orsz_mszp),
+  orsz_dk = sum(orsz_dk),
+  orsz_mszp_dk = sum(orsz_mszp) + sum(orsz_dk),
+  orsz_jobbik = sum(orsz_jobbik),
+  orsz_momentum = sum(orsz_momentum),
+  orsz_egyutt = sum(orsz_egyutt),
+  orsz_mkkp = sum(orsz_mkkp),
+  orsz_egyeb = sum(orsz_egyeb),
+  
+  nemzetisegi_osszes = sum(nemzetisegi_osszes),
+  nemzetisegi_nemet = sum(nemzetisegi_nemet),
+  
+  orsz_fidesz_pc = sum(orsz_fidesz) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_lmp_pc = sum(orsz_lmp) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_mszp_pc = sum(orsz_mszp) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_dk_pc = sum(orsz_dk) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_jobbik_pc = sum(orsz_jobbik) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_momentum_pc = sum(orsz_momentum) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_egyutt_pc = sum(orsz_egyutt) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_mkkp_pc = sum(orsz_mkkp) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  orsz_egyeb_pc = sum(orsz_egyeb) / (sum(orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb)),
+  
+  
+  elteres_fidesz = sum(egyeni_fidesz) - (sum(orsz_fidesz)),
+  elteres_lmp = sum(egyeni_lmp) - sum(orsz_lmp),
+  elteres_mszp = sum(egyeni_mszp) - sum(orsz_mszp),
+  elteres_mszp_dk = (sum(egyeni_mszp) + sum(egyeni_dk)) - (sum(orsz_mszp) + sum(orsz_dk)),
+  elteres_dk = sum(egyeni_dk) - sum(orsz_dk),
+  elteres_jobbik = sum(egyeni_jobbik) - sum(orsz_jobbik),
+  elteres_momentum = sum(egyeni_momentum) - sum(orsz_momentum),
+  elteres_egyutt = sum(egyeni_egyutt) - sum(orsz_egyutt),
+  elteres_mkkp = sum(egyeni_mkkp) - sum(orsz_mkkp),
+  elteres_egyeb = sum(egyeni_egyeb) - sum(orsz_egyeb),
+  elteres_nemzetisegi_osszes = sum(nemzetisegi_osszes) * -1,
+  elteres_nemzetisegi_nemet = sum(nemzetisegi_nemet) * -1,
+  
+  listas_hianyzo = sum((orsz_fidesz + orsz_jobbik + orsz_mszp + orsz_dk + orsz_lmp + orsz_momentum + orsz_egyutt + orsz_mkkp + orsz_egyeb + nemzetisegi_osszes + nemzetisegi_nemet)) - sum((kesz_zoltan + mellar_tamas + egyeni_fidesz + egyeni_jobbik + egyeni_mszp + egyeni_dk + egyeni_lmp + egyeni_momentum + egyeni_egyutt + egyeni_mkkp + egyeni_egyeb)),
+  
+  balodal_jobbik_kihivo = sum(orsz_mszp) + sum(orsz_dk) - sum(orsz_jobbik)),
+  
+  by = telep][order(orsz_fidesz_pc)] 
+
+egyeni_lista_by_telep_2018 <-unique(egyeni_lista_by_telep_2018)
+
+write.csv(egyeni_lista_by_telep_2018,'2018_by_telep.csv', fileEncoding = "UTF-8")
+```
+
+
+## Part 2: Initial analysis of 2018 results
+
+OEVK_profil defines the types of constituencies that contain different types of towns.
+
+The types are:
+
+52 OEVKs
+- 0 = Budapest
+- 1 = county capital with few or no smaller towns
+- 2 = county capital or major city with 5-15 smaller towns
+- 3 = major city or cities with some smaller towns
+
+54 OEVKs
+- 4 = some smaller cities combined with lots of villages
+- 5 = one smaller town with lots of villages
+- 6 = one smaller town with 100+ villages
+
+OEVK profile scores are significant in all parties' expected vote share (Fidesz and Jobbik performs worse, left-wing parties perform better)
+```{r warning=FALSE}
+### OEVK profilok
+
+
+data_OEVK_profil <- read.csv("2018_by_oevk_OEVK_profiles.csv")
+
+
+freq(data_OEVK_profil$OEVK_profil)
+
+## ANALYSIS - Fidesz and other party votes
+
+fidesz_vote_by_OEVK_profile <- lm(orsz_fidesz_pc ~ OEVK_profil, data_OEVK_profil)
+coeftest(fidesz_vote_by_OEVK_profile)
+
+mszp_vote_by_OEVK_profile <- lm(orsz_mszp_pc ~ OEVK_profil, data_OEVK_profil)
+coeftest(mszp_vote_by_OEVK_profile)
+
+dk_vote_by_OEVK_profile <- lm(orsz_dk_pc ~ OEVK_profil, data_OEVK_profil)
+coeftest(dk_vote_by_OEVK_profile)
+
+jobbik_vote_by_OEVK_profile <- lm(orsz_jobbik_pc ~ OEVK_profil, data_OEVK_profil)
+coeftest(jobbik_vote_by_OEVK_profile)
+
+lmp_vote_by_OEVK_profile <- lm(orsz_lmp_pc ~ OEVK_profil, data_OEVK_profil)
+coeftest(lmp_vote_by_OEVK_profile)
+
+momentum_vote_by_OEVK_profile <- lm(orsz_momentum_pc ~ OEVK_profil, data_OEVK_profil)
+coeftest(momentum_vote_by_OEVK_profile)
+
+
+ggplot(data_OEVK_profil, aes(OEVK_profil, orsz_fidesz_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "loess") + ggtitle("Fidesz vote share % by OEVK profile") + xlab("OEVK profile") + ylab("Fidesz vote share") +
+  theme_minimal()
+ggsave(("fidesz_vote_oevk_profile.png"), width = 30, height = 18, units = c("cm"))
+
+ggplot(data_OEVK_profil, aes(szavazok, orsz_fidesz_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "lm") + ggtitle("Fidesz vote share % by OEVK size (number of voters)") + xlab("Number of voters") + ylab("Fidesz vote share") +
+  theme_minimal()
+ggsave(("fidesz_vote_oevk_size.png"), width = 30, height = 18, units = c("cm"))
+
+ggplot(data_OEVK_profil, aes(OEVK_profil, orsz_jobbik_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "loess") + ggtitle("Jobbik vote share % by OEVK profile") + xlab("OEVK profile") + ylab("Jobbik vote share") +
+  theme_minimal()
+ggsave(("jobbik_vote_oevk_profile.png"), width = 30, height = 18, units = c("cm"))
+
+
+ggplot(data_OEVK_profil, aes(OEVK_profil, orsz_mszp_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "loess") + ggtitle("MSZP vote share % by OEVK profile") + xlab("OEVK profile") + ylab("MSZP vote share") +
+  theme_minimal()
+ggsave(("mszp_vote_oevk_profile.png"), width = 30, height = 18, units = c("cm"))
+
+
+ggplot(data_OEVK_profil, aes(OEVK_profil, orsz_lmp_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "loess") + ggtitle("LMP vote share % by OEVK profile") + xlab("OEVK profile") + ylab("LMP vote share") +
+  theme_minimal()
+ggsave(("lmp_vote_oevk_profile.png"), width = 30, height = 18, units = c("cm"))
+```
+
+## Part 2b: Analyzing results by town size
+
+The OEVK profile analysis is further reinforced by the town sizes: there are 9 different categories ranging from 0-500 voters/town to over 100,000 (size 1 to 9).
+
+The results show a similar pattern as seen in OEVK profiles (Fidesz and Jobbik performing better in smaller towns vs. left-wing parties performing better in cities)
+```{r warning=FALSE}
+
+egyeni_lista_by_telep_2018$telep_tipus <- cut(egyeni_lista_by_telep_2018$szavazok, c(0, 500, 1000, 2000, 5000, 10000, 30000, 60000, 100000, Inf), 
+                                              labels = c("0", "1", "2", "3", "4", "5", "6", "7", "8"))
+
+freq(egyeni_lista_by_telep_2018$telep_tipus)
+
+szavazok_by_telep_tipus <- egyeni_lista_by_telep_2018[, list(ossz_szavazo = sum(ossz_szavazo),
+                                                             ossz_telepules = sum(ossz_szavazo / ossz_szavazo)),
+                                                      by = telep_tipus][order(telep_tipus)] 
+
+egyeni_lista_by_telep_2018$telep_tipus <- as.integer(egyeni_lista_by_telep_2018$telep_tipus)
+
+ggplot(szavazok_by_telep_tipus, aes(x = ossz_szavazo)) + geom_histogram(binwidth = 100000)
+
+
+
+ggplot(egyeni_lista_by_telep_2018, aes(telep_tipus, orsz_fidesz_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "lm") + ggtitle("Fidesz vote share % by town size") + xlab("Town size category") + ylab("Fidesz vote share") +
+  theme_minimal()
+ggsave(("fidesz_vote_town_size.png"), width = 30, height = 18, units = c("cm"))
+
+ggplot(egyeni_lista_by_telep_2018, aes(telep_tipus, orsz_mszp_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "lm") + ggtitle("MSZP vote share % by town size") + xlab("Town size category") + ylab("MSZP vote share") +
+  theme_minimal()
+ggsave(("mszp_vote_town_size.png"), width = 30, height = 18, units = c("cm"))
+
+ggplot(egyeni_lista_by_telep_2018, aes(telep_tipus, orsz_jobbik_pc)) +
+ geom_smooth(method = "loess") +  geom_point(color ="red") + ggtitle("Jobbik vote share % by town size") + xlab("Town size category") + ylab("Jobbik vote share") +
+  theme_minimal()
+ggsave(("jobbik_vote_town_size.png"), width = 30, height = 18, units = c("cm"))
+
+ggplot(egyeni_lista_by_telep_2018, aes(telep_tipus, orsz_lmp_pc)) + geom_point(color ="red") +
+  geom_smooth(method = "loess") + ggtitle("LMP vote share % by town size") + xlab("Town size category") + ylab("LMP vote share") +
+  theme_minimal()
+ggsave(("lmp_vote_town_size.png"), width = 30, height = 18, units = c("cm"))
+
+
+```
+
+## Part 3: Results analysis
+
+A separate spreadsheet was prepared showing the last pre-election predictions published on 6 April 2018 and the deviation of these predictions compared to actual constituency results.
+
+It showes the list of districts where each party over-performed or under-performed compared to the predictions. The green line and the dotted red lines show the predicted values (so over and underprediction is clearly visible)
+```{r warning=FALSE}
+### OEVK predictions
+
+data_pred_egyeni <- read.csv("2018_egyeni_becsles_elteres.csv", fileEncoding = "UTF-8")
+
+OEVK_pred_elemzes <- merge(egyeni_lista_by_oevk_2018, data_pred_egyeni, by ="oevk_id")
+
+
+ggplot(OEVK_pred_elemzes, aes(Fidesz_egyeni_becsles, egyeni_fidesz_pc)) + geom_point(color ="red") +
+  geom_text(aes(label=oevk_id),
+            size = 2) + geom_smooth(method = "loess") + 
+  geom_line(aes(x=Fidesz_egyeni_becsles, y=Fidesz_egyeni_becsles), color="green", size = 1) +
+  ggtitle("Fidesz predicted and actual vote share % by OEVK") +
+  xlab("2018 Fidesz vote share") + ylab("Predicted vote share") +
+  xlim(0.25, 0.65) +
+  ylim(0.25, 0.65) +
+  theme_minimal()
+ggsave(("fidesz_pred_actual.png"), width = 25, height = 25, units = c("cm"))
+
+ggplot(OEVK_pred_elemzes, aes(egyeni_fidesz_pc, Fidesz_pred_elteres)) + geom_point(color ="red") +
+  geom_text(aes(label=oevk_id),
+            size = 2) + geom_smooth(method = "loess") + 
+   geom_hline (yintercept=0, linetype="dashed", color = "red") +
+  ggtitle("Fidesz actual vote share and prediction error by OEVK") +
+  xlab("Fidesz vote share") + ylab("Prediction error") +
+  xlim(0.25, 0.65) +
+theme_minimal()
+ggsave(("fidesz_deviation.png"), width = 25, height = 25, units = c("cm"))
+
+
+ggplot(OEVK_pred_elemzes, aes(Jobbik_egyeni_becsles, egyeni_jobbik_pc)) + geom_point(color ="red") +
+  geom_text(aes(label=oevk_id),
+            size = 2) + geom_smooth(method = "loess") + 
+  geom_line(aes(x=Jobbik_egyeni_becsles, y=Jobbik_egyeni_becsles), color="green", size = 1) + 
+  ggtitle("Jobbik predicted and actual vote share % by OEVK") +
+   xlab("2018 Jobbik vote share") + ylab("Predicted vote share") +
+  xlim(0.00, 0.50) +
+  ylim(0.00, 0.50) +
+  theme_minimal()
+ggsave(("jobbik_pred_actual.png"), width = 25, height = 25, units = c("cm"))
+
+
+ggplot(OEVK_pred_elemzes, aes(egyeni_jobbik_pc, Jobbik_pred_elteres)) + geom_point(color ="red") +
+  geom_text(aes(label=oevk_id),
+            size = 2) + geom_smooth(method = "loess") + 
+  geom_hline (yintercept=0, linetype="dashed", color = "red") + ggtitle("Jobbik actual vote share and prediction error by OEVK") + 
+  xlab("Jobbik vote share") + ylab("Prediction error") +
+  xlim(0.05, 0.45) +
+theme_minimal()
+ggsave(("jobbik_deviation.png"), width = 25, height = 25, units = c("cm"))
+
+
+ggplot(OEVK_pred_elemzes, aes(Baloldal_egyeni_becsles, egyeni_dk_pc)) + geom_point(color ="red") +
+  geom_text(aes(label=oevk_id),
+            size = 2) + geom_smooth(method = "loess") + 
+  geom_line(aes(x=Baloldal_egyeni_becsles, y=Baloldal_egyeni_becsles), color="green", size = 1) +
+  ggtitle("DK predicted and actual vote share % by OEVK") +
+   xlab("2018 DK vote share") + ylab("Predicted vote share") +
+  xlim(0.001, 0.55) +
+  ylim(0.001, 0.55) +
+theme_minimal()
+ggsave(("dk_pred_actual.png"), width = 25, height = 25, units = c("cm"))
+
+ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point(color ="red") +
+  geom_text(aes(label=oevk_id),
+            size = 2) + geom_smooth(method = "loess") + 
+  geom_hline (yintercept=0, linetype="dashed", color = "red") + ggtitle("DK actual vote share and prediction error by OEVK") +
+  xlab("DK vote share") + ylab("Prediction error") +
+  xlim(0.001, 0.55) +
+  theme_minimal()
+  ggsave(("dk_deviation.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(OEVK_pred_elemzes, aes(Baloldal_egyeni_becsles, egyeni_mszp_pc)) + geom_point(color ="red") +
+    geom_text(aes(label=oevk_id),
+              size = 2) + geom_smooth(method = "loess") + 
+    geom_line(aes(x=Baloldal_egyeni_becsles, y=Baloldal_egyeni_becsles), color="green", size = 1) +
+    ggtitle("MSZP predicted and actual vote share % by OEVK") +
+     xlab("2018 MSZP vote share") + ylab("Predicted vote share") +
+    xlim(0.001, 0.60) +
+    ylim(0.001, 0.60) +
+  theme_minimal()
+  ggsave(("mszp_pred_actual.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(OEVK_pred_elemzes, aes(egyeni_mszp_pc, Baloldal_pred_elteres)) + geom_point(color ="red") +
+    geom_text(aes(label=oevk_id),
+              size = 2) + geom_smooth(method = "loess") + 
+    geom_hline (yintercept=0, linetype="dashed", color = "red") +
+    ggtitle("MSZP actual vote share and prediction error by OEVK") +
+    xlab("MSZP vote share") + ylab("Prediction error") +
+    xlim(0.001, 0.60) +
+  theme_minimal()
+  ggsave(("mszp_deviation.png"), width = 25, height = 25, units = c("cm"))
+
+
+  ggplot(OEVK_pred_elemzes, aes(LMP_egyeni_becsles, egyeni_lmp_pc)) + geom_point(color ="red") +
+    geom_text(aes(label=oevk_id),
+              size = 2) + geom_smooth(method = "lm") + 
+    geom_line(aes(x=Baloldal_egyeni_becsles, y=Baloldal_egyeni_becsles), color="green", size = 1) +
+    ggtitle("LMP predicted and actual vote share % by OEVK") +
+     xlab("2018 LMP vote share") + ylab("Predicted vote share") +
+    xlim(0.08, 0.55) +
+    ylim(0.08, 0.55) +
+  theme_minimal()
+  ggsave(("lmp_pred_actual.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(OEVK_pred_elemzes, aes(egyeni_lmp_pc, LMP_pred_elteres)) + geom_point(color ="red") +
+    geom_text(aes(label=oevk_id),
+              size = 2) + geom_smooth(method = "lm") + 
+    geom_hline (yintercept=0, linetype="dashed", color = "red") +
+    ggtitle("LMP actual vote share and prediction error by OEVK") +
+    xlab("LMP vote share") + ylab("Prediction error") +
+    xlim(0.08, 0.55) +
+  theme_minimal()
+  ggsave(("lmp_deviation.png"), width = 25, height = 25, units = c("cm"))
+```
+
+## Part 4: Post-election prediction using GLM and data from statistical office (KSH and tstar data)
+
+Using the data from KSH's database, I wanted to explore other predictors that could show why people voted for certain parties. Unfortunately, only one of the statistical predictors are significant in telling how people voted. This predictor is the 2014 vote share, all the other predictors improve the prediction too, but only slightly.
+
+The additional predictors were divided into quintiles to have categorical levels instead of the actual measurements.
+
+There was lots of missing data in these predictor (missig values have been replaced with 0)
+
+TBD - Mention AIC score for Fidesz and Jobbik
+```{r warning=FALSE}
+ data_telepulesadatok_t_star <-read.csv("Telepulesadatok_t_star.csv")
+  colnames(data_telepulesadatok_t_star)[1] <- "telep_nev"
+  
+  egyeni_lista_2018_telep_clean <- read.csv("2018_by_telep_clean.csv", fileEncoding = "UTF-8")
+  
+  oevk_2014_telep_clean <- read.csv("oevk2014_telepules_clean.csv", fileEncoding = "UTF-8") 
+  
+  
+  t_star_telepules_2018 <- merge(data_telepulesadatok_t_star, egyeni_lista_2018_telep_clean, by.x = "telep_nev")
+  
+  t_star_telepules_2014_2018 <- merge(oevk_2014_telep_clean, t_star_telepules_2018, by = "telep_nev")
+  
+  t_star_telepules_2014_2018$megye_ido_km <- as.numeric(t_star_telepules_2014_2018$megye_ido_km)
+  t_star_telepules_2014_2018$megyeszekhely_km <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_km)
+  t_star_telepules_2014_2018$megyeszekhely_min <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_min)
+  t_star_telepules_2014_2018$altisk <- as.numeric(t_star_telepules_2014_2018$altisk)
+  
+  t_star_telepules_2014_2018 <- as.data.table(t_star_telepules_2014_2018)
+  
+  
+  write.csv(t_star_telepules_2014_2018, '2014_2018_tstar_by_telep.csv')
+  
+  
+  ###t_star_telepules_2018 is all basic t_star data with all towns (Budapest merged)
+  
+  
+  #### regression example - GLM
+  
+  ###applying quintiles to continuous variables to create categories for easier analysis
+  
+  t_star_telepules_2014_2018[is.na(t_star_telepules_2014_2018)] <- 0
+  
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, reszvetel_q <- as.integer(cut(reszvetel, quantile(reszvetel, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, budapest_ido_km_q <- as.integer(cut(budapest_ido_km, quantile(budapest_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, megye_ido_km_q <- as.integer(cut(megye_ido_km, quantile(megye_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, megyeszekhely_km_q <- as.integer(cut(megyeszekhely_km, quantile(megyeszekhely_km, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, megyeszekhely_min_q <- as.integer(cut(megyeszekhely_min, quantile(megyeszekhely_min, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, budapest_min_q <- as.integer(cut(budapest_min, quantile(budapest_min, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, altisk_q <- as.integer(cut(altisk, quantile(altisk, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, jovedelem_fo_q <- as.integer(cut(jovedelem_fo, quantile(jovedelem_fo, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, ujszulott_rate_q <- as.integer(cut(ujszulott_rate, quantile(ujszulott_rate, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, idosek_rate_q <- as.integer(cut(idosek_rate, quantile(idosek_rate, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, nepesseg_q <- as.integer(cut(nepesseg, quantile(nepesseg, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, elvandorlas_q <- as.integer(cut(elvandorlas, quantile(elvandorlas, probs=0:10/10), include.lowest=TRUE)))
+  t_star_telepules_2014_2018 <- within(t_star_telepules_2014_2018, odavanadorlas_q <- as.integer(cut(odavanadorlas, quantile(odavanadorlas, probs=0:10/10), include.lowest=TRUE)))
+  
+
+  
+  regression_test_2014_2018_tstar_mini <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + reszvetel_q + 
+                                               budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q, data=t_star_telepules_2014_2018, na.action = na.pass)
+  summary(regression_test_2014_2018_tstar_mini)
+  coeftest(regression_test_2014_2018_tstar_mini)
+  
+  ###Fidesz
+  
+  
+  logitcoeffs_regression_fidesz_2014_2018_tstar_mini <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + reszvetel_q + 
+                                                             budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                            budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                            idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q,  data=t_star_telepules_2014_2018, family='binomial'(link="logit"))
+  
+  summary(logitcoeffs_regression_fidesz_2014_2018_tstar_mini)
+  
+  
+  t_star_telepules_2014_2018$pred_logit_fidesz <- predict.glm(logitcoeffs_regression_fidesz_2014_2018_tstar_mini, type="response")
+  
+  ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+    geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+    ggsave(("fidesz_GLM_by_megye_id.png"), width = 25, height = 25, units = c("cm"))
+    
+    ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+      geom_text(aes(label=telep_nev), size = 1, check_overlap = FALSE) +
+      geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+      geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+    ggsave(("fidesz_GLM_by_town.png"), width = 25, height = 25, units = c("cm"))
+    
+### Jobbik
+    
+    logitcoeffs_regression_jobbik_2014_2018_tstar_mini <- glm(egyeni_jobbik_pc.y ~ egyeni_jobbik_pc.x + reszvetel_q + 
+                                                                budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                                budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                                idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q,  data=t_star_telepules_2014_2018, family='binomial'(link="logit"))
+    
+    summary(logitcoeffs_regression_jobbik_2014_2018_tstar_mini)
+    
+    
+    t_star_telepules_2014_2018$pred_logit_jobbik <- predict.glm(logitcoeffs_regression_jobbik_2014_2018_tstar_mini, type="response")
+    
+    ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+      geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+      geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1)
+    theme_minimal() 
+    ggsave(("Jobbik_GLM_by_megye_id.png"), width = 25, height = 25, units = c("cm"))
+    
+    ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+      geom_text(aes(label=telep_nev), size = 1, check_overlap = FALSE) +
+      geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1)
+    theme_minimal() 
+    ggsave(("Jobbik_GLM_by_town.png"), width = 25, height = 25, units = c("cm"))
+ 
+```
+
+
+##Part 4/b: Additional KSH (tstar data)
+
+If we use additional predictors such as the number of pensioners, age groups, and people on benefit, the predictions still remain the same.
+
+It is likely that analyzing different town sizes separately would improve the effectiveness of this prediction model. Also, since Budapest with 1 million voters counts as 1 data point while all the other towns account for 4.5 million votes in 3150 data points, there is a clear bias towards smaller cities.
+
+TBD - Mention AIC score for Jobbik
+
+
+### Analyzing outliers - TBD!!
+
+The prediction shows some towns with vastly different vote shares in 2018 compared to 2014. Towns such as x y z are in districts which were Jobbik target seats. As it was shown before, Fidesz performed better than expected in rural seats, meaning that it is likely that they have targeted these towns and OEVKs during the campaign.
+```{r warning=FALSE}
+
+
+  ###additional data tables t-star (unemployment rate, pensioners, people on benefits, etc)
+    
+    rm(list=ls())
+    
+    data_telepulesadatok_t_star <-read.csv("Telepulesadatok_t_star.csv")
+    colnames(data_telepulesadatok_t_star)[1] <- "telep_nev"
+    
+    egyeni_lista_2018_telep_clean <- read.csv("2018_by_telep_clean.csv", fileEncoding = "UTF-8")
+    
+    oevk_2014_telep_clean <- read.csv("oevk2014_telepules_clean.csv", fileEncoding = "UTF-8") 
+    
+    
+    t_star_telepules_2018 <- merge(data_telepulesadatok_t_star, egyeni_lista_2018_telep_clean, by.x = "telep_nev")
+    
+    t_star_telepules_2014_2018 <- merge(oevk_2014_telep_clean, t_star_telepules_2018, by = "telep_nev")
+    
+  
+  data_allaskeresok <- read.csv("tstar/allaskeresok.csv", fileEncoding = "UTF-8")
+  data_allaskeresok <- as.data.table(data_allaskeresok)
+  data_allaskeresok <- data_allaskeresok[ev.3 == 2018]
+    
+  data_koraranyok <- read.csv("tstar/koraranyok.csv", fileEncoding = "UTF-8")
+  data_koraranyok <- as.data.table(data_koraranyok)
+  data_koraranyok <- data_koraranyok[ev.3 == 2018]
+    
+  data_munkaadok <- read.csv("tstar/munkaadok.csv", fileEncoding = "UTF-8")
+  data_munkaadok <- as.data.table(data_munkaadok)
+  data_munkaadok <- data_munkaadok[ev.3 == 2018]
+    
+  data_nyugdijasok <- read.csv("tstar/nyugdijasok.csv", fileEncoding = "UTF-8")
+  data_nyugdijasok <- as.data.table(data_nyugdijasok)
+  data_nyugdijasok <- data_nyugdijasok[ev.3 == 2018]
+
+  data_tamogatottak <- read.csv("tstar/tamogatottak.csv", fileEncoding = "UTF-8")
+  data_tamogatottak <- as.data.table(data_tamogatottak)
+  data_tamogatottak <- data_tamogatottak[ev.3 == 2018]  
+  
+  
+  colnames(t_star_telepules_2014_2018)[1] <- "telnev"
+  
+  merge_all_t_star1 <- merge(data_allaskeresok, t_star_telepules_2014_2018, by = "telnev")  
+  merge_all_t_star2 <- merge(data_koraranyok, merge_all_t_star1, by = c("telnev", "ev.3"))
+  merge_all_t_star3 <- merge(data_munkaadok, merge_all_t_star2, by = c("telnev", "ev.3"))
+  merge_all_t_star4 <- merge(data_nyugdijasok, merge_all_t_star3, by = c("telnev", "ev.3"))
+  
+  merge_all_t_star4 <- subset(merge_all_t_star4, select = c(1:2, 4:5, 7:145))
+  
+  merge_all_t_star_all <-  merge(data_tamogatottak, merge_all_t_star4, by = c("telnev", "ev.3"))
+  
+  merge_all_t_star_all$megye_ido_km <- as.numeric(t_star_telepules_2014_2018$megye_ido_km)
+  merge_all_t_star_all$megyeszekhely_km <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_km)
+  merge_all_t_star_all$megyeszekhely_min <- as.numeric(t_star_telepules_2014_2018$megyeszekhely_min)
+  merge_all_t_star_all$altisk <- as.numeric(t_star_telepules_2014_2018$altisk)
+  
+  write.csv(merge_all_t_star_all, '2014_2018_tstar_all_by_telep.csv')
+  
+  
+  merge_all_t_star_all[is.na(merge_all_t_star_all)] <- 0
+  
+  merge_all_t_star_all <- within(merge_all_t_star_all, reszvetel_q <- as.integer(cut(reszvetel, quantile(reszvetel, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, budapest_ido_km_q <- as.integer(cut(budapest_ido_km, quantile(budapest_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, megye_ido_km_q <- as.integer(cut(megye_ido_km, quantile(megye_ido_km, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, megyeszekhely_km_q <- as.integer(cut(megyeszekhely_km, quantile(megyeszekhely_km, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, megyeszekhely_min_q <- as.integer(cut(megyeszekhely_min, quantile(megyeszekhely_min, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, budapest_min_q <- as.integer(cut(budapest_min, quantile(budapest_min, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, altisk_q <- as.integer(cut(altisk, quantile(altisk, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, jovedelem_fo_q <- as.integer(cut(jovedelem_fo, quantile(jovedelem_fo, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, ujszulott_rate_q <- as.integer(cut(ujszulott_rate, quantile(ujszulott_rate, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, idosek_rate_q <- as.integer(cut(idosek_rate, quantile(idosek_rate, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, nepesseg_q <- as.integer(cut(nepesseg, quantile(nepesseg, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, elvandorlas_q <- as.integer(cut(elvandorlas, quantile(elvandorlas, probs=0:10/10), include.lowest=TRUE)))
+  merge_all_t_star_all <- within(merge_all_t_star_all, odavanadorlas_q <- as.integer(cut(odavanadorlas, quantile(odavanadorlas, probs=0:10/10), include.lowest=TRUE)))
+  
+  ###GLM with all T-star data
+  
+  ## Fidesz
+  
+  logitcoeffs_regression_fidesz_2014_2018_tstar_all <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + kozmunka_aranya + nyudijas_ffi_arany +
+                                                             nyudijas_noi_arany + nok_30_39_aranya + nok_40_49_aranya + nok_65._aranya +
+                                                             ffi_30_39_aranya + ffi_40_49_aranya + ffi_65._aranya + allaskeresok_aranya_8osztaly +
+                                                             ervenytelen_szazalek + reszvetel_q + 
+                                                             budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                             budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                             idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q
+                                                          ,  data=merge_all_t_star_all, family='binomial'(link="logit"))
+  
+  
+  summary(logitcoeffs_regression_fidesz_2014_2018_tstar_all)
+  
+  
+  merge_all_t_star_all$pred_logit_fidesz <- predict.glm(logitcoeffs_regression_fidesz_2014_2018_tstar_all, type="response")
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+    geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+  theme_minimal() 
+  ggsave(("fidesz_GLM_by_megye_id_2.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.15, 1.00) + ylim(0.15, 1.00) +
+    geom_text(aes(label=telnev), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each town") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+  theme_minimal() 
+  ggsave(("fidesz_GLM_by_town_2.png"), width = 25, height = 25, units = c("cm"))
+  
+  
+  
+  ## Jobbik
+  
+  logitcoeffs_regression_jobbik_2014_2018_tstar_all <- glm(egyeni_jobbik_pc.y ~ egyeni_jobbik_pc.x + kozmunka_aranya + nyudijas_ffi_arany +
+                                                             nyudijas_noi_arany + nok_30_39_aranya + nok_40_49_aranya + nok_65._aranya +
+                                                             ffi_30_39_aranya + ffi_40_49_aranya + ffi_65._aranya + allaskeresok_aranya_8osztaly +
+                                                             ervenytelen_szazalek + reszvetel_q + 
+                                                             budapest_ido_km_q + megye_ido_km_q + megyeszekhely_km_q + megyeszekhely_min_q +
+                                                             budapest_min_q + altisk_q + jovedelem_fo_q + ujszulott_rate_q + 
+                                                             idosek_rate_q + nepesseg_q + elvandorlas_q + odavanadorlas_q
+                                                           ,  data=merge_all_t_star_all, family='binomial'(link="logit"))
+  
+  
+  summary(logitcoeffs_regression_jobbik_2014_2018_tstar_all)
+  
+  
+  merge_all_t_star_all$pred_logit_jobbik <- predict.glm(logitcoeffs_regression_jobbik_2014_2018_tstar_all, type="response")
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+    geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("Jobbik_GLM_by_megye_id_2.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(data = merge_all_t_star_all, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
+    geom_text(aes(label=telnev), size = 1, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("Jobbik_GLM_by_town_2.png"), width = 25, height = 25, units = c("cm"))
+
+```
+
+
+##Part 5: GLM prediction on OEVK level
+
+
+GLM prediction was also done using OEVK level metrics on the 2018 data. Since some of the predictors from the KSH database cannot be merged on the OEVK level, they were not used for this analysis. Instead, the number of cities, proportion of cities vs. towns, and the previously defined OEVK profile was used. With 106 data points, this analysis showed a clearer picture of where Fidesz and other parties overperformed and underperformed.
+
+TBD - analyze over/underperformance
+```{r warning=FALSE}
+ new_by_oevk_2014 <- read.csv("oevk2014_clean_new.csv")
+  egyeni_lista_by_oevk_2018 <- read.csv("2018_by_oevk_clean.csv")
+  
+  new_by_oevk_2014 <- as.data.table(new_by_oevk_2014)
+  egyeni_lista_by_oevk_2018 <- as.data.table(egyeni_lista_by_oevk_2018)
+  
+  
+  oevk_2014_vs_2018 <- merge(new_by_oevk_2014, egyeni_lista_by_oevk_2018, by = "oevk_id")
+  
+  write.csv(oevk_2014_vs_2018, "egyeni_oevk_2014_vs_2018.csv")
+  
+#FIDESZ
+  
+oevk_2014_vs_2018_glm_fidesz <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=oevk_2014_vs_2018)
+  summary(oevk_2014_vs_2018_glm_fidesz)
+  coeftest(oevk_2014_vs_2018_glm_fidesz)
+  
+  logitcoeffs_oevk_2014_vs_2018_glm_fidesz <- glm(egyeni_fidesz_pc.y ~ egyeni_fidesz_pc.x + szavazokorok_szama + telepulesek_szama + profil + varos_aranya, data=oevk_2014_vs_2018, family='binomial')
+  
+  summary(logitcoeffs_oevk_2014_vs_2018_glm_fidesz)
+  
+  oevk_2014_vs_2018$pred_logit_fidesz <- predict.glm(logitcoeffs_oevk_2014_vs_2018_glm_fidesz, type="response")
+  
+  
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= pred_logit_fidesz)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
+    geom_text(aes(label=oevk_id), size = 1.5, check_overlap = FALSE) +
+    geom_point(color ="red") +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK") + xlab("2018 Fidesz vote %") + ylab("GLM prediction") +
+    geom_line(aes(x=pred_logit_fidesz, y=pred_logit_fidesz), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("fidesz_GLM_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+
+
+#JOBBIK  - TBD
+  
+
+#MSZP - TBD
+  
+
+#LMP - TBD
+  
+  
+```
+
+## Part 6: UNS predictions and deviation
+
+The final set of prediction comparison was done using the 2014 raw UNS data compared to the 2018 data.
+
+This shows the list of constituencies and contituency profile types where parties overperformed or underperformed compared to the expected UNS vote share.
+```{r warning=FALSE}
+ ### UNIFORM SWING vote share
+
+
+data <- read.csv("vote_counts_precincts_2b.csv")
+  
+  data <- as.data.table(data)
+  
+  #kamupartok egyesitese es szurese
+  kamu <- subset(data, select = c(id, mcp, haza_nem_elado, sms, fkgp, udp, sem, jesz, ump, munkaspart, szocdemek, kti, egyutt2014, zoldek, osszefogas))
+  
+  kamu$egyeb <- rowSums( kamu[,2:15] )
+  
+  kamu2 <- subset(kamu, select = c(id, egyeb))
+  
+  data2 <- merge(data, kamu2, by="id")
+  
+  #reszveteli adatok, 4 part listaja, egyeni, egyeb partok lista + megye, telepules, szavazokor kulon
+  
+  data_clean <- subset(data2, select = c(id, atjelentkezettek, szavazokor, oevk_id, szavazok, reszvetel, fidesz, lmp, kormanyvaltok, jobbik, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb))
+  
+  
+  
+  #szavazasra jogosultak szama / szavazokor
+  
+  data_clean <- data_clean[, ossz_szavazo := round(szavazok / (reszvetel /100), digits = 0)] 
+  
+  #szavazokorok szama 
+  
+  data_szavazokorok_szama <- data_clean[, list(szavazokorok_szama = .N), by = oevk_id]
+  
+  data_clean <- merge(data_clean, data_szavazokorok_szama, by = "oevk_id")
+  
+  
+  #UJ VALTOZOK - partok szazalekos egyeni eredmenye egymashoz viszonyitva (kamupartok nelkul)
+  
+  data_clean <- data_clean[, egyeni_fidesz_pc := egyeni_fidesz / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)] 
+  
+  data_clean <- data_clean[, egyeni_kormanyvaltok_pc := egyeni_kormanyvaltok / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  data_clean <- data_clean[, egyeni_jobbik_pc := egyeni_jobbik / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  data_clean <- data_clean[, egyeni_lmp_pc := egyeni_lmp / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+
+  #2014 results - single-seats
+  
+  oevk_2014_vs_2018 <- oevk_2014_vs_2018[, Fidesz_2014_orszagos_UNS := 44.13] 
+  data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
+  data_UNS <- data_UNS[, Jobbik_2014_orszagos := 20.34]
+  data_UNS <- data_UNS[, LMP_2014_orszagos := 4.98]
+  data_UNS <- data_UNS[, Egyeb_2014_orszagos := 3.69]
+  
+  data_UNS <- data_UNS[, reszvetel_2014 := 60.99] 
+  
+  
+  #2014 results -party list - TB ADDED
+  
+  oevk_2014_vs_2018 <- oevk_2014_vs_2018[, Fidesz_2014_orszagos_UNS := 44.13] 
+  data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
+  data_UNS <- data_UNS[, Jobbik_2014_orszagos := 20.34]
+  data_UNS <- data_UNS[, LMP_2014_orszagos := 4.98]
+  data_UNS <- data_UNS[, Egyeb_2014_orszagos := 3.69]
+  
+  data_UNS <- data_UNS[, reszvetel_2014 := 60.99] 
+  
+  #2018 results - add party lists and OEVK
+  
+  oevk_2014_vs_2018 <- oevk_2014_vs_2018[, Fidesz_2018_orszagos_UNS := 47.73] 
+  data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 12.46]
+  data_UNS <- data_UNS[, Jobbik_2018_orszagos := 19.96]
+  data_UNS <- data_UNS[, LMP_2018_orszagos := 7.43]
+  data_UNS <- data_UNS[, DK_2018_orszagos := 5.6]
+  data_UNS <- data_UNS[, Momentum_2018_orszagos := 3.18]
+  
+  data_UNS <- data_UNS[, reszvetel_2018 := 70.2]  
+  
+  
+  
+  oevk_2014_vs_2018$Fidesz_2018_UNS_egyeni_pc <- oevk_2014_vs_2018[, egyeni_fidesz_pc.x * (Fidesz_2018_orszagos_UNS / Fidesz_2014_orszagos_UNS)] 
+  oevk_2014_vs_2018$Fidesz_2018_UNS_listas_pc <- oevk_2014_vs_2018[, orszagos_fidesz_pc * (Fidesz_2018_orszagos_UNS / Fidesz_2014_orszagos_UNS)]
+  
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= Fidesz_2018_UNS_egyeni_pc)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
+    geom_text(aes(label=oevk_id), size = 1.5, check_overlap = FALSE) +
+    geom_point(color ="red") +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK") + xlab("2018 Fidesz vote %") + ylab("UNS prediction") +
+    geom_line(aes(x=Fidesz_2018_UNS_egyeni_pc, y=Fidesz_2018_UNS_pc), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("fidesz_UNS_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  
+  ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= Fidesz_2018_UNS_egyeni_pc)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
+    geom_text(aes(label=profil), size = 3, check_overlap = FALSE) +
+    geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK type") + xlab("2018 Fidesz vote %") + ylab("UNS prediction") +
+    geom_line(aes(x=Fidesz_2018_UNS_egyeni_pc, y=Fidesz_2018_UNS_pc), color="green", size = 1) +
+    theme_minimal() 
+  ggsave(("fidesz_UNS_by_OEVK_type.png"), width = 25, height = 25, units = c("cm"))
+  
+  
+  
+
+### UNS deviation   
+  
+  #FIDESZ
+  
+  oevk_2014_vs_2018$Fidesz_2018_UNS_egyeni_pc_elteres <- oevk_2014_vs_2018[, egyeni_fidesz_pc.y - Fidesz_2018_UNS_egyeni_pc] 
+  
+  ggplot(oevk_2014_vs_2018, aes(egyeni_fidesz_pc.y, Fidesz_2018_UNS_egyeni_pc_elteres)) + geom_point(color ="red") +
+    geom_text(aes(label=oevk_id), size = 2) + geom_smooth(method = "lm") + ggtitle("Fidesz actual vote share and prediction error by OEVK") +
+    xlab("Fidesz vote share") + ylab("Prediction error") +
+    xlim(0.25, 0.65) +
+    theme_minimal()
+  ggsave(("fidesz_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  
+
+  #TBD - all UNS deviations
+  
+  
+  
+  
+```
+
+
+##Appendix: Code segments used to generate UNS vote shares for pre-election
+
+This code was used to generate the 2018 predictions for pre-election predictions. This data was then manipulated in Excel based on different aspects (e.g. incumbency effect, OEVK profile, number of opposition candidates, etc.)
+```{r warning=FALSE}
+setwd('C:/Users/adasan01/OneDrive - ARM/Documents/GitHub/106/capstone_adat')
+  data <- read.csv("vote_counts_precincts_2b.csv")
+  
+  data <- as.data.table(data)
+  
+  #kamupartok egyesitese es szurese
+  kamu <- subset(data, select = c(id, mcp, haza_nem_elado, sms, fkgp, udp, sem, jesz, ump, munkaspart, szocdemek, kti, egyutt2014, zoldek, osszefogas))
+  
+  kamu$egyeb <- rowSums( kamu[,2:15] )
+  
+  kamu2 <- subset(kamu, select = c(id, egyeb))
+  
+  data2 <- merge(data, kamu2, by="id")
+  
+  #reszveteli adatok, 4 part listaja, egyeni, egyeb partok lista + megye, telepules, szavazokor kulon
+  
+  data_clean <- subset(data2, select = c(id, atjelentkezettek, szavazokor, oevk_id, szavazok, reszvetel, fidesz, lmp, kormanyvaltok, jobbik, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb))
+  
+  
+  
+  #szavazasra jogosultak szama / szavazokor
+  
+  data_clean <- data_clean[, ossz_szavazo := round(szavazok / (reszvetel /100), digits = 0)] 
+  
+  #szavazokorok szama 
+  
+  data_szavazokorok_szama <- data_clean[, list(szavazokorok_szama = .N), by = oevk_id]
+  
+  data_clean <- merge(data_clean, data_szavazokorok_szama, by = "oevk_id")
+  
+  
+  #UJ VALTOZOK - partok szazalekos egyeni eredmenye egymashoz viszonyitva (kamupartok nelkul)
+  
+  data_clean <- data_clean[, egyeni_fidesz_pc := egyeni_fidesz / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)] 
+  
+  data_clean <- data_clean[, egyeni_kormanyvaltok_pc := egyeni_kormanyvaltok / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  data_clean <- data_clean[, egyeni_jobbik_pc := egyeni_jobbik / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  data_clean <- data_clean[, egyeni_lmp_pc := egyeni_lmp / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  
+  #uniform swing kalkulacio data_UNS
+  
+  #new inputs - 
+  
+  data_UNS <- data_clean[, Fidesz_2014_orszagos := 44.13] 
+  data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
+  data_UNS <- data_UNS[, Jobbik_2014_orszagos := 20.34]
+  data_UNS <- data_UNS[, LMP_2014_orszagos := 4.98]
+  data_UNS <- data_UNS[, Egyeb_2014_orszagos := 3.69]
+  
+  data_UNS <- data_UNS[, reszvetel_2014 := 60.99] 
+  
+  #friss?theto ?j adatok alapj?n
+  
+  data_UNS <- data_UNS[, Fidesz_2018_orszagos := 47.73] 
+  data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 12.5]
+  data_UNS <- data_UNS[, Jobbik_2018_orszagos := 23.5]
+  data_UNS <- data_UNS[, LMP_2018_orszagos := 6]
+  data_UNS <- data_UNS[, DK_2018_orszagos := 7.5]
+  data_UNS <- data_UNS[, Momentum_2018_orszagos := 3]
+  data_UNS <- data_UNS[, Egyutt_2018 := 2]
+  data_uns <- data_UNS[, MKKP_2018 := 1]
+  #egyeb 1.5%
+  
+  
+  data_UNS <- data_UNS[, reszvetel_2018 := 70.2]  
+  
+  #kiegeszito 2014-es benchmarkok az MSZP-P, DK, es Momentum adataihoz
+  
+  data_UNS <- data_UNS[, MSZP_P_2014_orszagos := (MSZP_P_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos)) * Kormanyvaltok_2014_orszagos ]
+  
+  data_UNS <- data_UNS[, DK_2014_orszagos := (DK_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos)) * Kormanyvaltok_2014_orszagos ]
+  
+  data_UNS <- data_UNS[, Momentum_2014_orszagos :=  0.1 * LMP_2014_orszagos + 0.2 * Egyeb_2014_orszagos]
+  
+  data_UNS <- data_UNS[, reszvetel_2018_szorzo :=  reszvetel_2018 / reszvetel_2014]
+  
+  # 2018-as UNS vote share
+  
+  
+  by_oevk_UNS_2018 <- data_UNS[, list(Fidesz_2014 = sum(egyeni_fidesz),
+                                      MSZP_DK_P_2014 = sum(egyeni_kormanyvaltok),
+                                      LMP_2014 = sum(egyeni_lmp),
+                                      Jobbik_2014 = sum(egyeni_jobbik),
+                                      Fidesz_2018 = sum(egyeni_fidesz * (Fidesz_2018_orszagos / Fidesz_2014_orszagos) * reszvetel_2018_szorzo),
+                                      Jobbik_2018 = sum(egyeni_jobbik * (Jobbik_2018_orszagos / Jobbik_2014_orszagos) * reszvetel_2018_szorzo),
+                                      MSZP_P_2018 = sum(egyeni_kormanyvaltok * (MSZP_P_2018_orszagos / Kormanyvaltok_2014_orszagos) * reszvetel_2018_szorzo),
+                                      DK_2018 = sum(egyeni_kormanyvaltok * (DK_2018_orszagos / Kormanyvaltok_2014_orszagos) * reszvetel_2018_szorzo),
+                                      LMP_2018 = sum(egyeni_lmp * (LMP_2018_orszagos / LMP_2014_orszagos) * reszvetel_2018_szorzo),
+                                      Momentum_2018 = sum((egyeni_lmp * 0.6) * reszvetel_2018_szorzo),
+                                      Egyutt_2018 = sum((egyeni_lmp * 0.4) * reszvetel_2018_szorzo),
+                                      MKKP_2018 = sum((egyeni_lmp * 0.2) * reszvetel_2018_szorzo)),
+                               by = oevk_id][order(oevk_id)]
+  
+  Fidesz_2018_votes <- sum(by_oevk_UNS_2018$Fidesz_2018)
+  Fidesz_2018_votes
+  
+  Jobbik_2018_votes <- sum(by_oevk_UNS_2018$Jobbik_2018)
+  Jobbik_2018_votes
+  
+  MSZP_P_2018_votes <- sum(by_oevk_UNS_2018$MSZP_P_2018)
+  MSZP_P_2018_votes
+  
+  DK_2018 <- sum(by_oevk_UNS_2018$DK_2018)
+  DK_2018
+  
+  LMP_2018_votes <- sum(by_oevk_UNS_2018$LMP_2018)
+  LMP_2018_votes
+  
+  Momentum_2018_votes <- sum(by_oevk_UNS_2018$Momentum_2018)
+  Momentum_2018_votes
+  
+  Egyutt_2018_votes <- sum(by_oevk_UNS_2018$Egyutt_2018)
+  Egyutt_2018_votes
+  
+  MKKP_2018_votes <- sum(by_oevk_UNS_2018$MKKP_2018)
+  MKKP_2018_votes
+  
+  osszes_szavazat <- by_oevk_UNS_2018[, list(Fidesz = round(sum(Fidesz_2018), digits = 0), 
+                                             Jobbik = round(sum(Jobbik_2018), digits = 0), 
+                                             MSZP = round(sum(MSZP_P_2018), digits = 0), 
+                                             DK = round(sum(DK_2018), digits = 0), LMP  = round(sum(LMP_2018), digits = 0), 
+                                             Momentum = round(sum(Momentum_2018), digits = 0),
+                                             Egyutt = round(sum(Egyutt_2018), digits = 0),
+                                             MKKP = round(sum(MKKP_2018), digits = 0))]
+  
+  rowSums(osszes_szavazat)
+  
+  
+  write.csv(by_oevk_UNS_2018,'2018_UNS_baseline.csv')
+```

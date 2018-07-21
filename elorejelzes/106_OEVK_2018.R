@@ -949,6 +949,8 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   ### UNIFORM SWING vote share
   
+  #ALL tables - TO BE CURATED (ADD LISTAS VOTES)
+  
   oevk_2014_vs_2018 <- oevk_2014_vs_2018[, Fidesz_2014_orszagos_UNS := 44.13] 
   data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
   data_UNS <- data_UNS[, Jobbik_2014_orszagos := 20.34]
@@ -971,7 +973,7 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   
   oevk_2014_vs_2018$Fidesz_2018_UNS_egyeni_pc <- oevk_2014_vs_2018[, egyeni_fidesz_pc.x * (Fidesz_2018_orszagos_UNS / Fidesz_2014_orszagos_UNS)] 
-  
+  oevk_2014_vs_2018$Fidesz_2018_UNS_listas_pc <- oevk_2014_vs_2018[, orszagos_fidesz_pc * (Fidesz_2018_orszagos_UNS / Fidesz_2014_orszagos_UNS)]
   
   ggplot(data = oevk_2014_vs_2018, aes(x=egyeni_fidesz_pc.y, y= Fidesz_2018_UNS_egyeni_pc)) + xlim(0.25, 0.65) + ylim(0.25, 0.65) +
     geom_text(aes(label=oevk_id), size = 1.5, check_overlap = FALSE) +
@@ -986,43 +988,75 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
     geom_smooth(method = "loess") +  ggtitle("Fidesz - Actual and predicted vote share in each OEVK type") + xlab("2018 Fidesz vote %") + ylab("UNS prediction") +
     geom_line(aes(x=Fidesz_2018_UNS_egyeni_pc, y=Fidesz_2018_UNS_pc), color="green", size = 1) +
     theme_minimal() 
-  ggsave(("fidesz_UNS_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  ggsave(("fidesz_UNS_by_OEVK_type.png"), width = 25, height = 25, units = c("cm"))
+  
+  
   
 
-### UNS deviation    
+### UNS deviation   
+  
+  #FIDESZ
+  
   oevk_2014_vs_2018$Fidesz_2018_UNS_egyeni_pc_elteres <- oevk_2014_vs_2018[, egyeni_fidesz_pc.y - Fidesz_2018_UNS_egyeni_pc] 
   
   ggplot(oevk_2014_vs_2018, aes(egyeni_fidesz_pc.y, Fidesz_2018_UNS_egyeni_pc_elteres)) + geom_point(color ="red") +
-    geom_text(aes(label=oevk_id),
-              size = 1) + geom_smooth(method = "lm") + ggtitle("Fidesz actual vote share and prediction error by OEVK") +
+    geom_text(aes(label=oevk_id), size = 2) + geom_smooth(method = "lm") + ggtitle("Fidesz actual vote share and prediction error by OEVK") +
     xlab("Fidesz vote share") + ylab("Prediction error") +
     xlim(0.25, 0.65) +
     theme_minimal()
   ggsave(("fidesz_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
   
+
+  #TBD - all UNS deviations
+  
+  
 #### 2014-2018 UNS from 106_OEVK_2014_glm file
+  
+  setwd('C:/Users/adasan01/OneDrive - ARM/Documents/GitHub/106/capstone_adat')
+  data <- read.csv("vote_counts_precincts_2b.csv")
+  
+  data <- as.data.table(data)
+  
+  #kamupartok egyesitese es szurese
+  kamu <- subset(data, select = c(id, mcp, haza_nem_elado, sms, fkgp, udp, sem, jesz, ump, munkaspart, szocdemek, kti, egyutt2014, zoldek, osszefogas))
+  
+  kamu$egyeb <- rowSums( kamu[,2:15] )
+  
+  kamu2 <- subset(kamu, select = c(id, egyeb))
+  
+  data2 <- merge(data, kamu2, by="id")
+  
+  #reszveteli adatok, 4 part listaja, egyeni, egyeb partok lista + megye, telepules, szavazokor kulon
+  
+  data_clean <- subset(data2, select = c(id, atjelentkezettek, szavazokor, oevk_id, szavazok, reszvetel, fidesz, lmp, kormanyvaltok, jobbik, egyeni_fidesz, egyeni_lmp, egyeni_kormanyvaltok, egyeni_jobbik, egyeb))
+  
+  
+  
+  #szavazasra jogosultak szama / szavazokor
+  
+  data_clean <- data_clean[, ossz_szavazo := round(szavazok / (reszvetel /100), digits = 0)] 
+  
+  #szavazokorok szama 
+  
+  data_szavazokorok_szama <- data_clean[, list(szavazokorok_szama = .N), by = oevk_id]
+  
+  data_clean <- merge(data_clean, data_szavazokorok_szama, by = "oevk_id")
+  
+  
+  #UJ VALTOZOK - partok szazalekos egyeni eredmenye egymashoz viszonyitva (kamupartok nelkul)
+  
+  data_clean <- data_clean[, egyeni_fidesz_pc := egyeni_fidesz / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)] 
+  
+  data_clean <- data_clean[, egyeni_kormanyvaltok_pc := egyeni_kormanyvaltok / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  data_clean <- data_clean[, egyeni_jobbik_pc := egyeni_jobbik / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
+  data_clean <- data_clean[, egyeni_lmp_pc := egyeni_lmp / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  
   
   #uniform swing kalkulacio data_UNS
   
-  #new inputs - orszagos pollok atlaga -4% Fidesz, frissitve m?rcius 2-an
-  
-  #2014 eredm?ny Fidesz 
-  # Fidesz 44.13
-  # Jobbik 20.34
-  # Korm?nyv?lt?k 26.86
-  # LMP 4.98
-  # Egy?b 3.69
-  
-  #2018 m?rcius 
-  #Fidesz 45%, 
-  #MSZP-P 17%
-  #Jobbik 18% 
-  #LMP 9%
-  # DK 6%
-  #Momentum 2%
-  #Egy?b 3%
-  
-  #?lland? 2014-es p?rt szorz?k
+  #new inputs - 
   
   data_UNS <- data_clean[, Fidesz_2014_orszagos := 44.13] 
   data_UNS <- data_UNS[, Kormanyvaltok_2014_orszagos := 26.86]
@@ -1035,11 +1069,15 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   #friss?theto ?j adatok alapj?n
   
   data_UNS <- data_UNS[, Fidesz_2018_orszagos := 47.73] 
-  data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 12.46]
-  data_UNS <- data_UNS[, Jobbik_2018_orszagos := 19.96]
-  data_UNS <- data_UNS[, LMP_2018_orszagos := 7.43]
-  data_UNS <- data_UNS[, DK_2018_orszagos := 5.6]
-  data_UNS <- data_UNS[, Momentum_2018_orszagos := 3.18]
+  data_UNS <- data_UNS[, MSZP_P_2018_orszagos := 12.5]
+  data_UNS <- data_UNS[, Jobbik_2018_orszagos := 23.5]
+  data_UNS <- data_UNS[, LMP_2018_orszagos := 6]
+  data_UNS <- data_UNS[, DK_2018_orszagos := 7.5]
+  data_UNS <- data_UNS[, Momentum_2018_orszagos := 3]
+  data_UNS <- data_UNS[, Egyutt_2018 := 2]
+  data_uns <- data_UNS[, MKKP_2018 := 1]
+  #egyeb 1.5%
+  
   
   data_UNS <- data_UNS[, reszvetel_2018 := 70.2]  
   
@@ -1049,27 +1087,12 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
   
   data_UNS <- data_UNS[, DK_2014_orszagos := (DK_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos)) * Kormanyvaltok_2014_orszagos ]
   
-  data_UNS <- data_UNS[, Momentum_2014_orszagos :=  0.4 * LMP_2014_orszagos + 0.2 * Egyeb_2014_orszagos]
+  data_UNS <- data_UNS[, Momentum_2014_orszagos :=  0.1 * LMP_2014_orszagos + 0.2 * Egyeb_2014_orszagos]
   
   data_UNS <- data_UNS[, reszvetel_2018_szorzo :=  reszvetel_2018 / reszvetel_2014]
   
   # 2018-as UNS vote share
   
-  
-  by_szavazokor_UNS_2018 <- data_UNS[, list(Fidesz_2014 = egyeni_fidesz,
-                                            MSZP_DK_P_2014 = egyeni_kormanyvaltok,
-                                            LMP_2014 = egyeni_lmp,
-                                            Jobbik_2014 = egyeni_jobbik,
-                                            Fidesz_2018 = egyeni_fidesz * (Fidesz_2018_orszagos / Fidesz_2014_orszagos) * reszvetel_2018_szorzo,
-                                            Jobbik_2018 = egyeni_jobbik * (Jobbik_2018_orszagos / Jobbik_2014_orszagos) * reszvetel_2018_szorzo,
-                                            MSZP_P_2018 = egyeni_kormanyvaltok * ((MSZP_P_2018_orszagos / MSZP_P_2014_orszagos) * (MSZP_P_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos))) * reszvetel_2018_szorzo,
-                                            DK_2018 = egyeni_kormanyvaltok * ((DK_2018_orszagos / DK_2014_orszagos) * (DK_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos))) * reszvetel_2018_szorzo,
-                                            LMP_2018 = egyeni_lmp * (LMP_2018_orszagos / LMP_2014_orszagos) * reszvetel_2018_szorzo,
-                                            Momentum_2018 = (egyeni_lmp * 0.2) + (egyeb * 0.4) * (Momentum_2018_orszagos / Momentum_2014_orszagos) * reszvetel_2018_szorzo,
-                                            reszvetel_2014 = reszvetel,
-                                            reszvetel_2018 = reszvetel * reszvetel_2018_szorzo,
-                                            szavazokorok_szama = szavazokorok_szama),
-                                     by = list(oevk, id)][order(oevk)]
   
   by_oevk_UNS_2018 <- data_UNS[, list(Fidesz_2014 = sum(egyeni_fidesz),
                                       MSZP_DK_P_2014 = sum(egyeni_kormanyvaltok),
@@ -1077,45 +1100,48 @@ ggplot(OEVK_pred_elemzes, aes(egyeni_dk_pc, Baloldal_pred_elteres)) + geom_point
                                       Jobbik_2014 = sum(egyeni_jobbik),
                                       Fidesz_2018 = sum(egyeni_fidesz * (Fidesz_2018_orszagos / Fidesz_2014_orszagos) * reszvetel_2018_szorzo),
                                       Jobbik_2018 = sum(egyeni_jobbik * (Jobbik_2018_orszagos / Jobbik_2014_orszagos) * reszvetel_2018_szorzo),
-                                      MSZP_P_2018 = sum(egyeni_kormanyvaltok * ((MSZP_P_2018_orszagos / MSZP_P_2014_orszagos) * (MSZP_P_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos))) * reszvetel_2018_szorzo),
-                                      DK_2018 = sum(egyeni_kormanyvaltok * ((DK_2018_orszagos / DK_2014_orszagos) * (DK_2018_orszagos / (DK_2018_orszagos + MSZP_P_2018_orszagos))) * reszvetel_2018_szorzo),
+                                      MSZP_P_2018 = sum(egyeni_kormanyvaltok * (MSZP_P_2018_orszagos / Kormanyvaltok_2014_orszagos) * reszvetel_2018_szorzo),
+                                      DK_2018 = sum(egyeni_kormanyvaltok * (DK_2018_orszagos / Kormanyvaltok_2014_orszagos) * reszvetel_2018_szorzo),
                                       LMP_2018 = sum(egyeni_lmp * (LMP_2018_orszagos / LMP_2014_orszagos) * reszvetel_2018_szorzo),
-                                      Momentum_2018 = sum((egyeni_lmp * 0.2) + (egyeb * 0.4) * (Momentum_2018_orszagos / Momentum_2014_orszagos) * reszvetel_2018_szorzo)),
-                               by = oevk][order(oevk)]
+                                      Momentum_2018 = sum((egyeni_lmp * 0.6) * reszvetel_2018_szorzo),
+                                      Egyutt_2018 = sum((egyeni_lmp * 0.4) * reszvetel_2018_szorzo),
+                                      MKKP_2018 = sum((egyeni_lmp * 0.2) * reszvetel_2018_szorzo)),
+                               by = oevk_id][order(oevk_id)]
   
-  by_szavazokor_UNS_2018 <- by_szavazokor_UNS_2018[, egyeni_fidesz_2018_pc := egyeni_fidesz / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)] 
+  Fidesz_2018_votes <- sum(by_oevk_UNS_2018$Fidesz_2018)
+  Fidesz_2018_votes
   
-  by_szavazokor_UNS_2018 <- by_szavazokor_UNS_2018[, egyeni_MSZP_2018_pc := egyeni_kormanyvaltok / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
+  Jobbik_2018_votes <- sum(by_oevk_UNS_2018$Jobbik_2018)
+  Jobbik_2018_votes
   
-  by_szavazokor_UNS_2018 <- by_szavazokor_UNS_2018[, egyeni_jobbik_2018_pc := egyeni_jobbik / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
-  
-  by_szavazokor_UNS_2018 <- by_szavazokor_UNS_2018[, egyeni_lmp_2018_pc := egyeni_lmp / (egyeni_fidesz + egyeni_jobbik + egyeni_kormanyvaltok + egyeni_lmp + egyeb)]
-  
-  Fidesz_2018 <- sum(by_oevk_UNS_2018$Fidesz_2018)
-  Fidesz_2018
-  
-  Jobbik_2018 <- sum(by_oevk_UNS_2018$Jobbik_2018)
-  Jobbik_2018
-  
-  MSZP_P_2018 <- sum(by_oevk_UNS_2018$MSZP_P_2018)
-  MSZP_P_2018
+  MSZP_P_2018_votes <- sum(by_oevk_UNS_2018$MSZP_P_2018)
+  MSZP_P_2018_votes
   
   DK_2018 <- sum(by_oevk_UNS_2018$DK_2018)
   DK_2018
   
-  LMP_2018 <- sum(by_oevk_UNS_2018$LMP_2018)
-  LMP_2018
+  LMP_2018_votes <- sum(by_oevk_UNS_2018$LMP_2018)
+  LMP_2018_votes
   
-  Momentum_2018 <- sum(by_oevk_UNS_2018$Momentum_2018)
-  Momentum_2018
+  Momentum_2018_votes <- sum(by_oevk_UNS_2018$Momentum_2018)
+  Momentum_2018_votes
   
-  osszes_szavazat <- by_oevk_UNS_2018[, list(Fidesz = round(sum(Fidesz_2018), digits = 0), Jobbik = round(sum(Jobbik_2018), digits = 0), 
+  Egyutt_2018_votes <- sum(by_oevk_UNS_2018$Egyutt_2018)
+  Egyutt_2018_votes
+  
+  MKKP_2018_votes <- sum(by_oevk_UNS_2018$MKKP_2018)
+  MKKP_2018_votes
+  
+  osszes_szavazat <- by_oevk_UNS_2018[, list(Fidesz = round(sum(Fidesz_2018), digits = 0), 
+                                             Jobbik = round(sum(Jobbik_2018), digits = 0), 
                                              MSZP = round(sum(MSZP_P_2018), digits = 0), 
                                              DK = round(sum(DK_2018), digits = 0), LMP  = round(sum(LMP_2018), digits = 0), 
-                                             Momentum = round(sum(Momentum_2018), digits = 0))]
+                                             Momentum = round(sum(Momentum_2018), digits = 0),
+                                             Egyutt = round(sum(Egyutt_2018), digits = 0),
+                                             MKKP = round(sum(MKKP_2018), digits = 0))]
   
   rowSums(osszes_szavazat)
   
   
-  write.csv(by_oevk_UNS_2018,'2018_UNS.csv')
+  write.csv(by_oevk_UNS_2018,'2018_UNS_baseline.csv')
   
