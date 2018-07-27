@@ -375,16 +375,22 @@ OEVK_profil defines the types of constituencies that contain different types of 
 
 The types are:
 
-52 OEVKs
-- 0 = Budapest
-- 1 = county capital with few or no smaller towns
-- 2 = county capital or major city with 5-15 smaller towns
-- 3 = major city or cities with some smaller towns
+52 of 106 OEVKs:
+0 = Budapest
 
-54 OEVKs
-- 4 = some smaller cities combined with lots of villages
-- 5 = one smaller town with lots of villages
-- 6 = one smaller town with 100+ villages
+1 = county capital with few or no smaller towns
+
+2 = county capital or major city with 5-15 smaller towns
+
+3 = major city or cities with some smaller towns
+
+54 of 106 OEVKs:
+
+4 = some smaller cities combined with lots of villages
+
+5 = one smaller town with lots of villages
+
+6 = one smaller town with 100+ villages
 
 OEVK profile scores are significant in all parties' expected vote share (Fidesz and Jobbik performs worse, left-wing parties perform better)
 ```{r warning=FALSE}
@@ -463,6 +469,14 @@ szavazok_by_telep_tipus <- egyeni_lista_by_telep_2018[, list(ossz_szavazo = sum(
 
 egyeni_lista_by_telep_2018$telep_tipus <- as.integer(egyeni_lista_by_telep_2018$telep_tipus)
 
+
+## USE this for Google Data Studio visualization
+
+egyeni_lista_by_telep_2018$telep_tipus_2 <- cut(egyeni_lista_by_telep_2018$szavazok, c(0, 500, 1000, 2000, 5000, 10000, 30000, 60000, 100000, Inf), 
+                                              labels = c("0-500", "500-1001", "1001-2000", "2001-5000", "5001-10000", "10001-30000", "30001-60000", "60001-100000", "Over 100001"))
+
+write.csv(egyeni_lista_by_telep_2018,'2018_by_telep_v2.csv', fileEncoding = "UTF-8")
+
 ggplot(szavazok_by_telep_tipus, aes(x = ossz_szavazo)) + geom_histogram(binwidth = 100000)
 
 
@@ -494,7 +508,7 @@ ggsave(("lmp_vote_town_size.png"), width = 30, height = 18, units = c("cm"))
 
 A separate spreadsheet was prepared showing the last pre-election predictions published on 6 April 2018 and the deviation of these predictions compared to actual constituency results.
 
-It showes the list of districts where each party over-performed or under-performed compared to the predictions. The green line and the dotted red lines show the predicted values (so over and underprediction is clearly visible)
+It shows the list of districts where each party over-performed or under-performed compared to the predictions. The green line and the dotted red lines show the predicted values (so over and underprediction is clearly visible)
 ```{r warning=FALSE}
 ### OEVK predictions
 
@@ -719,14 +733,14 @@ The AIC score of the prediction on Fidesz is 3445 while it is 1853 on Jobbik. Th
     ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
       geom_text(aes(label=megyeid), size = 1, check_overlap = FALSE) +
       geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
-      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1)
+      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1) +
     theme_minimal() 
     ggsave(("Jobbik_GLM_by_megye_id.png"), width = 25, height = 25, units = c("cm"))
     
     ggplot(data = t_star_telepules_2014_2018, aes(x=egyeni_jobbik_pc.y, y= pred_logit_jobbik)) + xlim(0.00, 0.65) + ylim(0.00, 0.65) +
       geom_text(aes(label=telep_nev), size = 1, check_overlap = FALSE) +
       geom_smooth(method = "loess") +  ggtitle("Jobbik - Actual and predicted vote share in each town") + xlab("2018 Jobbik vote %") + ylab("GLM prediction") +
-      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1)
+      geom_line(aes(x=pred_logit_jobbik, y=pred_logit_jobbik), color="green", size = 1) +
     theme_minimal() 
     ggsave(("Jobbik_GLM_by_town.png"), width = 25, height = 25, units = c("cm"))
  
@@ -1022,9 +1036,11 @@ The final set of prediction comparison was done using the 2014 raw UNS data comp
 
 This shows the list of constituencies and contituency profile types where parties overperformed or underperformed compared to the expected UNS vote share. This analysis is useful as it shows how the share of votes of a given party had reallocated between different parts of the the country since the last election.
 
-Fidesz
+Fidesz performed better in rural OEVKs (code 3 and over) and in Miskolc (in Borsod county where both Jobbik and MSZP had one target seat each), however they underperformed in Budapest (OEVKs marked with 0) suggesting that their core voter base is shrinking in the capital.
 
-Jobbik
+Jobbik was getting less votes in Budapest and in other big cities because of tactical voting, but their vote share has exceeded expectation in rural areas, both in target seats with bigger cities (such as Békéscsaba in Békés 1), but their other target seats in rural areas (such as seats in Borsod and Jász-Nagykun-Szolnok coutines), they performed worse.
+
+UNS does not tell much about LMP and MSZP other than the huge difference thanks to tactical voting. In some cases, the deviance was up to 30% because left-wing voters and Jobbik supported MSZP or DK candidates in Budapest, while in rural areas, MSZP and LMP performed 10-20% worse as they cast their votes on Jobbik.
 ```{r warning=FALSE}
  ### UNIFORM SWING vote share
 
@@ -1207,7 +1223,7 @@ write.csv(oevk_2014_vs_2018, "oevk_2014_2018_UNS_OEVK_values.csv")
     geom_text(aes(label=oevk_id), size = 2) + geom_smooth(method = "lm") + 
     geom_hline (yintercept=0, linetype="dashed", color = "red") +
     ggtitle("Fidesz actual vote share and prediction error by OEVK") +
-    xlab("Fidesz vote share") + ylab("Prediction error") +
+    xlab("Fidesz vote share") + ylab("UNS Prediction error") +
     xlim(0.25, 0.65) +
     theme_minimal()
   ggsave(("fidesz_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
@@ -1221,7 +1237,7 @@ write.csv(oevk_2014_vs_2018, "oevk_2014_2018_UNS_OEVK_values.csv")
     geom_text(aes(label=oevk_id), size = 2) + geom_smooth(method = "lm") + 
     geom_hline (yintercept=0, linetype="dashed", color = "red") +
     ggtitle("Jobbik actual vote share and prediction error by OEVK") +
-    xlab("Jobbik vote share") + ylab("Prediction error") +
+    xlab("Jobbik vote share") + ylab("UNS Prediction error") +
     xlim(0.05, 0.45) +
     theme_minimal()
   ggsave(("jobbik_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
@@ -1235,7 +1251,7 @@ write.csv(oevk_2014_vs_2018, "oevk_2014_2018_UNS_OEVK_values.csv")
     geom_text(aes(label=oevk_id), size = 2) + geom_smooth(method = "lm") + 
     geom_hline (yintercept=0, linetype="dashed", color = "red") +
     ggtitle("MSZP actual vote share and prediction error by OEVK") +
-    xlab("MSZP vote share") + ylab("Prediction error") +
+    xlab("MSZP vote share") + ylab("UNS Prediction error") +
     xlim(0.001, 0.6) +
     theme_minimal()
   ggsave(("mszp_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
@@ -1248,11 +1264,11 @@ write.csv(oevk_2014_vs_2018, "oevk_2014_2018_UNS_OEVK_values.csv")
   ggplot(oevk_2014_vs_2018, aes(egyeni_lmp_pc.y, LMP_2018_UNS_egyeni_pc_elteres)) + geom_point(color ="red") +
     geom_text(aes(label=oevk_id), size = 2) + geom_smooth(method = "lm") + 
     geom_hline (yintercept=0, linetype="dashed", color = "red") +
-    ggtitle("Fidesz actual vote share and prediction error by OEVK") +
-    xlab("Fidesz vote share") + ylab("Prediction error") +
+    ggtitle("LMP actual vote share and prediction error by OEVK") +
+    xlab("Fidesz vote share") + ylab("UNS Prediction error") +
     xlim(0.001, 0.25) +
     theme_minimal()
-  ggsave(("fidesz_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
+  ggsave(("LMP_UNS_deviation_by_OEVK.png"), width = 25, height = 25, units = c("cm"))
   
   
   
