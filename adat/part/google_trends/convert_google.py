@@ -1,6 +1,5 @@
 import csv
 import re
-from datetime import datetime
 import glob
 
 FIELD_RE = re.compile(r'(.+?):\W\((.+?)\)', re.UNICODE and re.DOTALL)
