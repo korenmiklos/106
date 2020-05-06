@@ -52,7 +52,8 @@ def store_relation(row, jelolt_lista, eredmeny_lista, oevk_map):
     if jid not in [_['id'] for _ in jelolt_lista]:
         jelolt_lista.append(dict(id=jid, nev=row['A jelölt neve'], szervezet=row['Jelölő szervezet(ek)']))
     else:
-        assert dict(id=jid, nev=row['A jelölt neve'], szervezet=row['Jelölő szervezet(ek)']) in jelolt_lista
+        if dict(id=jid, nev=row['A jelölt neve'], szervezet=row['Jelölő szervezet(ek)']) not in jelolt_lista:
+            raise AssertionError
     eredmeny_lista.append(dict(szavazokor=row['szavazokor'], jelolt=jid, szavazat=numeric_value(row['Kapott érvényes szavazat'])))
 
 def store_listas(row, szervezet_lista, eredmeny_lista):
@@ -61,7 +62,8 @@ def store_listas(row, szervezet_lista, eredmeny_lista):
         szervezet_lista.append(dict(id=jid, szervezet=row['A pártlista neve']))
     else:
         try:
-            assert dict(id=jid, szervezet=row['A pártlista neve']) in szervezet_lista
+            if dict(id=jid, szervezet=row['A pártlista neve']) not in szervezet_lista:
+                raise AssertionError
         except: 
             pass 
     eredmeny_lista.append(dict(szavazokor=row['szavazokor'], part=jid, szavazat=numeric_value(row['Szavazat'])))
