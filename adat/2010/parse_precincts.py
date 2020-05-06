@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os, csv, re
+import csv, re
 import lxml.html, lxml.etree
 import glob
 
