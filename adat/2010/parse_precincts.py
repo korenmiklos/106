@@ -69,7 +69,8 @@ def store_listas(row, szervezet_lista, eredmeny_lista):
         szervezet_lista.append(dict(id=jid, szervezet=row['Lista neve']))
     else:
         try:
-            assert dict(id=jid, szervezet=row['Lista neve']) in szervezet_lista
+            if dict(id=jid, szervezet=row['Lista neve']) not in szervezet_lista:
+                raise AssertionError
         except: 
             pass 
     eredmeny_lista.append(dict(szavazokor=row['szavazokor'], part=jid, szavazat=numeric_value(row['Kapottérvényesszavazat'])))
